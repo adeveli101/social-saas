@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Tailwind CSS Guidelines
+
+## Configuration
+- Tailwind CSS v4 is configured in the project
+- Custom CSS variables are defined in [src/app/globals.css](mdc:src/app/globals.css)
+- Use the `@/*` import alias for components
+
+## Styling Approach
+- Use utility-first approach with Tailwind classes
+- Prefer Tailwind utilities over custom CSS
+- Use responsive prefixes (sm:, md:, lg:, xl:) for responsive design
+- Use dark: prefix for dark mode styles
+
+## Color Scheme
+- Primary colors: blue-600, purple-600 for gradients
+- Background: slate-50 to slate-100 (light), slate-900 (dark)
+- Text: slate-900 (light), white (dark)
+- Use semantic color names: text-slate-600, bg-slate-50, etc.
+
+## Component Styling
+- Use consistent spacing with Tailwind's spacing scale
+- Apply hover states with hover: prefix
+- Use focus states for accessibility
+- Implement proper contrast ratios
+
+## Layout Patterns
+- Use Flexbox and Grid utilities for layouts
+- Container classes for max-width and centering
+- Responsive grid: grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+- Use gap utilities for spacing between elements
+
+## Common Patterns
+- Cards: bg-white dark:bg-slate-800 border rounded-lg shadow
+- Buttons: Use Shadcn/UI Button component with variants
+- Forms: Use consistent spacing and focus states
+- Gradients: bg-gradient-to-r from-blue-600 to-purple-600
+

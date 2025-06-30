@@ -1,0 +1,38 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Next.js 15 App Router Guidelines
+
+## Project Structure
+- Use the App Router (not Pages Router)
+- All pages are in `src/app/` directory
+- Use TypeScript for all components and pages
+- Follow the file-based routing convention
+
+## Key Files
+- [src/app/layout.tsx](mdc:src/app/layout.tsx) - Root layout with metadata and providers
+- [src/app/page.tsx](mdc:src/app/page.tsx) - Landing page
+- [src/app/dashboard/page.tsx](mdc:src/app/dashboard/page.tsx) - Dashboard page
+- [src/app/providers.tsx](mdc:src/app/providers.tsx) - Context providers
+
+## Best Practices
+- Use 'use client' directive only when necessary for client-side interactivity
+- Prefer server components by default
+- Use Next.js Image component for optimized images
+- Implement proper metadata for SEO
+- Use dynamic imports for code splitting
+
+## Routing
+- Create directories for routes: `src/app/dashboard/` for `/dashboard`
+- Use `page.tsx` for route pages
+- Use `layout.tsx` for shared layouts
+- Use `loading.tsx` for loading states
+- Use `error.tsx` for error boundaries
+
+## API Routes
+- Place API routes in `src/app/api/` directory
+- Use Route Handlers (not API Routes from Pages Router)
+- Return Response objects directly
+

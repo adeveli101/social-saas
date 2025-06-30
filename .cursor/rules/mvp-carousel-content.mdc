@@ -1,0 +1,148 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Proje Planı ve Teknik Şartname: AI Destekli Instagram Carousel Oluşturucu (MVP)
+
+## 1. Proje Özeti ve Hedefler
+
+**Ana Hedef:**
+Kullanıcıların, belirledikleri bir konu (prompt) ve görsel sayısına göre yapay zeka aracılığıyla Instagram Carousel gönderileri (1080x1080px görseller ve uyumlu alt metin) oluşturmasını sağlamak.
+
+**MVP Felsefesi:**
+Karmaşık API entegrasyonları yerine, kullanıcının ürettiği içeriği Instagram'a manuel olarak ama en sürtünmesiz şekilde yüklemesini sağlayan bir akış sunmak. Kullanıcı deneyimi, hız ve basitlik önceliklidir.
+
+## 2. Teknoloji Yığını
+- **Frontend:** Next.js 15, React, TypeScript, Tailwind CSS
+- **Backend (API Rotaları):** Next.js API Route Handlers
+- **Veritabanı ve Depolama:** Supabase (Kullanıcı verileri, üretilen içerik meta verileri ve görsellerin kalıcı saklanması için)
+- **AI Servisleri:**
+  - Görsel ve metin üretimi için kullanılacak AI servisleri (ör. DALL-E, Imagen, ChatGPT, vb.) henüz kesinleşmemiştir. Proje geliştirme sürecinde bir veya birden fazla servis seçilebilir ve entegre edilebilir. Bu seçim, teknik gereksinimlere ve kalite/erişilebilirlik kriterlerine göre ileride netleştirilecektir.
+  - **Görsel Düzenleme (İsteğe Bağlı):** Fabric.js (Görsellere yazı ekleme özelliği için)
+
+## 3. Geliştirme Fazları
+
+### Faz 1: Çekirdek AI Motoru ve Veri Yapısı (Backend Odaklı)
+
+#### Dosya ve Klasör Yapısı (Önerilen)
+
+```
+src/
+├── app/
+│   └── api/
+│       └── carousel/
+│           ├── generate/
+│           │   └── route.ts      # POST: Carousel oluşturma ve AI tetikleme
+│           └── [id]/
+│               └── route.ts      # GET: Carousel durum ve sonuç sorgulama
+├── lib/
+│   └── carousel.ts               # Carousel ile ilgili yardımcı fonksiyonlar (AI çağrısı, Supabase işlemleri)
+```
+
+#### Açıklamalar
+- `src/app/api/carousel/generate/route.ts`: Kullanıcıdan prompt ve görsel sayısı alır, yeni carousel başlatır, AI ile içerik üretir, Supabase'e kaydeder.
+- `src/app/api/carousel/[id]/route.ts`: Belirli bir carousel'in durumunu ve sonuçlarını döndürür.
+- `src/lib/carousel.ts`: AI servislerine istek, Supabase'e kayıt, hata yönetimi gibi yardımcı fonksiyonlar.
+
+#### Supabase Şeması
+- `carousels` tablosu: id, user_id, prompt, image_count, status (pending, completed, failed), final_caption, error_message (nullable)
+- `carousel_slides` tablosu: id, carousel_id (foreign key), order_number, generated_image_url, edited_image_url (nullable)
+
+---
+
+Diğer fazlar için dosya yapısı ve component organizasyonu, Faz 1 tamamlandıktan sonra eklenmelidir.
+
+### Faz 2: Kullanıcı Arayüzü ve Temel Etkileşim (Frontend Odaklı)
+- **Carousel Oluşturma Formu:** Kullanıcının prompt ve görsel sayısını girdiği basit bir form. Form gönderildiğinde POST /api/carousel/generate'i tetikler ve bir yüklenme durumu (loading state) gösterir.
+- **Sonuç Görüntüleme Sayfası (CarouselPreview.tsx):**
+  - GET /api/carousel/[id] endpoint'inden gelen verileri kullanarak sonuçları render eder.
+  - Kullanıcının brief'inde belirttiği tüm UI/UX kurallarını uygular:
+    - Her görsel için download özellikli <a> etiketi.
+    - "Tüm Alt Metni Kopyala" butonu (navigator.clipboard API'si ile).
+    - Kullanıcıya anlık geri bildirim ("Kopyalandı!").
+    - Açık ve net "Nasıl Paylaşılır?" rehberi.
+    - Tamamen mobil uyumlu tasarım.
+  - **Asenkron Süreç Yönetimi:**
+    - Basit yöntem: Arayüz, her 5 saniyede bir GET /api/carousel/[id] endpoint'ine polling ile istek atarak işlemin bitip bitmediğini kontrol eder.
+    - İleri seviye yöntem: Supabase Realtime ile status değişimini anlık olarak frontend'e iletecek altyapı kurulabilir (MVP sonrası için önerilir).
+  - **Hata Yönetimi:**
+    - status 'failed' ise, error_message kullanıcıya gösterilir.
+
+### Faz 3: Görsel Üzerine Yazı Ekleme (İleri Seviye MVP Özelliği)
+- **Canvas Entegrasyonu:** CarouselPreview sayfasına, seçilen görseli bir canvas elementi üzerinde açan bir "Düzenle" butonu eklenir.
+- **Fabric.js Entegrasyonu:** Fabric.js kullanılarak canvas üzerine metin ekleme, font/renk/boyut değiştirme ve metni sürükleme özellikleri eklenir.
+- **Kaydetme Mantığı:** Düzenlenen görseli canvas.toDataURL() ile Base64 formatına çevirip yeni bir görsel olarak Supabase Storage'a yükleyecek bir API entegrasyonu yapılır. Düzenlenen görselin URL'i carousel_slides.edited_image_url alanına kaydedilir. Arayüzde orijinal ve düzenlenmiş görsel arasında geçiş yapılabilir.
+
+## 4. Kullanıcı Akışı Detayları
+- **Giriş:** Kullanıcı, Carousel oluşturma sayfasına gider.
+- **Form Doldurma:** "Yapay zekanın gücüyle iş hayatında verimlilik" gibi bir prompt girer ve "5" adet görsel seçer. "Oluştur" butonuna basar.
+- **Bekleme:** Arayüzde "Carousel içeriğiniz hazırlanıyor..." gibi bir bildirim belirir. Arka planda Faz 1'deki API'ler çalışır.
+- **Sonuç:** İşlem bitince kullanıcı sonuç sayfasına yönlendirilir. Faz 2'de tasarlanan CarouselPreview bileşeni ekrana gelir.
+- **İndirme:** Kullanıcı, "slide-1.jpg", "slide-2.jpg" gibi sıralı isimlendirilmiş görselleri tek tek indirir.
+- **Kopyalama:** "Tüm Alt Metni Kopyala" butonuna basar ve "Panoya Kopyalandı!" bildirimini görür.
+- **Paylaşım:** Instagram'ı açar, galerisinden indirdiği 5 görseli sırayla seçer, metin alanına panodaki metni yapıştırır ve paylaşır.
+
+## 5. UI/UX Kuralları
+- Her görselin altında "İndir" butonu (mobilde uzun basınca da kaydedilebilir)
+- Her görselin altında veya üstte "Caption'ı kopyala" butonu
+- "Tüm görselleri sırayla aç" veya "Tümünü indir" (her görseli yeni sekmede açar)
+- "Tüm caption'ı kopyala" butonu
+- Kısa bir "Nasıl paylaşılır?" rehberi:
+  1. Görselleri kaydedin.
+  2. Instagram'da yeni gönderi oluşturun, görselleri seçin.
+  3. Caption'ı yapıştırın.
+- Mobil ve masaüstü uyumluluğu sağlanmalı
+
+## 6. Teknik Gereksinimler
+- **Görsel Boyutu:** 1080x1080 px (Instagram'a uygun)
+- **Görsel Formatı:** JPEG veya PNG
+- **Alt Metin:** 2200 karakteri geçmemeli
+- **Görsel İsimlendirmesi:** slide-1.jpg, slide-2.jpg, ...
+- **Caption:** Tek bir toplu caption veya her görsel için ayrı caption sunulabilir
+- **AI Servisleri Esnekliği:** Kullanılacak AI servisleri geliştirme sürecinde denenecek ve en uygun olan(lar)ı seçilecektir. Proje, bu servislerin değiştirilebilir ve genişletilebilir olmasına uygun şekilde tasarlanmalıdır.
+
+## 7. Geliştirme Yol Haritası (Adım Adım)
+
+### Faz 1: Backend
+1. Supabase'de gerekli tabloları oluştur (carousels: error_message ekle, carousel_slides: edited_image_url ekle).
+2. Görsel ve metin üretimi için AI API entegrasyonunu hazırla (servis seçimi esnek).
+3. /api/carousel/generate endpoint'ini yaz (hata durumunda error_message doldur).
+4. /api/carousel/[id] endpoint'ini yaz.
+5. Üretilen görselleri Supabase Storage'a yükle, URL'leri kaydet.
+
+### Faz 2: Frontend
+1. Carousel oluşturma formunu hazırla.
+2. Formdan gelen veriyi /api/carousel/generate'e gönder.
+3. Sonuç sayfasında görselleri ve caption'ı göster.
+4. Her görsel için download linki ekle.
+5. "Tüm Alt Metni Kopyala" butonunu ekle.
+6. "Kopyalandı!" bildirimi ve "Nasıl paylaşılır?" rehberi ekle.
+7. Mobil uyumluluğu test et.
+8. Asenkron süreç için polling ile status kontrolü uygula (isteğe bağlı olarak Supabase Realtime ile geliştirilebilir).
+9. Hata mesajlarını kullanıcıya göster.
+
+### Faz 3: Görsel Üzerine Yazı Ekleme (Opsiyonel)
+1. CarouselPreview'a "Düzenle" butonu ekle.
+2. Fabric.js ile canvas üzerinde metin ekleme özelliği ekle.
+3. Düzenlenen görseli kaydedip Supabase'e yükle (edited_image_url).
+4. Arayüzde orijinal ve düzenlenmiş görsel arasında geçiş imkanı sun.
+
+## 8. Test ve Yayına Alma
+- Her faz sonunda işlevsellik ve kullanıcı deneyimi testleri yapılmalı.
+- Özellikle mobilde indirme ve kopyalama akışları test edilmeli.
+- Instagram'a manuel yükleme rehberi net ve anlaşılır olmalı.
+
+## 9. Geliştiriciye Notlar
+- Kodda temiz mimari ve tip güvenliği öncelikli olmalı.
+- AI API anahtarları ve Supabase erişimleri güvenli şekilde yönetilmeli.
+- Kullanıcıya hata ve durum bildirimleri açıkça gösterilmeli.
+- Caption ve görseller Instagram kurallarına uygun olmalı.
+- **Maliyet Kontrolü ve Kullanım Limitleri:**
+  - AI API maliyetlerini kontrol altında tutmak için, kullanıcı başına günlük veya toplam carousel oluşturma hakkı (ör. 5 hak) eklenebilir. Bu, ileride ücretli paketler için de temel oluşturur.
+
+
+
+
+
+

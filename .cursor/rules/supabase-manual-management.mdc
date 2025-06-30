@@ -1,0 +1,47 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Supabase Manual Management
+
+## Overview
+Supabase database operations (table creation, migrations, schema changes) are handled manually by the user through the Supabase Dashboard SQL Editor.
+
+## Manual Operations
+- **Table Creation**: User creates tables manually via Supabase Dashboard
+- **Schema Changes**: All database schema modifications done through SQL Editor
+- **Migrations**: No automated migration system - manual SQL execution only
+- **RLS Policies**: Row Level Security policies applied manually
+- **Indexes**: Database indexes created manually as needed
+
+## Development Workflow
+1. **Schema Design**: Assistant provides SQL scripts for review
+2. **Manual Execution**: User executes SQL in Supabase Dashboard
+3. **Code Integration**: Assistant updates TypeScript types and helper functions
+4. **Testing**: Application tested with real database operations
+
+## Key Files
+- [src/lib/supabase.ts](mdc:src/lib/supabase.ts) - Supabase client and type definitions
+- [src/lib/carousel.ts](mdc:src/lib/carousel.ts) - Database helper functions
+- [SUPABASE_SETUP.md](mdc:SUPABASE_SETUP.md) - Manual setup instructions
+
+## Best Practices
+- Provide clear SQL scripts for manual execution
+- Include detailed setup instructions in documentation
+- Update TypeScript types after schema changes
+- Test database operations thoroughly
+- Document any manual steps required
+
+## Current Schema
+- `carousels` table: Stores carousel metadata and status
+- `carousel_slides` table: Stores individual slide data
+- RLS policies: User isolation and security
+- Indexes: Performance optimization
+
+## Environment Variables
+Required environment variables for Supabase connection:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```

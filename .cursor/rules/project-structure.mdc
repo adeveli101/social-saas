@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Social SaaS Project Structure
+
+## Overview
+This is a modern SaaS application for social media management built with Next.js 15, TypeScript, Tailwind CSS, and Supabase.
+
+## Directory Structure
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── dashboard/         # Dashboard pages and features
+│   │   └── page.tsx       # Main dashboard page
+│   ├── globals.css        # Global styles and Tailwind imports
+│   ├── layout.tsx         # Root layout with metadata
+│   └── page.tsx           # Landing page
+├── components/            # React components
+│   ├── auth/             # Authentication components
+│   │   └── auth-form.tsx  # Login/signup form
+│   └── ui/               # Shadcn/UI components
+└── lib/                  # Utility functions and configurations
+    ├── supabase.ts       # Supabase client and types
+    └── utils.ts          # Utility functions
+```
+
+## Key Files
+- [src/app/layout.tsx](mdc:src/app/layout.tsx) - Root layout with metadata
+- [src/app/page.tsx](mdc:src/app/page.tsx) - Landing page with hero section
+- [src/app/dashboard/page.tsx](mdc:src/app/dashboard/page.tsx) - Main dashboard
+- [src/components/auth/auth-form.tsx](mdc:src/components/auth/auth-form.tsx) - Authentication form
+- [src/lib/supabase.ts](mdc:src/lib/supabase.ts) - Supabase configuration
+
+## Configuration Files
+- [package.json](mdc:package.json) - Dependencies and scripts
+- [tsconfig.json](mdc:tsconfig.json) - TypeScript configuration
+- [components.json](mdc:components.json) - Shadcn/UI configuration
+- [README.md](mdc:README.md) - Project documentation
+
+## Development Guidelines
+- Use TypeScript for all files
+- Follow Next.js 15 App Router conventions
+- Use Tailwind CSS for styling
+- Implement proper error handling
+- Follow Supabase best practices for database operations
+

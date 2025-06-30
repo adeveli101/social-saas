@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Shadcn/UI Component Guidelines
+
+## Configuration
+- Shadcn/UI is configured with [components.json](mdc:components.json)
+- Components are located in `src/components/ui/` directory
+- Use the `@/components/ui/` import path
+
+## Available Components
+- Button: Use for all interactive elements
+- Card: Use for content containers and layouts
+- Input: Use for form inputs
+- Label: Use for form labels
+- Form: Use for form validation and handling
+- Dialog: Use for modals and overlays
+- DropdownMenu: Use for dropdown menus
+- Avatar: Use for user profile pictures
+- Badge: Use for status indicators and tags
+
+## Component Usage
+- Import components from `@/components/ui/`
+- Use TypeScript for all component props
+- Follow Shadcn/UI prop patterns and variants
+- Extend components when needed, don't modify source files
+
+## Styling Components
+- Components use Tailwind CSS for styling
+- Use variant props for different styles (default, secondary, outline, etc.)
+- Use size props for different sizes (sm, md, lg)
+- Customize through CSS variables in globals.css
+
+## Form Components
+- Use Form component with react-hook-form for validation
+- Use Input with Label for form fields
+- Use Button for form submissions
+- Implement proper error handling and loading states
+
+## Layout Components
+- Use Card for content sections
+- Use CardHeader, CardContent, CardTitle, CardDescription
+- Combine with Tailwind utilities for custom layouts
+- Use consistent spacing and typography
+
+## Best Practices
+- Don't modify the source component files
+- Create wrapper components for custom functionality
+- Use composition over inheritance
+- Maintain accessibility standards
+

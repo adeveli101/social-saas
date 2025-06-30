@@ -1,0 +1,210 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Page.tsx Clean Architecture Guidelines
+
+## Core Principles
+- Page.tsx files should be simple and clean
+- Business logic should be in components, not in pages
+- Pages act as containers and route handlers
+- Follow separation of concerns
+- Use composition over complex page logic
+
+## Page Structure
+```typescript
+// ✅ Good: Clean and simple page
+export default function DashboardPage() {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <DashboardHeader />
+      <DashboardContent />
+      <DashboardFooter />
+    </div>
+  )
+}
+
+// ❌ Bad: Complex logic in page
+export default function DashboardPage() {
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(false)
+  
+  useEffect(() => {
+    // Complex data fetching logic
+  }, [])
+  
+  const handleClick = () => {
+    // Complex event handling
+  }
+  
+  return (
+    <div>
+      {/* Complex JSX with inline logic */}
+    </div>
+  )
+}
+```
+
+## Page Responsibilities
+- **Route handling**: Define the page route and layout
+- **Component composition**: Compose components together
+- **Metadata**: Set page-specific metadata
+- **Layout structure**: Define the overall page structure
+- **Error boundaries**: Handle page-level errors
+
+## Component Organization
+- Create dedicated components for each page section
+- Use descriptive component names
+- Group related components in feature folders
+- Keep components focused and single-purpose
+
+## File Structure
+```
+src/
+├── app/
+│   ├── dashboard/
+│   │   └── page.tsx              # Simple page container
+│   └── page.tsx                  # Landing page container
+├── components/
+│   ├── dashboard_page/          # Dashboard-specific components
+│   │   ├── header.tsx
+│   │   ├── welcome-section.tsx
+│   │   ├── stats-grid.tsx
+│   │   ├── activity-section.tsx
+│   │   ├── quick-actions.tsx
+│   │   └── connected-accounts.tsx
+│   ├── landing_page/            # Landing page components
+│   │   ├── header.tsx
+│   │   ├── hero-section.tsx
+│   │   ├── features-section.tsx
+│   │   ├── cta-section.tsx
+│   │   └── footer-section.tsx
+│   ├── auth/                    # Authentication components
+│   │   └── auth-form.tsx
+│   └── ui/                      # Shadcn/UI components
+```
+
+## Naming Convention
+- Use `{page_name}_page/` for page-specific component folders
+- Use kebab-case for component file names
+- Use PascalCase for component function names
+- Use descriptive names that indicate the component's purpose
+
+## Best Practices
+
+### ✅ Do's
+- Keep pages as simple containers
+- Extract complex logic to custom hooks
+- Use composition to build page layouts
+- Handle loading and error states in components
+- Use TypeScript for page props and metadata
+- Group page components in dedicated folders
+
+### ❌ Don'ts
+- Don't put business logic in pages
+- Don't use useState/useEffect directly in pages
+- Don't create complex JSX in pages
+- Don't mix data fetching with page rendering
+- Don't create large, monolithic page components
+- Don't mix components from different pages in the same folder
+
+## Example Implementations
+
+### Landing Page
+```typescript
+// src/app/page.tsx
+import { Header } from "@/components/landing_page/header"
+import { HeroSection } from "@/components/landing_page/hero-section"
+import { FeaturesSection } from "@/components/landing_page/features-section"
+import { CTASection } from "@/components/landing_page/cta-section"
+import { FooterSection } from "@/components/landing_page/footer-section"
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <HeroSection />
+      <FeaturesSection />
+      <CTASection />
+      <FooterSection />
+    </div>
+  )
+}
+```
+
+### Dashboard Page
+```typescript
+// src/app/dashboard/page.tsx
+import { DashboardHeader } from "@/components/dashboard_page/header"
+import { WelcomeSection } from "@/components/dashboard_page/welcome-section"
+import { StatsGrid } from "@/components/dashboard_page/stats-grid"
+
+export default function DashboardPage() {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <DashboardHeader />
+      <main className="container mx-auto px-4 py-8">
+        <WelcomeSection />
+        <StatsGrid />
+      </main>
+    </div>
+  )
+}
+```
+
+### Auth Page
+```typescript
+// src/app/auth/page.tsx
+import { AuthForm } from "@/components/auth/auth-form"
+
+export default function AuthPage() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <AuthForm />
+    </div>
+  )
+}
+```
+
+## Metadata Handling
+```typescript
+// Set page-specific metadata
+export const metadata: Metadata = {
+  title: 'Dashboard - Social SaaS',
+  description: 'Manage your social media accounts',
+}
+
+export default function DashboardPage() {
+  return <DashboardLayout />
+}
+```
+
+## Error Handling
+```typescript
+// Handle page-level errors
+export default function DashboardPage() {
+  return (
+    <ErrorBoundary fallback={<DashboardError />}>
+      <DashboardContent />
+    </ErrorBoundary>
+  )
+}
+```
+
+## Data Fetching Pattern
+```typescript
+// Use components for data fetching, not pages
+export default function DashboardPage() {
+  return (
+    <div>
+      <DashboardStatsProvider>
+        <DashboardContent />
+      </DashboardStatsProvider>
+    </div>
+  )
+}
+```
+
+
+

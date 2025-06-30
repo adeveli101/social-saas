@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Supabase Integration Guidelines
+
+## Configuration
+- Supabase client is configured in [src/lib/supabase.ts](mdc:src/lib/supabase.ts)
+- Environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+- Database types are defined in the same file
+
+## Authentication
+- Use Supabase Auth for user authentication
+- Implement sign up, sign in, and sign out functionality
+- Use the auth-form component in [src/components/auth/auth-form.tsx](mdc:src/components/auth/auth-form.tsx)
+- Handle authentication state with Supabase client
+
+## Database Operations
+- Use the supabase client for all database operations
+- Follow the Database interface for type safety
+- Use RPC calls for complex operations
+- Implement proper error handling
+
+## Key Functions
+```typescript
+// Authentication
+const { data, error } = await supabase.auth.signUp({ email, password })
+const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+const { error } = await supabase.auth.signOut()
+
+// Database queries
+const { data, error } = await supabase.from('table_name').select('*')
+const { data, error } = await supabase.from('table_name').insert({ column: value })
+const { data, error } = await supabase.from('table_name').update({ column: value }).eq('id', id)
+```
+
+## Real-time Subscriptions
+- Use real-time subscriptions for live data updates
+- Subscribe to table changes with supabase.channel()
+- Handle subscription cleanup in useEffect
+
+## File Storage
+- Use Supabase Storage for file uploads
+- Implement proper file type validation
+- Use signed URLs for secure file access
+
+## Security
+- Use Row Level Security (RLS) policies
+- Validate user permissions before operations
+- Use environment variables for sensitive data
+- Implement proper error handling for auth failures
+

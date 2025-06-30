@@ -1,0 +1,77 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TypeScript Guidelines
+
+## Configuration
+- TypeScript is configured in [tsconfig.json](mdc:tsconfig.json)
+- Use strict mode for better type safety
+- Import alias `@/*` is configured for src directory
+
+## Type Definitions
+- Define interfaces for all data structures
+- Use type aliases for complex types
+- Export types from dedicated type files
+- Use generic types where appropriate
+
+## Component Types
+```typescript
+// Props interface
+interface ComponentProps {
+  title: string
+  description?: string
+  children: React.ReactNode
+  onClick?: () => void
+}
+
+// Component definition
+export function Component({ title, description, children, onClick }: ComponentProps) {
+  // Component implementation
+}
+```
+
+## Database Types
+- Define database types in [src/lib/supabase.ts](mdc:src/lib/supabase.ts)
+- Use Supabase generated types when available
+- Create interfaces for API responses
+- Type all database operations
+
+## API Types
+- Define request and response types
+- Use consistent naming conventions
+- Type all async functions
+- Handle error types properly
+
+## Best Practices
+- Use strict null checks
+- Avoid `any` type, use `unknown` instead
+- Use union types for multiple possible values
+- Implement proper error handling with typed errors
+- Use const assertions for immutable data
+
+## Common Patterns
+```typescript
+// Async function with proper typing
+async function fetchData(): Promise<Data[]> {
+  try {
+    const response = await fetch('/api/data')
+    const data: Data[] = await response.json()
+    return data
+  } catch (error) {
+    throw new Error(`Failed to fetch data: ${error}`)
+  }
+}
+
+// Generic component
+interface ListProps<T> {
+  items: T[]
+  renderItem: (item: T) => React.ReactNode
+}
+
+function List<T>({ items, renderItem }: ListProps<T>) {
+  return <div>{items.map(renderItem)}</div>
+}
+```
+

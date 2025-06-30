@@ -1,0 +1,52 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# No Build or Run Operations Rule
+
+## Core Principle
+**NEVER** execute build, run, or deployment commands. Focus only on code development, file creation, and configuration.
+
+## Prohibited Commands
+- `npm run build`
+- `npm run dev`
+- `npm start`
+- `yarn build`
+- `yarn dev`
+- `yarn start`
+- `pnpm build`
+- `pnpm dev`
+- `pnpm start`
+- `next build`
+- `next dev`
+- `next start`
+- Any deployment commands (vercel, netlify, etc.)
+
+## Allowed Operations
+- File creation and editing
+- Code refactoring
+- Configuration changes
+- Package installation (`npm install`)
+- Component development
+- TypeScript type definitions
+- Documentation updates
+- Cursor rules creation
+
+## Development Focus
+- Write clean, maintainable code
+- Follow established patterns and conventions
+- Create reusable components
+- Implement proper TypeScript types
+- Maintain project structure
+- Update documentation
+
+## When User Requests Build/Run
+- Inform user that build/run operations are not performed
+- Suggest manual execution of commands
+- Focus on code quality and structure instead
+- Provide guidance on what to check after manual build/run
+
+## Example Response
+"I don't execute build or run commands. You can run `npm run dev` manually to test the application. I focus on code development and can help you with any code issues or improvements you encounter."
+
