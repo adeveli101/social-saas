@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/server"
 
 export async function StatsGrid({ userId }: { userId: string }) {
   const cookieStore = cookies()
-  const supabase = await createClient(cookieStore)
+  const supabase = await createClient()
 
   let stats = [
     { title: "Total Followers", value: 0, change: "+0%", trend: "up", icon: Users, description: "Across all platforms" },
@@ -53,15 +53,15 @@ export async function StatsGrid({ userId }: { userId: string }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {stats.map((stat, index) => (
-        <Card key={index} className="bg-surface-primary border-surface-border hover:border-primary-600/50 transition-colors">
+        <Card key={index} className="bg-background border-border hover:border-primary/50 transition-all duration-200 hover:shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-text-secondary">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               {stat.title}
             </CardTitle>
-            <stat.icon className="h-4 w-4 text-text-tertiary" />
+            <stat.icon className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-text-primary">{stat.value}</div>
+            <div className="text-2xl font-bold text-foreground">{stat.value}</div>
             <div className="flex items-center space-x-2 mt-2">
               {stat.trend === "up" ? (
                 <TrendingUp className="h-4 w-4 text-green-500" />
@@ -70,16 +70,16 @@ export async function StatsGrid({ userId }: { userId: string }) {
               )}
               <Badge 
                 variant="outline" 
-                className={`text-xs border-surface-border ${
+                className={`text-xs ${
                   stat.trend === "up" 
-                    ? "text-green-500 border-green-500/20" 
-                    : "text-red-500 border-red-500/20"
+                    ? "text-green-500 border-green-500/20 bg-green-500/10" 
+                    : "text-red-500 border-red-500/20 bg-red-500/10"
                 }`}
               >
                 {stat.change}
               </Badge>
             </div>
-            <p className="text-xs text-text-tertiary mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               {stat.description}
             </p>
           </CardContent>

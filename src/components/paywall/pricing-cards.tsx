@@ -92,13 +92,13 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
     <div className="w-full max-w-6xl mx-auto px-4">
       {/* Billing Toggle */}
       <div className="flex justify-center mb-8">
-        <div className="flex items-center space-x-4 bg-slate-800 rounded-lg p-1">
+        <div className="flex items-center space-x-4 bg-accent rounded-lg p-1">
           <button
             onClick={() => setBillingInterval('month')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               billingInterval === 'month'
-                ? 'bg-blue-600 text-white'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Monthly
@@ -107,8 +107,8 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
             onClick={() => setBillingInterval('year')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               billingInterval === 'year'
-                ? 'bg-blue-600 text-white'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Yearly
@@ -129,15 +129,15 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
           return (
             <Card 
               key={plan.id}
-              className={`relative transition-all duration-200 hover:scale-105 ${
+              className={`relative transition-all duration-200 hover:scale-105 bg-background border-border ${
                 isPopular 
-                  ? 'border-blue-500 bg-gradient-to-b from-blue-500/10 to-transparent' 
-                  : 'border-slate-700'
+                  ? 'border-primary bg-gradient-to-b from-primary/10 to-transparent' 
+                  : 'border-border'
               } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
             >
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-gradient-to-r from-blue-600 to-purple-600">
+                  <Badge className="bg-gradient-to-r from-primary to-primary/80">
                     Most Popular
                   </Badge>
                 </div>
@@ -155,12 +155,12 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
                 <div className="flex items-center justify-center mb-2">
                   {getPlanIcon(plan.id)}
                 </div>
-                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                <div className="text-3xl font-bold text-blue-400">
+                <CardTitle className="text-2xl font-bold text-foreground">{plan.name}</CardTitle>
+                <div className="text-3xl font-bold text-primary">
                   {getPlanPrice(plan)}
                 </div>
                 {plan.price > 0 && billingInterval === 'year' && (
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     ${plan.price}/month when billed monthly
                   </p>
                 )}
@@ -171,7 +171,7 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start space-x-3">
                       <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-300">{feature}</span>
+                      <span className="text-muted-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -183,8 +183,8 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
                     isCurrentPlan
                       ? 'bg-green-600 hover:bg-green-700'
                       : isPopular
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-                      : 'bg-slate-700 hover:bg-slate-600'
+                      ? 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70'
+                      : 'bg-accent hover:bg-accent/80'
                   }`}
                 >
                   {isLoading ? (

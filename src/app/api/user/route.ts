@@ -12,8 +12,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
     
     // Clerk user bilgilerini al ve Supabase'de kullanıcıyı oluştur/al
     const userData = await getCurrentUser(supabase)
@@ -54,8 +53,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Plan is required' }, { status: 400 })
     }
 
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
     
     // Plan güncelleme işlemi
     const success = await upgradeUserPlan(userId, plan, supabase)

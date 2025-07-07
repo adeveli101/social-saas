@@ -53,16 +53,35 @@ CREATE TABLE IF NOT EXISTS carousel_slides (
     UNIQUE(carousel_id, slide_number)
 );
 
+-- Create todos table
+CREATE TABLE IF NOT EXISTS todos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    completed BOOLEAN DEFAULT FALSE,
+    priority TEXT DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
+    due_date TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_carousels_user_id ON carousels(user_id);
 CREATE INDEX IF NOT EXISTS idx_carousels_status ON carousels(status);
 CREATE INDEX IF NOT EXISTS idx_carousels_created_at ON carousels(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_carousel_slides_carousel_id ON carousel_slides(carousel_id);
 CREATE INDEX IF NOT EXISTS idx_carousel_slides_slide_number ON carousel_slides(slide_number);
+CREATE INDEX IF NOT EXISTS idx_todos_user_id ON todos(user_id);
+CREATE INDEX IF NOT EXISTS idx_todos_completed ON todos(completed);
+CREATE INDEX IF NOT EXISTS idx_todos_priority ON todos(priority);
+CREATE INDEX IF NOT EXISTS idx_todos_due_date ON todos(due_date);
+CREATE INDEX IF NOT EXISTS idx_todos_created_at ON todos(created_at);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE carousels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carousel_slides ENABLE ROW LEVEL SECURITY;
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies for carousels
 CREATE POLICY "Users can view their own carousels" ON carousels
@@ -113,6 +132,19 @@ CREATE POLICY "Users can delete slides of their own carousels" ON carousel_slide
             AND carousels.user_id = auth.jwt() ->> 'sub'
         )
     );
+
+-- Create RLS policies for todos
+CREATE POLICY "Users can view their own todos" ON todos
+    FOR SELECT USING (user_id = auth.jwt() ->> 'sub');
+
+CREATE POLICY "Users can insert their own todos" ON todos
+    FOR INSERT WITH CHECK (user_id = auth.jwt() ->> 'sub');
+
+CREATE POLICY "Users can update their own todos" ON todos
+    FOR UPDATE USING (user_id = auth.jwt() ->> 'sub');
+
+CREATE POLICY "Users can delete their own todos" ON todos
+    FOR DELETE USING (user_id = auth.jwt() ->> 'sub');
 ```
 
 ### Supabase CLI ile Kurulum

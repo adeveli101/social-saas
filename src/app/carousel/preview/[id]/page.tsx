@@ -1,6 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { Header } from "@/components/shared/header"
 import { CarouselPreview } from "@/components/carousel_page/carousel-preview"
+import { PageContainer } from "@/components/shared/page-container"
 
 interface CarouselPreviewPageProps {
   params: {
@@ -16,10 +18,11 @@ export default async function CarouselPreviewPage({ params }: CarouselPreviewPag
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-background to-blue-950/20">
+    <PageContainer>
+      <Header />
       <main className="container mx-auto px-4 py-16">
         <CarouselPreview carouselId={params.id} />
       </main>
-    </div>
+    </PageContainer>
   )
 } 

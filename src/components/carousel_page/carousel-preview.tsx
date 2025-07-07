@@ -44,7 +44,7 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
       try {
         const response = await fetch(`/api/carousel/${carouselId}`)
         if (!response.ok) {
-          throw new Error('Carousel bulunamadı')
+          throw new Error('Carousel not found')
         }
         const data = await response.json()
         setCarousel(data)
@@ -56,7 +56,7 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
           setLoading(false)
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu')
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred')
         setLoading(false)
       }
     }
@@ -71,7 +71,7 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
       } catch (err) {
-        console.error('Clipboard kopyalama başarısız:', err)
+        console.error('Clipboard copy failed:', err)
       }
     }
   }
@@ -79,15 +79,15 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
   const getStatusMessage = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'Carousel sıraya alındı...'
+        return 'Carousel queued...'
       case 'processing':
-        return 'AI görselleri oluşturuyor...'
+        return 'AI creating images...'
       case 'completed':
-        return 'Carousel hazır!'
+        return 'Carousel ready!'
       case 'failed':
-        return 'Hata oluştu'
+        return 'Error occurred'
       default:
-        return 'Bilinmeyen durum'
+        return 'Unknown status'
     }
   }
 
@@ -110,12 +110,12 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
     return (
       <div className="max-w-4xl mx-auto text-center">
         <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
-          <h2 className="text-2xl font-bold text-white">
-            {carousel ? getStatusMessage(carousel.status) : 'Carousel yükleniyor...'}
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <h2 className="text-2xl font-bold text-foreground">
+            {carousel ? getStatusMessage(carousel.status) : 'Loading carousel...'}
           </h2>
-          <p className="text-slate-400">
-            {carousel?.status === 'processing' ? 'Bu işlem birkaç dakika sürebilir.' : 'Lütfen bekleyin...'}
+          <p className="text-muted-foreground">
+            {carousel?.status === 'processing' ? 'This process may take a few minutes.' : 'Please wait...'}
           </p>
           {carousel && (
             <Badge variant="secondary" className={getStatusColor(carousel.status)}>
@@ -130,21 +130,21 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
   if (error || carousel?.status === 'failed') {
     return (
       <div className="max-w-4xl mx-auto">
-        <Card className="border-red-500/20 bg-red-500/10">
+        <Card className="border-red-500/20 bg-red-500/10 bg-background border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-400">
               <AlertCircle className="h-5 w-5" />
-              Hata Oluştu
+              Error Occurred
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-red-300 mb-4">
-              {carousel?.error_message || error || 'Carousel oluşturulurken bir hata oluştu.'}
+              {carousel?.error_message || error || 'An error occurred while creating the carousel.'}
             </p>
             <Link href="/carousel">
               <Button variant="outline" className="border-red-500/20 text-red-400 hover:bg-red-500/10">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Tekrar Dene
+                Try Again
               </Button>
             </Link>
           </CardContent>
@@ -161,16 +161,16 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-white mb-2">Carousel Hazır!</h1>
-        <p className="text-slate-400 mb-4">{carousel.prompt}</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Carousel Ready!</h1>
+        <p className="text-muted-foreground mb-4">{carousel.prompt}</p>
         <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-          {carousel.slides.length} görsel oluşturuldu
+          {carousel.slides.length} images created
         </Badge>
       </div>
 
       {/* Caption Section */}
-      {carousel.final_caption && (
-        <Card>
+              {carousel.final_caption && (
+          <Card className="bg-background border-border">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Instagram Caption</span>
@@ -183,19 +183,19 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
                 {copied ? (
                   <>
                     <Check className="mr-2 h-4 w-4" />
-                    Kopyalandı!
+                    Copied!
                   </>
                 ) : (
                   <>
                     <Copy className="mr-2 h-4 w-4" />
-                    Kopyala
+                    Copy
                   </>
                 )}
               </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-300 whitespace-pre-wrap">{carousel.final_caption}</p>
+            <p className="text-muted-foreground whitespace-pre-wrap">{carousel.final_caption}</p>
           </CardContent>
         </Card>
       )}
@@ -203,7 +203,7 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
       {/* Images Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {carousel.slides.map((slide) => (
-          <Card key={slide.id} className="overflow-hidden">
+          <Card key={slide.id} className="overflow-hidden bg-background border-border">
             <CardContent className="p-0">
               <div className="relative">
                 <img
@@ -220,10 +220,10 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
               <div className="p-4">
                 <Button 
                   onClick={() => window.open(slide.image_url || '', '_blank')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  İndir
+                  Download
                 </Button>
               </div>
             </CardContent>
@@ -232,17 +232,17 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
       </div>
 
       {/* Instructions */}
-      <Card className="border-blue-500/20 bg-blue-500/10">
+      <Card className="border-blue-500/20 bg-blue-500/10 bg-background border-border">
         <CardHeader>
-          <CardTitle className="text-blue-400">Nasıl Paylaşılır?</CardTitle>
+          <CardTitle className="text-blue-400">How to Share?</CardTitle>
         </CardHeader>
         <CardContent>
-          <ol className="list-decimal list-inside space-y-2 text-slate-300">
-            <li>Görselleri sırayla indirin (slide-1, slide-2, ...)</li>
-            <li>Instagram'da yeni gönderi oluşturun</li>
-            <li>İndirdiğiniz görselleri sırayla seçin</li>
-            <li>Caption'ı kopyalayıp yapıştırın</li>
-            <li>Paylaşın!</li>
+          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+            <li>Download images in order (slide-1, slide-2, ...)</li>
+            <li>Create new post on Instagram</li>
+            <li>Select downloaded images in order</li>
+            <li>Copy and paste the caption</li>
+            <li>Share!</li>
           </ol>
         </CardContent>
       </Card>
@@ -250,9 +250,9 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
       {/* Back to Create */}
       <div className="text-center">
         <Link href="/carousel">
-          <Button variant="outline" className="border-slate-500/20 text-slate-400 hover:bg-slate-500/10">
+          <Button variant="outline" className="border-border text-muted-foreground hover:bg-muted">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Yeni Carousel Oluştur
+            Create New Carousel
           </Button>
         </Link>
       </div>

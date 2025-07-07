@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
+import { ThemeProvider } from '@/lib/theme-provider'
 import "./globals.css";
+import { FooterSection } from "@/components/landing_page/footer-section"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +34,16 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className="dark">
+      <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased text-foreground bg-background bg-gradient-to-br from-slate-950 via-background to-blue-950/20 min-h-screen`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased text-foreground min-h-screen`}
         >
-          {children}
+          <ThemeProvider>
+            <div className="min-h-screen bg-gradient-main page-fade transition-all">
+              {children}
+              <FooterSection />
+            </div>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

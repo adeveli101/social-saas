@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
     
     const hasAccess = await canAccessFeature(feature, userId, supabase, requiredPlan)
 

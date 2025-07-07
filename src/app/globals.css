@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "aos/dist/aos.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -46,25 +47,30 @@
 :root {
   --radius: 0.625rem;
   
-  /* Light Theme - Default */
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #4f46e5;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f8fafc;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
-  --destructive: #ef4444;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #4f46e5;
+  /* Light Theme - Strong, Warm Cream Gradient */
+  --background: #f5f2ed;
+  --foreground: #2d3748;
+  --card: #f7f4f0;
+  --card-foreground: #2d3748;
+  --primary: #1e3a8a;
+  --primary-foreground: #faf8f5;
+  --secondary: #f1ede8;
+  --secondary-foreground: #2d3748;
+  --muted: #f5f2ed;
+  --muted-foreground: #6b7280;
+  --accent: #e8e4df;
+  --accent-foreground: #2d3748;
+  --border: #e5e0d8;
+  --input: #faf8f5;
+  --ring: #1e3a8a;
+  --success: #059669;
+  --success-foreground: #faf8f5;
+  --warning: #d97706;
+  --warning-foreground: #faf8f5;
+  --info: #2563eb;
+  --info-foreground: #faf8f5;
+  /* App-wide background gradient for light theme - strong, visible, warm */
+  --app-bg-gradient: linear-gradient(120deg, #f5f2ed 0%, #ede6dd 30%, #e3d6c7 60%, #cbbfae 85%, #b6a489 100%);
   
   /* Chart Colors */
   --chart-1: #3b82f6;
@@ -74,36 +80,55 @@
   --chart-5: #8b5cf6;
   
   /* Sidebar Colors */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #4f46e5;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #4f46e5;
+  --sidebar: #f7f4f0;
+  --sidebar-foreground: #2d3748;
+  --sidebar-primary: #1e3a8a;
+  --sidebar-primary-foreground: #faf8f5;
+  --sidebar-accent: #f1ede8;
+  --sidebar-accent-foreground: #2d3748;
+  --sidebar-border: #e5e0d8;
+  --sidebar-ring: #1e3a8a;
+}
+
+/* Light theme gradient background - Cream to Light Navy */
+:root {
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 25%, #e8e4df 50%, #d1d5db 75%, #9ca3af 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  min-height: 100vh;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .dark {
-  /* Dark Theme - Our Custom Black-Blue Palette */
-  --background: #0a0a0f;
-  --foreground: #ffffff;
-  --card: #1e1e2e;
-  --card-foreground: #ffffff;
-  --popover: #1e1e2e;
-  --popover-foreground: #ffffff;
-  --primary: #6366ff;
-  --primary-foreground: #ffffff;
-  --secondary: #1a1a2e;
-  --secondary-foreground: #e2e8f0;
-  --muted: #111827;
-  --muted-foreground: #94a3b8;
-  --accent: #16213e;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --border: #2d3748;
-  --input: #2d3748;
-  --ring: #6366ff;
+  /* Dark Theme - Blue/Black Tones */
+  --background: #181e29;
+  --foreground: #f3f6fa;
+  --card: #232a36;
+  --card-foreground: #f3f6fa;
+  --primary: #7ea2f7;
+  --primary-foreground: #181e29;
+  --secondary: #232a36;
+  --secondary-foreground: #f3f6fa;
+  --muted: #202736;
+  --muted-foreground: #b8c2d1;
+  --accent: #25304a;
+  --accent-foreground: #f3f6fa;
+  --border: #2c3442;
+  --input: #232a36;
+  --ring: #7ea2f7;
+  --success: #2e7d5b;
+  --success-foreground: #eafaf1;
+  --warning: #bfa14a;
+  --warning-foreground: #fffbe6;
+  --info: #3a5d8c;
+  --info-foreground: #eaf3fa;
+  /* App-wide background gradient for dark theme */
+  --app-bg-gradient: linear-gradient(135deg, #181e29 0%, #232a36 40%, #1e293b 100%);
   
   /* Chart Colors - Dark Theme */
   --chart-1: #3b82f6;
@@ -121,6 +146,18 @@
   --sidebar-accent-foreground: #e2e8f0;
   --sidebar-border: #2d3748;
   --sidebar-ring: #6366ff;
+  
+  /* Dark theme gradient background */
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #1e293b 100%);
+  background-size: 400% 400%;
+  animation: gradientShiftDark 20s ease infinite;
+  min-height: 100vh;
+}
+
+@keyframes gradientShiftDark {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @layer base {
@@ -129,7 +166,22 @@
   }
   body {
     @apply bg-background text-foreground;
+    background: var(--app-bg-gradient);
+    min-height: 100vh;
   }
+}
+
+/* Theme switching support */
+html {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 /* Custom utility classes for our theme */
@@ -154,10 +206,231 @@
     background: linear-gradient(135deg, #581c87 0%, #8b5cf6 100%);
   }
   
+  .bg-gradient-ocean {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 25%, #e2e8f0 50%, #cbd5e1 75%, #94a3b8 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+  
+  .bg-gradient-midnight {
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #1e293b 100%);
+    background-size: 400% 400%;
+    animation: gradientShiftDark 20s ease infinite;
+  }
+  
+  .bg-gradient-sunset {
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #ff9ff3 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+  }
+  
+  .bg-gradient-aurora {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #ffecd2 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 18s ease infinite;
+  }
+  
+  .bg-gradient-cosmic {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 25s ease infinite;
+  }
+  
   .text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, #7ea2f7 0%, #a18fff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: transparent;
+  }
+  
+  .text-gradient-animated {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-main {
+    background: linear-gradient(135deg, var(--background) 0%, var(--card) 100%);
+  }
+  .dark .bg-gradient-main {
+    background: linear-gradient(135deg, #181e29 0%, #232a36 100%);
+  }
+
+  .page-fade {
+    transition-property: background, color;
+    transition-duration: 500ms;
+  }
+
+  .card-hover-effect {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card-hover-effect:hover {
+    box-shadow: 0 8px 32px 0 rgba(30, 41, 59, 0.12);
+    transform: scale(1.035);
+  }
+
+  .btn-micro-effect {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .btn-micro-effect:hover, .btn-micro-effect:focus-visible {
+    box-shadow: 0 4px 16px 0 rgba(126, 162, 247, 0.15);
+    transform: scale(1.045);
+  }
+
+  .landing-hero-gradient {
+    background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 60%, #e8e4df 100%);
+  }
+  .dark .landing-hero-gradient {
+    background: linear-gradient(135deg, #20273a 0%, #232a36 60%, #2d3a5a 100%);
+  }
+  .landing-features-gradient {
+    background: linear-gradient(135deg, #f7f4f0 0%, #f1ede8 100%);
+  }
+  .dark .landing-features-gradient {
+    background: linear-gradient(135deg, #232a36 0%, #1e2533 100%);
+  }
+  .landing-card-gradient {
+    background: linear-gradient(120deg, #f7f4f0 60%, #e8e4df 100%);
+  }
+  .dark .landing-card-gradient {
+    background: linear-gradient(120deg, #232a36 60%, #2d3a5a 100%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+  .dark .text-gradient {
+    background: linear-gradient(90deg, #7ea2f7 0%, #a18fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-primary-foreground {
+    color: #232a36;
+  }
+  .dark .text-primary-foreground {
+    color: #F1F5F9;
+  }
+  .text-primary-foreground\/80 {
+    color: #232a36cc;
+  }
+  .dark .text-primary-foreground\/80 {
+    color: #F1F5F9cc;
+  }
+  .text-primary-foreground\/70 {
+    color: #232a36b3;
+  }
+  .dark .text-primary-foreground\/70 {
+    color: #F1F5F9b3;
+  }
+  .bg-white\/5 { background-color: rgba(255,255,255,0.07); }
+  .dark .bg-white\/5 { background-color: rgba(255,255,255,0.12); }
+  .bg-white\/10 { background-color: rgba(255,255,255,0.12); }
+  .dark .bg-white\/10 { background-color: rgba(255,255,255,0.18); }
+  .border-white\/10 { border-color: rgba(255,255,255,0.10); }
+  .dark .border-white\/10 { border-color: rgba(255,255,255,0.18); }
+  .border-white\/20 { border-color: rgba(255,255,255,0.20); }
+  .dark .border-white\/20 { border-color: rgba(255,255,255,0.28); }
+
+  /* Kart gelişmiş hover efektleri */
+  .card-animated {
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s, border-color 0.25s;
+    will-change: transform, box-shadow, border-color;
+  }
+  .card-animated:hover {
+    transform: scale(1.045) translateY(-2px) rotateZ(-0.2deg);
+    box-shadow: 0 8px 32px 0 rgba(80,120,255,0.10), 0 1.5px 8px 0 rgba(80,120,255,0.08);
+    border-color: #a18fff;
+  }
+
+  /* Gradientli ve animasyonlu başlıklar */
+  .animated-gradient-text {
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6, #1e3a8a);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-move 2.5s linear infinite;
+  }
+  .dark .animated-gradient-text {
+    background: linear-gradient(90deg, #7ea2f7, #a18fff, #7ea2f7);
+  }
+  @keyframes gradient-move {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+
+  .hover-animated-gradient-text {
+    position: relative;
+    display: inline-block;
+    color: inherit;
+    transition: color 0.3s;
+  }
+  .hover-animated-gradient-text:hover {
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6, #1e3a8a);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-move 2.5s linear infinite;
+  }
+  .dark .hover-animated-gradient-text:hover {
+    background: linear-gradient(90deg, #7ea2f7, #a18fff, #7ea2f7);
+  }
+
+  .letter-gradient {
+    display: inline-block;
+    transition: color 0.2s;
+  }
+  .letter-gradient:hover {
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6, #1e3a8a);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-move 2.5s linear infinite;
+  }
+  .dark .letter-gradient:hover {
+    background: linear-gradient(90deg, #7ea2f7, #a18fff, #7ea2f7);
+  }
+
+  .static-gradient-text {
+    background: linear-gradient(90deg, #1e3a8a, #3b82f6, #1e3a8a);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    transition: background-position 0.5s;
+  }
+  .dark .static-gradient-text {
+    background: linear-gradient(90deg, #7ea2f7, #a18fff, #7ea2f7);
+  }
+  .static-gradient-text:hover {
+    animation: gradient-move 2.5s linear infinite;
+  }
+
+  .hover\:grow-text {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .hover\:grow-text:hover {
+    transform: scale(1.035);
   }
 }

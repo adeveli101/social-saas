@@ -1,6 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { Header } from "@/components/shared/header"
 import { CarouselForm } from "@/components/carousel_page/carousel-form"
+import { PageContainer } from "@/components/shared/page-container"
 
 export default async function CarouselPage() {
   const { userId } = await auth()
@@ -10,22 +12,23 @@ export default async function CarouselPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-background to-blue-950/20">
+    <PageContainer>
+      <Header />
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
-              AI Instagram Carousel Oluşturucu
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4">
+              AI Instagram Carousel Creator
             </h1>
-            <p className="text-xl text-slate-400 max-w-xl mx-auto">
-              Yapay zeka ile Instagram carousel gönderileri oluşturun. 
-              Görseller ve alt metinler otomatik olarak üretilir.
+            <p className="text-xl text-muted-foreground max-w-xl mx-auto">
+              Create Instagram carousel posts with AI. 
+              Images and captions are automatically generated.
             </p>
           </div>
           
           <CarouselForm />
         </div>
       </main>
-    </div>
+    </PageContainer>
   )
 } 

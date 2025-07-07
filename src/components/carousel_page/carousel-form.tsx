@@ -22,9 +22,9 @@ export function CarouselForm() {
   // Kullanıcı yüklenene kadar loading göster
   if (!isLoaded) {
     return (
-      <Card className="w-full">
+      <Card className="w-full bg-background border-border">
         <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </CardContent>
       </Card>
     )
@@ -69,49 +69,49 @@ export function CarouselForm() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-background border-border">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-blue-500" />
-          Carousel Oluştur
+        <CardTitle className="flex items-center gap-2 text-foreground">
+          <Sparkles className="h-5 w-5 text-primary" />
+          Create Carousel
         </CardTitle>
-        <CardDescription>
-          Konunuzu ve görsel sayısını belirtin, AI ile Instagram carousel'inizi oluşturalım.
+        <CardDescription className="text-muted-foreground">
+          Describe your topic and select image count, we'll create your Instagram carousel with AI.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="prompt">Konu / Prompt</Label>
+            <Label htmlFor="prompt" className="text-foreground">Topic / Prompt</Label>
             <Textarea
               id="prompt"
-              placeholder="Örnek: 'Girişimcilik için 5 ipucu' veya 'Sağlıklı yaşam tarzı'"
+              placeholder="Example: '5 tips for entrepreneurs' or 'Healthy lifestyle habits'"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               required
-              className="min-h-[100px]"
+              className="min-h-[100px] bg-background border-border text-foreground placeholder:text-muted-foreground"
             />
-            <p className="text-sm text-slate-500">
-              Carousel'inizin konusunu detaylı bir şekilde açıklayın.
+            <p className="text-sm text-muted-foreground">
+              Describe your carousel topic in detail.
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="imageCount">Görsel Sayısı</Label>
+            <Label htmlFor="imageCount" className="text-foreground">Number of Images</Label>
             <Select value={imageCount} onValueChange={setImageCount}>
-              <SelectTrigger>
-                <SelectValue placeholder="Görsel sayısı seçin" />
+              <SelectTrigger className="bg-background border-border text-foreground">
+                <SelectValue placeholder="Select number of images" />
               </SelectTrigger>
               <SelectContent>
                 {[3, 4, 5, 6, 7, 8, 9, 10].map((count) => (
                   <SelectItem key={count} value={count.toString()}>
-                    {count} görsel
+                    {count} images
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-sm text-slate-500">
-              Instagram carousel için 3-10 arası görsel seçebilirsiniz.
+            <p className="text-sm text-muted-foreground">
+              Choose between 3-10 images for Instagram carousel.
             </p>
           </div>
 
@@ -121,20 +121,16 @@ export function CarouselForm() {
             </div>
           )}
 
-          <Button 
-            type="submit" 
-            disabled={loading || !prompt.trim()}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-          >
+          <Button variant="default" type="submit" disabled={loading || !prompt.trim()}>
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Carousel Oluşturuluyor...
+                Creating Carousel...
               </>
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                Carousel Oluştur
+                Create Carousel
               </>
             )}
           </Button>
