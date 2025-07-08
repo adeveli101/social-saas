@@ -66,31 +66,31 @@ export function FeaturesSection() {
       containerClassName="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto"
       center={true}
     >
-      <h2 className="font-extrabold mb-4 text-foreground text-3xl md:text-4xl text-center">
-        <span className="bg-gradient-to-tr from-red-800 via-red-600 to-rose-500 bg-clip-text text-transparent">Features</span>
+      <h2 className="font-semibold mb-4 text-3xl md:text-4xl text-center heading-gradient heading text-[var(--heading-foreground)]">
+        Features
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {features.map((feature, index) => (
           <div 
             key={index} 
-            className="bg-background/80 rounded-2xl shadow-lg p-6 border border-border card-animated hover:shadow-xl transition-all duration-400 ease-out hover:border-primary/20 transform-gpu hover:scale-105 group"
+            className="bg-[var(--background)]/80 rounded-2xl shadow-lg p-6 border border-[var(--border)] card-animated hover:shadow-xl transition-all duration-400 ease-out hover:border-[var(--primary)]/20 transform-gpu hover:scale-105 group"
             data-aos="fade-up" 
             data-aos-delay={index * 100}
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
-                <feature.icon className="h-6 w-6 text-primary-foreground" />
+              <div className="w-12 h-12 bg-gradient-to-r from-[var(--heading-gradient-from)] to-[var(--heading-gradient-to)] rounded-lg flex items-center justify-center">
+                <feature.icon className="h-6 w-6 text-[var(--primary)]" />
               </div>
               {feature.badge && (
-                <Badge variant="outline" className="text-xs border-primary/20 text-primary hover:grow-text transition-transform duration-400 ease-out group-hover:scale-105">
+                <Badge variant="outline" className="text-xs border-[var(--primary)]/20 text-[var(--primary)] hover:grow-text transition-transform duration-400 ease-out group-hover:scale-105">
                   {feature.badge}
                 </Badge>
               )}
             </div>
-            <h3 className="text-xl font-bold mb-2 text-card-foreground hover:grow-text transition-transform duration-400 ease-out group-hover:scale-105">
-              <span className="bg-gradient-to-tr from-red-800 via-red-600 to-rose-500 bg-clip-text text-transparent">{feature.title}</span>
+            <h3 className="text-xl font-semibold mb-2 heading-gradient heading text-[var(--heading-foreground)] hover:grow-text transition-transform duration-400 ease-out group-hover:scale-105">
+              {feature.title}
             </h3>
-            <p className="text-muted-foreground text-sm leading-relaxed hover:grow-text transition-transform duration-400 ease-out group-hover:scale-105">
+            <p className="text-[var(--heading-foreground)] text-sm leading-relaxed hover:grow-text transition-transform duration-400 ease-out group-hover:scale-105">
               {feature.description}
             </p>
           </div>

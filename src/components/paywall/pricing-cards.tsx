@@ -33,11 +33,11 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
   const getPlanIcon = (planId: string) => {
     switch (planId) {
       case 'free':
-        return <Zap className="h-5 w-5" />
+        return <Zap className="h-5 w-5 text-[var(--primary)]" />
       case 'pro':
-        return <Crown className="h-5 w-5" />
+        return <Crown className="h-5 w-5 text-[var(--primary)]" />
       case 'business':
-        return <Crown className="h-5 w-5 text-yellow-500" />
+        return <Crown className="h-5 w-5 text-[var(--primary)]" />
       default:
         return null
     }
@@ -92,13 +92,13 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
     <div className="w-full max-w-6xl mx-auto px-4">
       {/* Billing Toggle */}
       <div className="flex justify-center mb-8">
-        <div className="flex items-center space-x-4 bg-accent rounded-lg p-1">
+        <div className="flex items-center space-x-4 bg-[var(--muted)] rounded-lg p-1">
           <button
             onClick={() => setBillingInterval('month')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               billingInterval === 'month'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
           >
             Monthly
@@ -107,8 +107,8 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
             onClick={() => setBillingInterval('year')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               billingInterval === 'year'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
           >
             Yearly
@@ -120,7 +120,7 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {SUBSCRIPTION_PLANS.map((plan) => {
           const isCurrentPlan = currentPlan === plan.id
           const isPopular = plan.id === 'pro'
@@ -129,15 +129,15 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
           return (
             <Card 
               key={plan.id}
-              className={`relative transition-all duration-200 hover:scale-105 bg-background border-border ${
+              className={`relative transition-all duration-200 hover:scale-105 bg-[var(--card)] border-[var(--border)] ${
                 isPopular 
-                  ? 'border-primary bg-gradient-to-b from-primary/10 to-transparent' 
-                  : 'border-border'
+                  ? 'border-[var(--primary)] bg-gradient-to-b from-[var(--primary)]/10 to-transparent' 
+                  : 'border-[var(--border)]'
               } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
             >
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-gradient-to-r from-primary to-primary/80">
+                  <Badge className="bg-gradient-to-r from-[var(--primary)] to-[var(--primary)]/80">
                     Most Popular
                   </Badge>
                 </div>
@@ -153,14 +153,14 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
 
               <CardHeader className="text-center pb-4">
                 <div className="flex items-center justify-center mb-2">
-                  {getPlanIcon(plan.id)}
+                  {plan.id === 'free' ? <Zap className="h-5 w-5 text-[var(--primary)]" /> : <Crown className="h-5 w-5 text-[var(--primary)]" />}
                 </div>
-                <CardTitle className="text-2xl font-bold text-foreground">{plan.name}</CardTitle>
-                <div className="text-3xl font-bold text-primary">
+                <CardTitle className="text-2xl font-bold text-[var(--foreground)]">{plan.name}</CardTitle>
+                <div className="text-3xl font-bold text-[var(--primary)]">
                   {getPlanPrice(plan)}
                 </div>
                 {plan.price > 0 && billingInterval === 'year' && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-[var(--muted-foreground)]">
                     ${plan.price}/month when billed monthly
                   </p>
                 )}
@@ -171,7 +171,7 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start space-x-3">
                       <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
+                      <span className="text-[var(--muted-foreground)]">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -183,8 +183,8 @@ export function PricingCards({ onSelectPlan, currentPlan }: PricingCardsProps) {
                     isCurrentPlan
                       ? 'bg-green-600 hover:bg-green-700'
                       : isPopular
-                      ? 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70'
-                      : 'bg-accent hover:bg-accent/80'
+                      ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--primary)]/80 hover:from-[var(--primary)]/90 hover:to-[var(--primary)]/70'
+                      : 'bg-[var(--accent)] hover:bg-[var(--accent)]/80'
                   }`}
                 >
                   {isLoading ? (

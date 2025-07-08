@@ -72,7 +72,7 @@ export function TodoForm({ userId, onTodoCreated }: TodoFormProps) {
   return (
     <Card className="mb-6 bg-background border-border">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-foreground">
+        <CardTitle className="flex items-center gap-2 heading-gradient heading">
           <Plus className="h-5 w-5 text-primary" />
           Add New Todo
         </CardTitle>

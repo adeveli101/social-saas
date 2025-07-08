@@ -4,6 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/lib/theme-provider'
 import "./globals.css";
 import { FooterSection } from "@/components/landing_page/footer-section"
+import { Header } from "@/components/shared/header"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased text-foreground min-h-screen`}
         >
           <ThemeProvider>
+            <Header />
             <div className="min-h-screen bg-gradient-main page-fade transition-all">
               {children}
               <FooterSection />

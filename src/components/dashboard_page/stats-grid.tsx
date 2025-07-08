@@ -64,16 +64,16 @@ export async function StatsGrid({ userId }: { userId: string }) {
             <div className="text-2xl font-bold text-foreground">{stat.value}</div>
             <div className="flex items-center space-x-2 mt-2">
               {stat.trend === "up" ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-4 w-4 text-[#22c55e]" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-4 w-4 text-[#ef4444]" />
               )}
               <Badge 
                 variant="outline" 
                 className={`text-xs ${
                   stat.trend === "up" 
-                    ? "text-green-500 border-green-500/20 bg-green-500/10" 
-                    : "text-red-500 border-red-500/20 bg-red-500/10"
+                    ? "text-[#22c55e] border-[#22c55e]/20 bg-[#22c55e]/10" 
+                    : "text-[#ef4444] border-[#ef4444]/20 bg-[#ef4444]/10"
                 }`}
               >
                 {stat.change}

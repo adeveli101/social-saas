@@ -59,8 +59,8 @@ export async function ConnectedAccounts({ userId }: { userId: string }) {
                     <Badge 
                       variant={account.status === "connected" ? "default" : "secondary"}
                       className={account.status === "connected" 
-                        ? "bg-green-500 hover:bg-green-600 text-white" 
-                        : "bg-muted text-muted-foreground border-border"
+                        ? "bg-[var(--primary)] text-[var(--primary-foreground)]" 
+                        : "bg-[var(--muted)] text-[var(--muted-foreground)] border-[var(--border)]"
                       }
                     >
                       {account.status === "connected" ? "Connected" : "Disconnected"}

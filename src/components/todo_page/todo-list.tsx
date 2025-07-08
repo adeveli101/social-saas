@@ -119,7 +119,7 @@ export function TodoList({ userId }: TodoListProps) {
     <Card className="bg-background border-border">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-foreground">Your Todos</CardTitle>
+          <CardTitle className="heading-gradient heading">Your Todos</CardTitle>
           <div className="flex items-center gap-2">
             <Select value={filter} onValueChange={(value) => setFilter(value as any)}>
               <SelectTrigger className="w-32 bg-background border-border text-foreground">
@@ -182,27 +182,21 @@ export function TodoList({ userId }: TodoListProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className={`font-medium ${
-                        todo.completed ? 'line-through text-muted-foreground' : 'text-foreground'
-                      }`}>
+                      <h3 className={`font-medium ${todo.completed ? 'line-through text-muted-foreground' : 'heading-gradient heading'}`}>
                         {todo.title}
                       </h3>
                       {todo.description && (
-                        <p className={`text-sm mt-1 ${
-                          todo.completed ? 'text-muted-foreground' : 'text-muted-foreground'
-                        }`}>
+                        <p className="text-sm text-muted-foreground mt-1">
                           {todo.description}
                         </p>
                       )}
-                      
                       <div className="flex items-center gap-4 mt-2">
                         <Badge 
                           variant="secondary" 
-                          className={`text-xs ${priorityColors[todo.priority]}`}
+                          className={`text-xs ${priorityColors[todo.priority as keyof typeof priorityColors]}`}
                         >
-                          {priorityLabels[todo.priority]}
+                          {priorityLabels[todo.priority as keyof typeof priorityLabels]}
                         </Badge>
-                        
                         {todo.due_date && (
                           <div className={`flex items-center gap-1 text-xs ${
                             isOverdue(todo.due_date) && !todo.completed
@@ -218,7 +212,6 @@ export function TodoList({ userId }: TodoListProps) {
                         )}
                       </div>
                     </div>
-                    
                     <div className="flex items-center gap-1">
                       <Button
                         variant="ghost"
@@ -238,4 +231,4 @@ export function TodoList({ userId }: TodoListProps) {
       </CardContent>
     </Card>
   )
-} 
+}

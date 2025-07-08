@@ -1,4 +1,3 @@
-import { Header } from "@/components/shared/header"
 import { HeroSection } from "@/components/landing_page/hero-section"
 import { FeaturesSection } from "@/components/landing_page/features-section"
 import { CTASection } from "@/components/landing_page/cta-section"
@@ -10,7 +9,6 @@ export default function HomePage() {
   return (
     <PageContainer>
       <HashNavigationHandler />
-      <Header />
       <HeroSection />
       <FeaturesSection />
       <CTASection />

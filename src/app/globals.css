@@ -47,30 +47,25 @@
 :root {
   --radius: 0.625rem;
   
-  /* Light Theme - Strong, Warm Cream Gradient */
-  --background: #f5f2ed;
-  --foreground: #2d3748;
-  --card: #f7f4f0;
-  --card-foreground: #2d3748;
-  --primary: #1e3a8a;
-  --primary-foreground: #faf8f5;
-  --secondary: #f1ede8;
-  --secondary-foreground: #2d3748;
-  --muted: #f5f2ed;
-  --muted-foreground: #6b7280;
-  --accent: #e8e4df;
-  --accent-foreground: #2d3748;
-  --border: #e5e0d8;
-  --input: #faf8f5;
-  --ring: #1e3a8a;
-  --success: #059669;
-  --success-foreground: #faf8f5;
-  --warning: #d97706;
-  --warning-foreground: #faf8f5;
-  --info: #2563eb;
-  --info-foreground: #faf8f5;
-  /* App-wide background gradient for light theme - strong, visible, warm */
-  --app-bg-gradient: linear-gradient(120deg, #f5f2ed 0%, #ede6dd 30%, #e3d6c7 60%, #cbbfae 85%, #b6a489 100%);
+  --background: #fafaf9;         /* stone-50 */
+  --foreground: #262626;         /* stone-800 */
+  --card: #e7e5e4;               /* stone-200 */
+  --muted: #a8a29e;              /* stone-400 */
+  --border: #d6d3d1;             /* stone-300 */
+  --primary: #78716c;            /* stone-500 */
+  --primary-foreground: #fafaf9; /* stone-50 */
+  --accent: #d6d3d1;             /* stone-300 */
+  --heading-foreground: #292524; /* stone-800 */
+  --heading-gradient-from: #78716c; /* stone-500 */
+  --heading-gradient-via: #57534e;  /* stone-700 */
+  --heading-gradient-to: #a8a29e;   /* stone-400 */
+  
+  /* Light Theme - Stone Palette */
+  --heading: #E7E5E4; /* stone-200, daha açık */
+  --secondary: #E7E5E4; /* stone-200 */
+  --secondary-foreground: #57534E; /* stone-600 */
+  --muted-foreground: #A8A29E; /* stone-400, daha açık */
+  --app-bg-gradient: linear-gradient(120deg, #FAFAF9 0%, #F5F5F4 30%, #E7E5E4 60%, #D6D3D1 85%, #A8A29E 100%);
   
   /* Chart Colors */
   --chart-1: #3b82f6;
@@ -105,30 +100,25 @@
 }
 
 .dark {
-  /* Dark Theme - Blue/Black Tones */
-  --background: #181e29;
-  --foreground: #f3f6fa;
-  --card: #232a36;
-  --card-foreground: #f3f6fa;
-  --primary: #7ea2f7;
-  --primary-foreground: #181e29;
-  --secondary: #232a36;
-  --secondary-foreground: #f3f6fa;
-  --muted: #202736;
-  --muted-foreground: #b8c2d1;
-  --accent: #25304a;
-  --accent-foreground: #f3f6fa;
-  --border: #2c3442;
-  --input: #232a36;
-  --ring: #7ea2f7;
-  --success: #2e7d5b;
-  --success-foreground: #eafaf1;
-  --warning: #bfa14a;
-  --warning-foreground: #fffbe6;
-  --info: #3a5d8c;
-  --info-foreground: #eaf3fa;
-  /* App-wide background gradient for dark theme */
-  --app-bg-gradient: linear-gradient(135deg, #181e29 0%, #232a36 40%, #1e293b 100%);
+  --background: #1c1917;         /* stone-900 */
+  --foreground: #fafaf9;         /* stone-50 */
+  --card: #292524;               /* stone-800 */
+  --muted: #78716c;              /* stone-500 */
+  --border: #44403c;             /* stone-700 */
+  --primary: #a8a29e;            /* stone-400 */
+  --primary-foreground: #1c1917; /* stone-900 */
+  --accent: #44403c;             /* stone-700 */
+  --heading-foreground: #fafaf9; /* stone-50 */
+  --heading-gradient-from: #a8a29e; /* stone-400 */
+  --heading-gradient-via: #78716c;  /* stone-500 */
+  --heading-gradient-to: #57534e;   /* stone-700 */
+  --app-bg-gradient: linear-gradient(135deg, #1c1917 0%, #292524 40%, #44403c 100%);
+  
+  /* Dark Theme - Stone Palette */
+  --heading: #E7E5E4; /* stone-200, daha açık */
+  --secondary: #292524; /* stone-800 */
+  --secondary-foreground: #A8A29E; /* stone-400 */
+  --muted-foreground: #F5F5F4; /* stone-100, daha açık */
   
   /* Chart Colors - Dark Theme */
   --chart-1: #3b82f6;
@@ -257,7 +247,7 @@ html.dark {
     background: linear-gradient(135deg, var(--background) 0%, var(--card) 100%);
   }
   .dark .bg-gradient-main {
-    background: linear-gradient(135deg, #181e29 0%, #232a36 100%);
+    background: linear-gradient(135deg, var(--background) 0%, var(--card) 100%);
   }
 
   .page-fade {
@@ -281,27 +271,23 @@ html.dark {
     transform: scale(1.045);
   }
 
-  .landing-hero-gradient {
-    background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 60%, #e8e4df 100%);
-  }
-  .dark .landing-hero-gradient {
-    background: linear-gradient(135deg, #20273a 0%, #232a36 60%, #2d3a5a 100%);
-  }
-  .landing-features-gradient {
-    background: linear-gradient(135deg, #f7f4f0 0%, #f1ede8 100%);
-  }
-  .dark .landing-features-gradient {
-    background: linear-gradient(135deg, #232a36 0%, #1e2533 100%);
-  }
+  .landing-hero-gradient,
+  .landing-features-gradient,
   .landing-card-gradient {
-    background: linear-gradient(120deg, #f7f4f0 60%, #e8e4df 100%);
+    background: linear-gradient(120deg, var(--background) 60%, var(--card) 100%);
   }
+  .dark .landing-hero-gradient,
+  .dark .landing-features-gradient,
   .dark .landing-card-gradient {
-    background: linear-gradient(120deg, #232a36 60%, #2d3a5a 100%);
+    background: linear-gradient(120deg, var(--background) 60%, var(--card) 100%);
   }
 
-  .text-gradient {
-    background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+  .text-gradient,
+  .animated-gradient-text,
+  .static-gradient-text {
+    background: linear-gradient(90deg, var(--heading-gradient-from), var(--heading-gradient-via), var(--heading-gradient-to));
+    background-size: 200% 200%;
+    background-position: 0% 50%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -432,5 +418,22 @@ html.dark {
   }
   .hover\:grow-text:hover {
     transform: scale(1.035);
+  }
+
+  .heading {
+    color: var(--heading);
+    font-weight: 600; /* font-semibold */
+  }
+  .heading-foreground {
+    color: var(--heading-foreground);
+  }
+  .heading-gradient {
+    background: linear-gradient(120deg, var(--heading-gradient-from, #E7E5E4), var(--heading-gradient-via, #D6D3D1), var(--heading-gradient-to, #A8A29E));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(40,40,40,0.10));
+    -webkit-text-stroke: 1px var(--heading-foreground, #57534E);
   }
 }

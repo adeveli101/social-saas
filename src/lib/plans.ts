@@ -46,20 +46,5 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Priority support',
       'Team collaboration'
     ]
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 99,
-    interval: 'month',
-    stripePriceId: 'price_business_monthly',
-    features: [
-      'Everything in Pro',
-      'White-label reports',
-      'API access',
-      'Custom integrations',
-      'Dedicated account manager',
-      'Advanced team permissions'
-    ]
   }
 ] 

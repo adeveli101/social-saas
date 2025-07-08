@@ -43,7 +43,7 @@ export function Section({
     >
       <div className={clsx("container mx-auto px-4", containerClassName, center && "text-center")}>
         {title && (
-          <h2 className={clsx("font-extrabold mb-4 text-foreground", titleClassName)}>
+          <h2 className={clsx("font-semibold mb-4 text-3xl md:text-4xl text-center heading-gradient heading heading-foreground", titleClassName)}>
             {title}
           </h2>
         )}

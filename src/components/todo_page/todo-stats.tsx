@@ -51,7 +51,7 @@ export function TodoStats({ userId }: TodoStatsProps) {
     <div className="space-y-4">
       <Card className="bg-background border-border">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-foreground">
+          <CardTitle className="flex items-center gap-2 heading-gradient heading">
             <Target className="h-5 w-5 text-primary" />
             Progress Overview
           </CardTitle>
@@ -59,7 +59,7 @@ export function TodoStats({ userId }: TodoStatsProps) {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Completion Rate</span>
-            <span className="text-2xl font-bold text-foreground">
+            <span className="text-2xl font-bold heading-gradient heading">
               {stats.completionRate}%
             </span>
           </div>
@@ -113,7 +113,7 @@ export function TodoStats({ userId }: TodoStatsProps) {
 
       <Card className="bg-background border-border">
         <CardHeader>
-          <CardTitle className="text-sm text-foreground">Quick Actions</CardTitle>
+          <CardTitle className="text-sm heading-gradient heading">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="text-xs text-muted-foreground">

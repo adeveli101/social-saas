@@ -67,20 +67,19 @@ export function QuickActions() {
               <div
                 className={cn(
                   "flex flex-col justify-between min-h-[140px] rounded-xl p-4 transition-all duration-200 cursor-pointer shadow-sm",
-                  "bg-gradient-to-br",
-                  action.color,
+                  "bg-gradient-to-br from-[var(--card)] to-[var(--background)]",
                   "hover:scale-105 hover:shadow-lg"
                 )}
               >
                 <div className="flex items-center mb-2">
-                  <action.icon className="h-7 w-7 mr-2 opacity-90 text-slate-700" />
+                  <action.icon className="h-7 w-7 mr-2 opacity-90 text-[var(--muted)]" />
                   <span className={cn(
-                    "text-lg font-semibold text-slate-800 truncate transition-all duration-200",
+                    "text-lg font-semibold text-[var(--foreground)] truncate transition-all duration-200",
                     "line-clamp-2 group-hover:line-clamp-none"
                   )}>{action.title}</span>
                 </div>
                 <p className={cn(
-                  "text-sm text-slate-700/90 mt-2 transition-all duration-200",
+                  "text-sm text-[var(--muted)] mt-2 transition-all duration-200",
                   "line-clamp-2 group-hover:line-clamp-none"
                 )}>
                   {action.description}
