@@ -49,7 +49,7 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
         const data = await response.json()
         setCarousel(data)
         
-        // Eğer hala pending veya processing ise, 5 saniye sonra tekrar kontrol et
+        // If still pending or processing, check again after 5 seconds
         if (data.status === 'pending' || data.status === 'processing') {
           setTimeout(fetchCarousel, 5000)
         } else {

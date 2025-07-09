@@ -1,0 +1,112 @@
+[
+  {
+    "id": "template-1",
+    "name": "Weekly Tips for Entrepreneurs",
+    "mainTopic": "Startup growth hacks",
+    "audience": "Entrepreneurs",
+    "purpose": "Educate",
+    "keyPoints": ["Growth", "Marketing", "Product", "Strategy"],
+    "category": "Personal Growth",
+    "createdAt": "2024-05-01T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-2",
+    "name": "Digital Marketing Guide",
+    "mainTopic": "Digital marketing trends",
+    "audience": "Small business owners",
+    "purpose": "Educate",
+    "keyPoints": ["SEO", "Social media", "Content strategy", "Analytics"],
+    "category": "Marketing",
+    "createdAt": "2024-05-02T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-3",
+    "name": "Product Promotion",
+    "mainTopic": "Brand storytelling",
+    "audience": "Marketing professionals",
+    "purpose": "Sell",
+    "keyPoints": ["Branding", "Messaging", "Customer stories", "Conversion"],
+    "category": "Marketing",
+    "createdAt": "2024-05-03T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-4",
+    "name": "Healthy Habits Series",
+    "mainTopic": "Healthy lifestyle tips",
+    "audience": "Fitness enthusiasts",
+    "purpose": "Inspire",
+    "keyPoints": ["Exercise", "Nutrition", "Sleep", "Wellness"],
+    "category": "Health",
+    "createdAt": "2024-05-04T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-5",
+    "name": "E-Commerce Growth Hacks",
+    "mainTopic": "E-commerce strategies",
+    "audience": "E-commerce owners",
+    "purpose": "Educate",
+    "keyPoints": ["Conversion", "Retention", "Shipping", "Analytics"],
+    "category": "E-commerce",
+    "createdAt": "2024-05-05T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-6",
+    "name": "Personal Finance 101",
+    "mainTopic": "Personal finance basics",
+    "audience": "Young professionals",
+    "purpose": "Educate",
+    "keyPoints": ["Budgeting", "Investing", "Saving", "Debt"],
+    "category": "Finance",
+    "createdAt": "2024-05-06T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-7",
+    "name": "Remote Work Productivity",
+    "mainTopic": "Remote work productivity",
+    "audience": "Remote workers",
+    "purpose": "Inspire",
+    "keyPoints": ["Time management", "Communication", "Tools", "Balance"],
+    "category": "Productivity",
+    "createdAt": "2024-05-07T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-8",
+    "name": "Instagram Content Ideas",
+    "mainTopic": "Instagram content ideas",
+    "audience": "Content creators",
+    "purpose": "Educate",
+    "keyPoints": ["Stories", "Reels", "Carousels", "Engagement"],
+    "category": "Marketing",
+    "createdAt": "2024-05-08T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-9",
+    "name": "Brand Storytelling Masterclass",
+    "mainTopic": "Brand storytelling",
+    "audience": "Brand managers",
+    "purpose": "Inspire",
+    "keyPoints": ["Voice", "Identity", "Stories", "Values"],
+    "category": "Marketing",
+    "createdAt": "2024-05-09T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-10",
+    "name": "Wellness for Busy People",
+    "mainTopic": "Healthy lifestyle tips",
+    "audience": "Busy professionals",
+    "purpose": "Inspire",
+    "keyPoints": ["Habits", "Mental health", "Sleep", "Nutrition"],
+    "category": "Wellness",
+    "createdAt": "2024-05-10T10:00:00Z",
+    "usageCount": 0
+  }
+] 

@@ -20,24 +20,24 @@ export function CarouselResult({ result, onRestart }: { result: any, onRestart: 
     a.click()
   }
 
-  // Tüm görselleri zip olarak indirme (placeholder, gerçek zip için ek kütüphane gerekir)
+  // Download all images as a zip (placeholder, requires external library for actual zip)
   const handleDownloadAll = () => {
     slides.forEach((slide: any, i: number) => handleDownload(slide.imageUrl, `slide-${i + 1}.jpg`))
   }
 
-  // Tüm caption'ı kopyala
+  // Copy all captions
   const handleCopyAll = () => handleCopy(result.caption)
 
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-6">
-      {/* Genel aksiyonlar */}
+      {/* General actions */}
       <div className="flex flex-wrap gap-2 justify-center mb-2">
         <Button onClick={handleDownloadAll} variant="outline" size="sm"><Download className="h-4 w-4 mr-1" />Download All</Button>
         <Button onClick={handleCopyAll} variant="outline" size="sm"><Copy className="h-4 w-4 mr-1" />Copy All Captions</Button>
         <Button onClick={onRestart} variant="ghost" size="sm">Start Over</Button>
       </div>
 
-      {/* Galeri */}
+      {/* Gallery */}
       <div className="relative bg-[var(--card)] border border-[var(--border)] rounded-lg p-4 flex flex-col items-center">
         <div className="flex items-center justify-between w-full mb-2">
           <Button variant="ghost" size="icon" onClick={() => setCurrent(c => Math.max(0, c - 1))} disabled={current === 0}><ArrowLeft /></Button>
@@ -52,7 +52,7 @@ export function CarouselResult({ result, onRestart }: { result: any, onRestart: 
             draggable={false}
           />
         )}
-        {/* Caption ve aksiyonlar */}
+        {/* Caption and actions */}
         <div className="w-full flex flex-col gap-2 items-center">
           <div className="bg-[var(--muted)] rounded p-3 w-full text-sm text-foreground flex items-center justify-between">
             <span className="truncate mr-2">{slides[current]?.caption || ""}</span>
@@ -63,7 +63,7 @@ export function CarouselResult({ result, onRestart }: { result: any, onRestart: 
         {copied && <div className="text-green-600 text-xs mt-2">Copied!</div>}
       </div>
 
-      {/* Nasıl paylaşılır rehberi */}
+      {/* How to share guide */}
       <details className="mt-4 bg-[var(--muted)] border border-[var(--border)] rounded p-4">
         <summary className="flex items-center gap-2 cursor-pointer font-semibold"><Info className="h-4 w-4" />How to share?</summary>
         <ol className="list-decimal ml-6 mt-2 text-sm text-muted-foreground space-y-1">

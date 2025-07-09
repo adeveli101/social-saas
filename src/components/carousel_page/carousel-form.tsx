@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { Button } from "@/components/ui/button"
@@ -8,10 +8,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Sparkles, Image, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap } from "lucide-react"
+import { Loader2, Sparkles, Image, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap, Save, BookOpen } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { X } from "lucide-react"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
+import { AnimatedChip, AnimatedChipGroup } from "@/components/ui/animated-chip"
+import { TemplateSaveDialog } from "./template-save-dialog"
+import { TemplateSelector } from "./template-selector"
+import { CONTEXTUAL_SUGGESTIONS, UserTemplate } from "@/lib/carousel-suggestions"
+import { motion, AnimatePresence } from 'framer-motion'
+import { useRef } from 'react'
 
 const STYLES = [
   { value: "photo", label: "Photo-realistic", icon: <Camera className="h-4 w-4 mr-1" /> },
@@ -81,19 +87,30 @@ const AUDIENCE_SUGGESTIONS = [
   "Marketing professionals",
   "Fitness enthusiasts",
 ]
-const KEYPOINT_SUGGESTIONS = [
-  "Social media",
-  "Content strategy",
-  "Analytics",
-  "Branding",
-  "Engagement",
-  "SEO",
-  "Time management",
-  "Growth mindset",
+// Key point grupları örneği
+const KEYPOINT_GROUPS = [
+  {
+    groupName: 'E-Ticaret İçin Öneriler',
+    suggestions: [
+      'Conversion', 'Retention', 'Shipping', 'Analytics', 'Inventory', 'Customer service'
+    ]
+  },
+  {
+    groupName: 'Sağlık Temalı Öneriler',
+    suggestions: [
+      'Exercise', 'Nutrition', 'Mental health', 'Sleep', 'Wellness', 'Habits'
+    ]
+  },
+  {
+    groupName: 'Genel Popüler Konular',
+    suggestions: [
+      'Social media', 'Content strategy', 'Branding', 'Engagement', 'SEO', 'Time management', 'Growth mindset'
+    ]
+  }
 ]
 
 // Chip renkleri (soft pastel tonlar, Tailwind)
-const CHIP_COLORS = [
+const CHIP_COLORS_LIGHT = [
   'bg-blue-100 text-blue-800',
   'bg-green-100 text-green-800',
   'bg-purple-100 text-purple-800',
@@ -103,8 +120,23 @@ const CHIP_COLORS = [
   'bg-orange-100 text-orange-800',
   'bg-teal-100 text-teal-800',
 ]
+const CHIP_COLORS_DARK = [
+  'bg-blue-900 text-blue-200',
+  'bg-green-900 text-green-200',
+  'bg-purple-900 text-purple-200',
+  'bg-yellow-900 text-yellow-200',
+  'bg-pink-900 text-pink-200',
+  'bg-slate-700 text-slate-200',
+  'bg-orange-900 text-orange-200',
+  'bg-teal-900 text-teal-200',
+]
+
+// Input, Textarea ve SelectTrigger için yeni className
+const inputClass = "w-full max-w-2xl mx-auto text-lg bg-white border-2 border-slate-300 text-foreground placeholder:text-slate-400 rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+const selectTriggerClass = "w-full max-w-2xl mx-auto text-lg bg-white border-2 border-slate-300 text-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
 
 export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
+  // All hooks at the top, unconditionally
   const [prompt, setPrompt] = useState("")
   const [imageCount, setImageCount] = useState(5)
   const [styles, setStyles] = useState<string[]>([STYLES[0].value])
@@ -112,18 +144,119 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
   const [error, setError] = useState('')
   const router = useRouter()
   const { user, isLoaded } = useUser()
-
-  // Prompt mode: classic or structured
+  const CHIP_COLORS = [
+    'bg-[var(--chart-1)] text-[var(--primary-foreground)]', // Digital marketing trends
+    'bg-[var(--chart-2)] text-[var(--primary-foreground)]', // Healthy lifestyle tips
+    'bg-[var(--chart-3)] text-[var(--primary-foreground)]', // Startup growth hacks
+    'bg-[var(--chart-4)] text-[var(--primary-foreground)]', // Personal finance basics
+    'bg-[var(--chart-5)] text-[var(--primary-foreground)]', // Remote work productivity
+    'bg-purple-600 text-white', // Brand storytelling (daha canlı)
+    'bg-yellow-400 text-black', // Bright (daha canlı)
+    'bg-blue-400 text-white',   // Cloudy (daha canlı)
+  ]
   const [promptMode, setPromptMode] = useState<'classic' | 'structured'>('classic')
-
-  // Structured prompt fields
   const [mainTopic, setMainTopic] = useState("")
   const [audience, setAudience] = useState("")
   const [purpose, setPurpose] = useState("")
   const [points, setPoints] = useState<string[]>([])
   const [pointInput, setPointInput] = useState("")
+  const [dynamicAudienceSuggestions, setDynamicAudienceSuggestions] = useState<string[]>(AUDIENCE_SUGGESTIONS)
+  const [dynamicKeyPointSuggestions, setDynamicKeyPointSuggestions] = useState<string[]>(KEYPOINT_GROUPS.flatMap(group => group.suggestions))
+  const [removedPoints, setRemovedPoints] = useState<string[]>([])
+  const [showDraftAlert, setShowDraftAlert] = useState(false)
+  const draftRestored = useRef(false)
+  const [lastLoadedTemplate, setLastLoadedTemplate] = useState<UserTemplate | null>(null)
 
-  // Kullanıcı yüklenene kadar loading göster
+  // Autosave structured prompt fields
+  useEffect(() => {
+    if (promptMode !== 'structured') return
+    const draft = { mainTopic, audience, purpose, points }
+    localStorage.setItem('carouselFormDraft', JSON.stringify(draft))
+  }, [promptMode, mainTopic, audience, purpose, points])
+
+  // On mount, check for draft
+  useEffect(() => {
+    if (promptMode !== 'structured') return
+    if (draftRestored.current) return
+    const draft = localStorage.getItem('carouselFormDraft')
+    if (draft) {
+      setShowDraftAlert(true)
+    }
+  }, [promptMode])
+
+  // Restore draft
+  const handleRestoreDraft = () => {
+    const draft = localStorage.getItem('carouselFormDraft')
+    if (draft) {
+      try {
+        const { mainTopic: dMain, audience: dAud, purpose: dPur, points: dPts } = JSON.parse(draft)
+        setMainTopic(dMain || '')
+        setAudience(dAud || '')
+        setPurpose(dPur || '')
+        setPoints(Array.isArray(dPts) ? dPts : [])
+        draftRestored.current = true
+      } catch {}
+    }
+    setShowDraftAlert(false)
+  }
+  // Dismiss draft
+  const handleDismissDraft = () => {
+    localStorage.removeItem('carouselFormDraft')
+    setShowDraftAlert(false)
+  }
+  // Clear draft on submit or reset
+  const clearDraft = () => {
+    localStorage.removeItem('carouselFormDraft')
+  }
+
+  // Ana konu değiştiğinde dinamik önerileri güncelle
+  useEffect(() => {
+    if (mainTopic && CONTEXTUAL_SUGGESTIONS[mainTopic]) {
+      setDynamicAudienceSuggestions(CONTEXTUAL_SUGGESTIONS[mainTopic].audience)
+      setDynamicKeyPointSuggestions(CONTEXTUAL_SUGGESTIONS[mainTopic].keyPoints)
+    } else {
+      setDynamicAudienceSuggestions(AUDIENCE_SUGGESTIONS)
+      setDynamicKeyPointSuggestions(KEYPOINT_GROUPS.flatMap(group => group.suggestions))
+    }
+  }, [mainTopic])
+
+  // Template seçimi için handler
+  const handleTemplateSelect = (template: UserTemplate) => {
+    setMainTopic(template.mainTopic)
+    setAudience(template.audience)
+    setPurpose(template.purpose)
+    setPoints(template.keyPoints)
+    setLastLoadedTemplate(template)
+  }
+
+  // Smart reset logic
+  const handleSmartReset = () => {
+    if (lastLoadedTemplate) {
+      setMainTopic(lastLoadedTemplate.mainTopic)
+      setAudience(lastLoadedTemplate.audience)
+      setPurpose(lastLoadedTemplate.purpose)
+      setPoints(lastLoadedTemplate.keyPoints)
+    }
+    clearDraft()
+  }
+  const handleClassicReset = () => {
+    setMainTopic("")
+    setAudience("")
+    setPurpose("")
+    setPoints([])
+    setRemovedPoints([])
+    setLastLoadedTemplate(null)
+    clearDraft()
+  }
+
+  // Redirect to sign-in if user is not authenticated (after isLoaded)
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push('/sign-in')
+    }
+  }, [isLoaded, user, router])
+
+  // Early return for loading state
   if (!isLoaded) {
     return (
       <Card className="w-full bg-background border-border">
@@ -134,9 +267,8 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
     )
   }
 
-  // Kullanıcı giriş yapmamışsa sign-in sayfasına yönlendir
+  // Early return for unauthenticated state (redirect will happen in useEffect)
   if (!user) {
-    router.push('/sign-in')
     return null
   }
 
@@ -157,6 +289,7 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
         `Purpose: ${purpose}\n` +
         (points.length > 0 ? `Key points to cover: ${points.join(", ")}\n` : "") +
         `Write a detailed, engaging Instagram carousel in English based on these instructions.`
+      clearDraft()
     }
     if (promptMode === 'classic' && !prompt.trim()) return
     setLoading(true)
@@ -172,6 +305,16 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Draft restore alert */}
+        {showDraftAlert && (
+          <div className="mb-4 p-3 rounded-lg bg-yellow-100 text-yellow-900 border border-yellow-300 flex flex-col md:flex-row items-start md:items-center gap-2 justify-between">
+            <span>It seems you have a draft carousel. Would you like to continue from where you left off?</span>
+            <div className="flex gap-2 mt-2 md:mt-0">
+              <Button size="sm" variant="default" onClick={handleRestoreDraft}>Continue</Button>
+              <Button size="sm" variant="outline" onClick={handleDismissDraft}>Dismiss</Button>
+            </div>
+          </div>
+        )}
         {/* Prompt Mode Switcher */}
         <div className="mb-6 flex flex-col items-center">
           <div className="inline-flex rounded-lg bg-[var(--muted)] p-1 shadow-sm border border-[var(--border)]">
@@ -210,6 +353,37 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Template Selector and Save Buttons */}
+          <div className="flex flex-wrap gap-2 justify-center items-center">
+            <TemplateSelector onTemplateSelect={handleTemplateSelect} />
+            {promptMode === 'structured' && mainTopic && audience && purpose && (
+              <TemplateSaveDialog
+                mainTopic={mainTopic}
+                audience={audience}
+                purpose={purpose}
+                keyPoints={points}
+                trigger={
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Save className="h-4 w-4" />
+                    Save Template
+                  </Button>
+                }
+              />
+            )}
+            {/* Smart/Classic Reset Button */}
+            {promptMode === 'structured' && (
+              lastLoadedTemplate ? (
+                <Button type="button" variant="destructive" size="sm" className="gap-2" onClick={handleSmartReset}>
+                  Reset Template
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" size="sm" className="gap-2" onClick={handleClassicReset}>
+                  Start Fresh
+                </Button>
+              )
+            )}
+          </div>
+
           {/* Classic Prompt Mode */}
           {promptMode === 'classic' && (
             <>
@@ -220,7 +394,7 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                   {TEMPLATES.map((tpl, i) => (
                     <button
                       type="button"
-                      key={tpl.label}
+                      key={tpl.label + '-' + i}
                       onClick={() => setPrompt(tpl.example)}
                       className={`px-3 py-1 rounded-full border border-transparent text-xs md:text-sm font-medium transition-colors shadow-sm
                         ${CHIP_COLORS[i % CHIP_COLORS.length]}
@@ -242,7 +416,7 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
               value={prompt}
                   onChange={e => setPrompt(e.target.value)}
                   required={promptMode === 'classic'}
-                  className="w-full max-w-2xl mx-auto min-h-[160px] md:min-h-[200px] bg-[var(--muted)] border-2 border-[var(--border)] text-lg md:text-xl text-foreground placeholder:text-muted-foreground rounded-xl px-5 py-4 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
+                  className={inputClass + ' min-h-[160px] md:min-h-[200px]'}
                 />
                 <div className="mt-1 text-sm md:text-base text-primary font-medium flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
@@ -263,24 +437,19 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                   value={mainTopic}
                   onChange={e => setMainTopic(e.target.value)}
                   required={promptMode === 'structured'}
-                  className="w-full max-w-2xl mx-auto text-lg bg-[var(--muted)] border-2 border-[var(--border)] text-foreground placeholder:text-muted-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
+                  className={inputClass}
                 />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {TOPIC_SUGGESTIONS.map((topic, i) => (
-                    <button
-                      type="button"
-                      key={topic}
-                      onClick={() => setMainTopic(topic)}
-                      className={`px-3 py-1 rounded-full border border-transparent text-xs font-medium transition-colors shadow-sm
-                        ${CHIP_COLORS[i % CHIP_COLORS.length]}
-                        hover:border-primary hover:text-primary hover:bg-primary/10
-                        ${mainTopic === topic ? 'border-primary bg-primary/10 text-primary' : ''}
-                      `}
-                    >
-                      {topic}
-                    </button>
-                  ))}
-                </div>
+                <AnimatedChipGroup
+                  chips={TOPIC_SUGGESTIONS.map((topic, i) => ({
+                    id: topic,
+                    label: topic,
+                    selected: mainTopic === topic,
+                    color: CHIP_COLORS[i % CHIP_COLORS.length],
+                    className: 'min-h-[2.25rem] px-4 py-1 text-sm rounded-full font-medium flex items-center justify-center'
+                  }))}
+                  onChipClick={(id) => setMainTopic(id)}
+                  className="mt-2"
+                />
                 <div className="text-xs text-muted-foreground">What is the main subject of your carousel?</div>
               </div>
               <div className="space-y-2">
@@ -291,30 +460,25 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                   value={audience}
                   onChange={e => setAudience(e.target.value)}
                   required={promptMode === 'structured'}
-                  className="w-full max-w-2xl mx-auto text-lg bg-[var(--muted)] border-2 border-[var(--border)] text-foreground placeholder:text-muted-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
+                  className={inputClass}
                 />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {AUDIENCE_SUGGESTIONS.map((aud, i) => (
-                    <button
-                      type="button"
-                      key={aud}
-                      onClick={() => setAudience(aud)}
-                      className={`px-3 py-1 rounded-full border border-transparent text-xs font-medium transition-colors shadow-sm
-                        ${CHIP_COLORS[i % CHIP_COLORS.length]}
-                        hover:border-primary hover:text-primary hover:bg-primary/10
-                        ${audience === aud ? 'border-primary bg-primary/10 text-primary' : ''}
-                      `}
-                    >
-                      {aud}
-                    </button>
-                  ))}
-                </div>
+                <AnimatedChipGroup
+                  chips={dynamicAudienceSuggestions.map((aud, i) => ({
+                    id: aud,
+                    label: aud,
+                    selected: audience === aud,
+                    color: CHIP_COLORS[i % CHIP_COLORS.length],
+                    className: 'min-h-[2.25rem] px-4 py-1 text-sm rounded-full font-medium flex items-center justify-center'
+                  }))}
+                  onChipClick={(id) => setAudience(id)}
+                  className="mt-2"
+                />
                 <div className="text-xs text-muted-foreground">Who is this content for?</div>
               </div>
           <div className="space-y-2">
                 <Label htmlFor="purpose" className="text-foreground font-semibold">Purpose</Label>
                 <Select value={purpose} onValueChange={setPurpose}>
-                  <SelectTrigger className="w-full max-w-2xl mx-auto text-lg bg-[var(--muted)] border-2 border-[var(--border)] text-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all">
+                  <SelectTrigger className={selectTriggerClass}>
                     <SelectValue placeholder="Select purpose" />
               </SelectTrigger>
               <SelectContent>
@@ -325,22 +489,25 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
             </Select>
                 <div className="text-xs text-muted-foreground">What is the main goal? (Educate, Sell, Inspire)</div>
               </div>
-              <div className="space-y-2">
+              {/* Key Points to Cover field */}
+          <div className="space-y-2">
                 <Label htmlFor="points" className="text-foreground font-semibold">Key Points to Cover <span className="text-xs text-muted-foreground">(optional)</span></Label>
+                <div className="text-xs text-muted-foreground mb-1">Each keyword, slide idea, or important topic must be covered in your carousel. You can add back removed keywords from below.</div>
                 <div className="flex gap-2">
                   <Input
                     id="points"
                     placeholder="e.g. Social media, Content strategy, Analytics"
                     value={pointInput}
                     onChange={e => setPointInput(e.target.value)}
-                    className="flex-1 text-lg bg-[var(--muted)] border-2 border-[var(--border)] text-foreground placeholder:text-muted-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
+                    className={inputClass}
                     onKeyDown={e => {
                       if ((e.key === 'Enter' || e.key === ',') && pointInput.trim()) {
-                        e.preventDefault()
+                        e.preventDefault();
                         if (!points.includes(pointInput.trim())) {
-                          setPoints([...points, pointInput.trim()])
+                          setPoints([...points, pointInput.trim()]);
+                          setRemovedPoints(removedPoints.filter(r => r !== pointInput.trim()));
                         }
-                        setPointInput("")
+                        setPointInput("");
                       }
                     }}
                   />
@@ -349,36 +516,111 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                     variant="secondary"
                     onClick={() => {
                       if (pointInput.trim() && !points.includes(pointInput.trim())) {
-                        setPoints([...points, pointInput.trim()])
-                        setPointInput("")
+                        setPoints([...points, pointInput.trim()]);
+                        setRemovedPoints(removedPoints.filter(r => r !== pointInput.trim()));
+                        setPointInput("");
                       }
                     }}
+                    disabled={!pointInput.trim()}
                   >Add</Button>
                 </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {points.map((pt, idx) => (
-                    <span key={pt} className="flex items-center bg-primary/10 text-primary border border-primary px-3 py-1 rounded-full text-xs font-medium shadow-sm">
-                      {pt}
-                      <button type="button" className="ml-1" onClick={() => setPoints(points.filter((_, i) => i !== idx))}>
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
-                  {KEYPOINT_SUGGESTIONS.filter(s => !points.includes(s)).map((s, i) => (
-                    <button
-                      type="button"
-                      key={s}
-                      onClick={() => setPoints([...points, s])}
-                      className={`px-3 py-1 rounded-full border border-transparent text-xs font-medium transition-colors shadow-sm
-                        ${CHIP_COLORS[i % CHIP_COLORS.length]}
-                        hover:border-primary hover:text-primary hover:bg-primary/10
-                      `}
-                    >
-                      {s}
-                    </button>
-                  ))}
+                {/* Selected tags */}
+                {points.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <AnimatePresence>
+                      {points.map((pt, idx) => (
+                        <motion.span
+                          key={pt + '-' + idx}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.18 }}
+                          className="flex items-center bg-primary/10 text-primary border border-primary px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
+                        >
+                          {pt}
+                          <button type="button" className="ml-1" onClick={() => {
+                            setRemovedPoints([...removedPoints, pt]);
+                            setPoints(points.filter((_, i) => i !== idx));
+                          }}>
+                            <X className="h-3 w-3" />
+                          </button>
+                        </motion.span>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+                {/* Grouped suggestions */}
+                <div className="space-y-2 mt-2">
+                  <AnimatePresence>
+                    {KEYPOINT_GROUPS.map((group, groupIdx) => {
+                      const groupSuggestions = group.suggestions.filter(s => !points.includes(s) && !removedPoints.includes(s));
+                      if (groupSuggestions.length === 0) return null;
+                      return (
+                        <motion.div
+                          key={group.groupName + '-' + groupIdx}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.22 }}
+                        >
+                          <div className="font-semibold text-xs mb-1 text-muted-foreground">{group.groupName}</div>
+                          <div className="flex flex-wrap gap-2">
+                            <AnimatePresence>
+                              {groupSuggestions.map((s, i) => (
+                                <motion.button
+                                  type="button"
+                                  key={group.groupName + '-' + s + '-' + i}
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.8 }}
+                                  transition={{ duration: 0.18, delay: i * 0.03 }}
+                                  onClick={() => {
+                                    setPoints([...points, s]);
+                                    setRemovedPoints(removedPoints.filter(r => r !== s));
+                                  }}
+                                  className={`px-3 py-1 rounded-full border border-transparent text-xs font-medium transition-colors shadow-sm bg-[var(--muted)] text-[var(--muted-foreground)] hover:border-primary hover:text-primary hover:bg-primary/10`}
+                                >
+                                  {s}
+                                </motion.button>
+                              ))}
+                            </AnimatePresence>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
+                  </AnimatePresence>
                 </div>
-                <div className="text-xs text-muted-foreground">Add important keywords or topics (press Enter, comma, or click a suggestion).</div>
+                {/* Removed items */}
+                {removedPoints.length > 0 && (
+                  <div className="mt-2">
+                    <div className="text-xs text-muted-foreground mb-1">Removed (click to add back):</div>
+                    <div className="flex flex-wrap gap-2">
+                      <AnimatePresence>
+                        {removedPoints.map((pt, i) => (
+                          <motion.div
+                            key={pt + '-removed-' + i}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.18, delay: i * 0.03 }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPoints([...points, pt]);
+                                setRemovedPoints(removedPoints.filter(r => r !== pt));
+                              }}
+                              className="px-3 py-1 rounded-full border border-dashed text-xs font-medium bg-slate-200 text-slate-800"
+                            >
+                              {pt} <span className='ml-1'>↩️</span>
+                            </button>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground">Add important keywords or topics (press Enter, comma, click a suggestion or Add button).</div>
           </div>
             </div>
           )}
@@ -404,27 +646,17 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           {/* Style Chips */}
           <div className="space-y-2">
             <Label className="text-foreground font-semibold">Image Styles</Label>
-            <div className="flex flex-wrap gap-2 mt-1 justify-center">
-              {STYLES.map((s, i) => {
-                const selected = styles.includes(s.value)
-                return (
-                  <button
-                    type="button"
-                    key={s.value}
-                    onClick={() => handleStyleToggle(s.value)}
-                    className={`flex items-center px-3 py-1 rounded-full border border-transparent text-sm font-medium transition-colors shadow-sm
-                      ${CHIP_COLORS[i % CHIP_COLORS.length]}
-                      hover:border-primary hover:text-primary hover:bg-primary/10
-                      ${selected ? 'border-primary bg-primary/10 text-primary' : ''}
-                    `}
-                  >
-                    {s.icon}
-                    {s.label}
-                    {selected && <span className="ml-1">✓</span>}
-                  </button>
-                )
-              })}
-            </div>
+            <AnimatedChipGroup
+              chips={STYLES.map((s, i) => ({
+                id: s.value,
+                label: s.label,
+                selected: styles.includes(s.value),
+                color: CHIP_COLORS[i % CHIP_COLORS.length],
+                icon: s.icon
+              }))}
+              onChipClick={(id) => handleStyleToggle(id)}
+              className="mt-1 justify-center"
+            />
             <p className="text-xs text-muted-foreground">You can select multiple styles.</p>
           </div>
 
