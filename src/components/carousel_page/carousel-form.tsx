@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Sparkles, Image, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap, Save, BookOpen } from "lucide-react"
+import { Loader2, Sparkles, Image, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap, Save, BookOpen, RotateCcw, RefreshCw, CheckCircle, AlertCircle } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { X } from "lucide-react"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
@@ -135,9 +135,9 @@ const CHIP_COLORS_DARK = [
 const inputClass = "w-full max-w-2xl mx-auto text-lg bg-white border-2 border-slate-300 text-foreground placeholder:text-slate-400 rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
 const selectTriggerClass = "w-full max-w-2xl mx-auto text-lg bg-white border-2 border-slate-300 text-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
 
-export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
+export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data: any) => void, initialPrompt?: string }) {
   // All hooks at the top, unconditionally
-  const [prompt, setPrompt] = useState("")
+  const [prompt, setPrompt] = useState(initialPrompt)
   const [imageCount, setImageCount] = useState(5)
   const [styles, setStyles] = useState<string[]>([STYLES[0].value])
   const [loading, setLoading] = useState(false)
@@ -166,6 +166,14 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
   const [showDraftAlert, setShowDraftAlert] = useState(false)
   const draftRestored = useRef(false)
   const [lastLoadedTemplate, setLastLoadedTemplate] = useState<UserTemplate | null>(null)
+  
+  // Enhanced button states
+  const [isResetting, setIsResetting] = useState(false)
+  const [isLoadingTemplate, setIsLoadingTemplate] = useState(false)
+  const [isSavingTemplate, setIsSavingTemplate] = useState(false)
+  const [resetSuccess, setResetSuccess] = useState(false)
+  const [templateLoadSuccess, setTemplateLoadSuccess] = useState(false)
+  const [templateSaveSuccess, setTemplateSaveSuccess] = useState(false)
 
   // Autosave structured prompt fields
   useEffect(() => {
@@ -184,8 +192,8 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
     }
   }, [promptMode])
 
-  // Restore draft
-  const handleRestoreDraft = () => {
+  // Restore draft with enhanced feedback
+  const handleRestoreDraft = async () => {
     const draft = localStorage.getItem('carouselFormDraft')
     if (draft) {
       try {
@@ -195,15 +203,21 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
         setPurpose(dPur || '')
         setPoints(Array.isArray(dPts) ? dPts : [])
         draftRestored.current = true
+        
+        // Success feedback
+        setTemplateLoadSuccess(true)
+        setTimeout(() => setTemplateLoadSuccess(false), 2000)
       } catch {}
     }
     setShowDraftAlert(false)
   }
+  
   // Dismiss draft
   const handleDismissDraft = () => {
     localStorage.removeItem('carouselFormDraft')
     setShowDraftAlert(false)
   }
+  
   // Clear draft on submit or reset
   const clearDraft = () => {
     localStorage.removeItem('carouselFormDraft')
@@ -220,33 +234,77 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
     }
   }, [mainTopic])
 
-  // Template seçimi için handler
-  const handleTemplateSelect = (template: UserTemplate) => {
-    setMainTopic(template.mainTopic)
-    setAudience(template.audience)
-    setPurpose(template.purpose)
-    setPoints(template.keyPoints)
-    setLastLoadedTemplate(template)
+  // Enhanced template selection with loading and success feedback
+  const handleTemplateSelect = async (template: UserTemplate) => {
+    setIsLoadingTemplate(true)
+    try {
+      // Simulate loading for better UX
+      await new Promise(resolve => setTimeout(resolve, 300))
+      
+      setMainTopic(template.mainTopic)
+      setAudience(template.audience)
+      setPurpose(template.purpose)
+      setPoints(template.keyPoints)
+      setLastLoadedTemplate(template)
+      
+      // Success feedback
+      setTemplateLoadSuccess(true)
+      setTimeout(() => setTemplateLoadSuccess(false), 2000)
+    } catch (error) {
+      console.error('Template loading error:', error)
+    } finally {
+      setIsLoadingTemplate(false)
+    }
   }
 
-  // Smart reset logic
-  const handleSmartReset = () => {
-    if (lastLoadedTemplate) {
+  // Enhanced smart reset with loading and success feedback
+  const handleSmartReset = async () => {
+    if (!lastLoadedTemplate) return
+    
+    setIsResetting(true)
+    try {
+      // Simulate loading for better UX
+      await new Promise(resolve => setTimeout(resolve, 400))
+      
       setMainTopic(lastLoadedTemplate.mainTopic)
       setAudience(lastLoadedTemplate.audience)
       setPurpose(lastLoadedTemplate.purpose)
       setPoints(lastLoadedTemplate.keyPoints)
+      clearDraft()
+      
+      // Success feedback
+      setResetSuccess(true)
+      setTimeout(() => setResetSuccess(false), 2000)
+    } catch (error) {
+      console.error('Reset error:', error)
+    } finally {
+      setIsResetting(false)
     }
-    clearDraft()
   }
-  const handleClassicReset = () => {
-    setMainTopic("")
-    setAudience("")
-    setPurpose("")
-    setPoints([])
-    setRemovedPoints([])
-    setLastLoadedTemplate(null)
-    clearDraft()
+  
+  // Enhanced classic reset with loading and success feedback
+  const handleClassicReset = async () => {
+    setIsResetting(true)
+    try {
+      // Simulate loading for better UX
+      await new Promise(resolve => setTimeout(resolve, 400))
+      
+      setMainTopic("")
+      setAudience("")
+      setPurpose("")
+      setPoints([])
+      setRemovedPoints([])
+      setLastLoadedTemplate(null)
+      clearDraft()
+      
+      // Success feedback
+      setResetSuccess(true)
+      setTimeout(() => setResetSuccess(false), 2000)
+    } catch (error) {
+      console.error('Reset error:', error)
+    } finally {
+      setIsResetting(false)
+    }
   }
 
   // Redirect to sign-in if user is not authenticated (after isLoaded)
@@ -305,24 +363,87 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Draft restore alert */}
+        {/* Enhanced draft restore alert */}
         {showDraftAlert && (
-          <div className="mb-4 p-3 rounded-lg bg-yellow-100 text-yellow-900 border border-yellow-300 flex flex-col md:flex-row items-start md:items-center gap-2 justify-between">
-            <span>It seems you have a draft carousel. Would you like to continue from where you left off?</span>
-            <div className="flex gap-2 mt-2 md:mt-0">
-              <Button size="sm" variant="default" onClick={handleRestoreDraft}>Continue</Button>
-              <Button size="sm" variant="outline" onClick={handleDismissDraft}>Dismiss</Button>
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-4 p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50 text-yellow-900 border border-yellow-300 flex flex-col md:flex-row items-start md:items-center gap-3 justify-between shadow-sm"
+          >
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-yellow-600" />
+              <span className="font-medium">You have a draft carousel. Would you like to continue from where you left off?</span>
             </div>
-          </div>
+            <div className="flex gap-2 mt-2 md:mt-0">
+              <Button 
+                size="sm" 
+                variant="default" 
+                onClick={handleRestoreDraft}
+                className="gap-2 hover:scale-105 transition-transform"
+              >
+                <CheckCircle className="h-4 w-4" />
+                Continue
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={handleDismissDraft}
+                className="hover:scale-105 transition-transform"
+              >
+                Dismiss
+              </Button>
+            </div>
+          </motion.div>
         )}
+        
+        {/* Success feedback alerts */}
+        <AnimatePresence>
+          {resetSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 rounded-lg bg-green-50 text-green-900 border border-green-300 flex items-center gap-2"
+            >
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span className="font-medium">Form reset successfully!</span>
+            </motion.div>
+          )}
+          
+          {templateLoadSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 rounded-lg bg-blue-50 text-blue-900 border border-blue-300 flex items-center gap-2"
+            >
+              <CheckCircle className="h-4 w-4 text-blue-600" />
+              <span className="font-medium">Template loaded successfully!</span>
+            </motion.div>
+          )}
+          
+          {templateSaveSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 rounded-lg bg-green-50 text-green-900 border border-green-300 flex items-center gap-2"
+            >
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span className="font-medium">Template saved successfully!</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Prompt Mode Switcher */}
         <div className="mb-6 flex flex-col items-center">
           <div className="inline-flex rounded-lg bg-[var(--muted)] p-1 shadow-sm border border-[var(--border)]">
             <button
               type="button"
-              className={`px-5 py-2 rounded-md font-semibold text-base transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
+              className={`px-5 py-2 rounded-md font-semibold text-base transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 hover:scale-105
                 ${promptMode === 'classic'
-                  ? 'bg-primary text-primary-foreground shadow'
+                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
                   : 'bg-transparent text-foreground hover:bg-primary/10'}
               `}
               onClick={() => setPromptMode('classic')}
@@ -333,9 +454,9 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
             </button>
             <button
               type="button"
-              className={`px-5 py-2 rounded-md font-semibold text-base transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
+              className={`px-5 py-2 rounded-md font-semibold text-base transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 hover:scale-105
                 ${promptMode === 'structured'
-                  ? 'bg-primary text-primary-foreground shadow'
+                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
                   : 'bg-transparent text-foreground hover:bg-primary/10'}
               `}
               onClick={() => setPromptMode('structured')}
@@ -353,32 +474,102 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Template Selector and Save Buttons */}
-          <div className="flex flex-wrap gap-2 justify-center items-center">
-            <TemplateSelector onTemplateSelect={handleTemplateSelect} />
+          {/* Enhanced Template Selector and Save Buttons */}
+          <div className="flex flex-wrap gap-3 justify-center items-center">
+            <TemplateSelector 
+              onTemplateSelect={handleTemplateSelect} 
+              isLoading={isLoadingTemplate}
+            />
             {promptMode === 'structured' && mainTopic && audience && purpose && (
               <TemplateSaveDialog
                 mainTopic={mainTopic}
                 audience={audience}
                 purpose={purpose}
                 keyPoints={points}
+                onTemplateSaved={(template) => {
+                  setTemplateSaveSuccess(true)
+                  setTimeout(() => setTemplateSaveSuccess(false), 2000)
+                }}
                 trigger={
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Save className="h-4 w-4" />
-                    Save Template
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2 hover:scale-105 transition-transform hover:shadow-md"
+                    disabled={isSavingTemplate}
+                  >
+                    {isSavingTemplate ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Save className="h-4 w-4" />
+                        </motion.div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4" />
+                        Save Template
+                      </>
+                    )}
                   </Button>
                 }
               />
             )}
-            {/* Smart/Classic Reset Button */}
+            {/* Enhanced Smart/Classic Reset Button */}
             {promptMode === 'structured' && (
               lastLoadedTemplate ? (
-                <Button type="button" variant="destructive" size="sm" className="gap-2" onClick={handleSmartReset}>
-                  Reset Template
+                <Button 
+                  type="button" 
+                  variant="destructive" 
+                  size="sm" 
+                  className="gap-2 hover:scale-105 transition-transform hover:shadow-md"
+                  onClick={handleSmartReset}
+                  disabled={isResetting}
+                >
+                  {isResetting ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </motion.div>
+                      Resetting...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="h-4 w-4" />
+                      Reset Template
+                    </>
+                  )}
                 </Button>
               ) : (
-                <Button type="button" variant="outline" size="sm" className="gap-2" onClick={handleClassicReset}>
-                  Start Fresh
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2 hover:scale-105 transition-transform hover:shadow-md"
+                  onClick={handleClassicReset}
+                  disabled={isResetting}
+                >
+                  {isResetting ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </motion.div>
+                      Clearing...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-4 w-4" />
+                      Start Fresh
+                    </>
+                  )}
                 </Button>
               )
             )}
@@ -396,10 +587,10 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                       type="button"
                       key={tpl.label + '-' + i}
                       onClick={() => setPrompt(tpl.example)}
-                      className={`px-3 py-1 rounded-full border border-transparent text-xs md:text-sm font-medium transition-colors shadow-sm
+                      className={`px-3 py-1 rounded-full border border-transparent text-xs md:text-sm font-medium transition-all duration-200 shadow-sm hover:scale-105 hover:shadow-md
                         ${CHIP_COLORS[i % CHIP_COLORS.length]}
                         hover:border-primary hover:text-primary hover:bg-primary/10
-                        ${prompt === tpl.example ? 'border-primary bg-primary/10 text-primary' : ''}
+                        ${prompt === tpl.example ? 'border-primary bg-primary/10 text-primary shadow-md scale-105' : ''}
                       `}
                     >
                       {tpl.label}
@@ -490,7 +681,7 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                 <div className="text-xs text-muted-foreground">What is the main goal? (Educate, Sell, Inspire)</div>
               </div>
               {/* Key Points to Cover field */}
-          <div className="space-y-2">
+              <div className="space-y-2">
                 <Label htmlFor="points" className="text-foreground font-semibold">Key Points to Cover <span className="text-xs text-muted-foreground">(optional)</span></Label>
                 <div className="text-xs text-muted-foreground mb-1">Each keyword, slide idea, or important topic must be covered in your carousel. You can add back removed keywords from below.</div>
                 <div className="flex gap-2">
@@ -526,9 +717,9 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                 </div>
                 {/* Selected tags */}
                 {points.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex flex-wrap gap-2 mt-2">
                     <AnimatePresence>
-                      {points.map((pt, idx) => (
+                  {points.map((pt, idx) => (
                         <motion.span
                           key={pt + '-' + idx}
                           initial={{ opacity: 0, scale: 0.8 }}
@@ -537,15 +728,15 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                           transition={{ duration: 0.18 }}
                           className="flex items-center bg-primary/10 text-primary border border-primary px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
                         >
-                          {pt}
+                      {pt}
                           <button type="button" className="ml-1" onClick={() => {
                             setRemovedPoints([...removedPoints, pt]);
                             setPoints(points.filter((_, i) => i !== idx));
                           }}>
-                            <X className="h-3 w-3" />
-                          </button>
+                        <X className="h-3 w-3" />
+                      </button>
                         </motion.span>
-                      ))}
+                  ))}
                     </AnimatePresence>
                   </div>
                 )}
@@ -568,7 +759,7 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                             <AnimatePresence>
                               {groupSuggestions.map((s, i) => (
                                 <motion.button
-                                  type="button"
+                      type="button"
                                   key={group.groupName + '-' + s + '-' + i}
                                   initial={{ opacity: 0, scale: 0.8 }}
                                   animate={{ opacity: 1, scale: 1 }}
@@ -579,10 +770,10 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
                                     setRemovedPoints(removedPoints.filter(r => r !== s));
                                   }}
                                   className={`px-3 py-1 rounded-full border border-transparent text-xs font-medium transition-colors shadow-sm bg-[var(--muted)] text-[var(--muted-foreground)] hover:border-primary hover:text-primary hover:bg-primary/10`}
-                                >
-                                  {s}
+                    >
+                      {s}
                                 </motion.button>
-                              ))}
+                  ))}
                             </AnimatePresence>
                           </div>
                         </motion.div>
@@ -660,16 +851,21 @@ export function CarouselForm({ onSubmit }: { onSubmit: (data: any) => void }) {
             <p className="text-xs text-muted-foreground">You can select multiple styles.</p>
           </div>
 
-          {/* Submit Button */}
+          {/* Enhanced Submit Button */}
           <Button
             variant="default"
             type="submit"
             disabled={loading || (promptMode === 'classic' ? !prompt.trim() : !mainTopic.trim() || !audience.trim() || !purpose.trim())}
-            className="w-full text-lg py-6 font-bold flex items-center justify-center"
+            className="w-full text-lg py-6 font-bold flex items-center justify-center hover:scale-105 transition-transform hover:shadow-lg"
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="mr-2 h-5 w-5" />
+                </motion.div>
                 Creating Carousel...
               </>
             ) : (

@@ -15,11 +15,11 @@ const actions = [
     href: "/dashboard/create"
   },
   {
-    title: "Todo Management",
+    title: "Content Planning",
     description: "Organize your tasks and stay productive",
     icon: CheckSquare,
     color: "from-[#f3ede7] to-[#e7e3d8]",
-    href: "/todo"
+    href: "/content-board"
   },
   {
     title: "Schedule Content",

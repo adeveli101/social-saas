@@ -13,9 +13,10 @@ import { useRef } from 'react'
 interface TemplateSelectorProps {
   onTemplateSelect: (template: UserTemplate) => void
   trigger?: React.ReactNode
+  isLoading?: boolean
 }
 
-export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelectorProps) {
+export function TemplateSelector({ onTemplateSelect, trigger, isLoading: isExternalLoading }: TemplateSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [templates, setTemplates] = useState<UserTemplate[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -131,9 +132,28 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" size="sm" className="gap-2">
-            <BookOpen className="h-4 w-4" />
-            Load Template
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2 hover:scale-105 transition-transform hover:shadow-md"
+            disabled={isExternalLoading}
+          >
+            {isExternalLoading ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <BookOpen className="h-4 w-4" />
+                </motion.div>
+                Loading...
+              </>
+            ) : (
+              <>
+                <BookOpen className="h-4 w-4" />
+                Load Template
+              </>
+            )}
           </Button>
         )}
       </DialogTrigger>
@@ -155,7 +175,11 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
             {allCategories.map((cat, idx) => (
               <button
                 key={cat + '-' + idx}
-                className={`text-left px-3 py-2 rounded font-medium transition-colors ${selectedCategory === cat ? 'bg-primary text-primary-foreground shadow' : 'hover:bg-primary/10 text-foreground'}`}
+                className={`text-left px-3 py-2 rounded font-medium transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+                  selectedCategory === cat 
+                    ? 'bg-primary text-primary-foreground shadow-lg scale-105' 
+                    : 'hover:bg-primary/10 text-foreground hover:text-primary'
+                }`}
                 onClick={() => setSelectedCategory(cat)}
               >
                 {cat}
@@ -199,12 +223,12 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
                     >
                       {/* Card rendering, same as below */}
                       <Card 
-                        className="cursor-pointer hover:shadow-md transition-all duration-200 hover:border-primary/50 w-full max-w-full min-h-[220px] sm:min-h-[220px] md:min-h-[260px] md:h-[260px] flex flex-col p-5"
+                        className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:border-primary/50 hover:scale-105 w-full max-w-full min-h-[220px] sm:min-h-[220px] md:min-h-[260px] md:h-[260px] flex flex-col p-5 group"
                         onClick={() => handleTemplateSelect(template)}
                       >
                         <CardHeader className="pb-1 pt-0 px-0 flex-shrink-0">
                               <div className="flex flex-col gap-1 min-w-0">
-                                <CardTitle className="text-base md:text-lg flex items-center gap-2 truncate font-semibold">
+                                <CardTitle className="text-base md:text-lg flex items-center gap-2 truncate font-semibold group-hover:text-primary transition-colors">
                                   {getTemplateIcon(template.purpose)}
                                   <span className="truncate">{template.name}</span>
                                 </CardTitle>
@@ -217,7 +241,7 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
                                     {template.purpose}
                                   </Badge>
                                 </div>
-                                <CardDescription className="mt-1 truncate text-xs md:text-sm text-muted-foreground">
+                                <CardDescription className="mt-1 truncate text-xs md:text-sm text-muted-foreground group-hover:text-foreground transition-colors">
                                   {template.mainTopic} • {template.audience}
                                 </CardDescription>
                               </div>
@@ -226,10 +250,10 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
                               <div className="space-y-1 flex-1">
                                 <div className="text-xs md:text-sm text-muted-foreground">
                                   <span className="font-semibold">Key Points:</span>
-                                  <div className="line-clamp-2 mt-0.5 text-[11px] md:text-xs leading-tight">{template.keyPoints.join(', ')}</div>
+                                  <div className="line-clamp-2 mt-0.5 text-[11px] md:text-xs leading-tight group-hover:text-foreground transition-colors">{template.keyPoints.join(', ')}</div>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between text-[12px] md:text-sm text-muted-foreground mt-4 pt-3 border-t border-border/50">
+                              <div className="flex items-center justify-between text-[12px] md:text-sm text-muted-foreground mt-4 pt-3 border-t border-border/50 group-hover:text-foreground transition-colors">
                                 <div className="flex items-center gap-1">
                                   <Clock className="h-4 w-4" />
                                   {formatDate(template.createdAt)}
@@ -277,12 +301,12 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
                           transition={{ delay: index * 0.07 }}
                         >
                           <Card 
-                            className="cursor-pointer hover:shadow-md transition-all duration-200 hover:border-primary/50 w-full max-w-full min-h-[220px] sm:min-h-[220px] md:min-h-[260px] md:h-[260px] flex flex-col p-5"
+                            className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:border-primary/50 hover:scale-105 w-full max-w-full min-h-[220px] sm:min-h-[220px] md:min-h-[260px] md:h-[260px] flex flex-col p-5 group"
                             onClick={() => handleTemplateSelect(template)}
                           >
                             <CardHeader className="pb-1 pt-0 px-0 flex-shrink-0">
                               <div className="flex flex-col gap-1 min-w-0">
-                                <CardTitle className="text-base md:text-lg flex items-center gap-2 truncate font-semibold">
+                                <CardTitle className="text-base md:text-lg flex items-center gap-2 truncate font-semibold group-hover:text-primary transition-colors">
                                   {getTemplateIcon(template.purpose)}
                                   <span className="truncate">{template.name}</span>
                                 </CardTitle>
@@ -295,7 +319,7 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
                                     {template.purpose}
                                   </Badge>
                                 </div>
-                                <CardDescription className="mt-1 truncate text-xs md:text-sm text-muted-foreground">
+                                <CardDescription className="mt-1 truncate text-xs md:text-sm text-muted-foreground group-hover:text-foreground transition-colors">
                                   {template.mainTopic} • {template.audience}
                                 </CardDescription>
                               </div>
@@ -304,10 +328,10 @@ export function TemplateSelector({ onTemplateSelect, trigger }: TemplateSelector
                               <div className="space-y-1 flex-1">
                                 <div className="text-xs md:text-sm text-muted-foreground">
                                   <span className="font-semibold">Key Points:</span>
-                                  <div className="line-clamp-2 mt-0.5 text-[11px] md:text-xs leading-tight">{template.keyPoints.join(', ')}</div>
+                                  <div className="line-clamp-2 mt-0.5 text-[11px] md:text-xs leading-tight group-hover:text-foreground transition-colors">{template.keyPoints.join(', ')}</div>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between text-[12px] md:text-sm text-muted-foreground mt-4 pt-3 border-t border-border/50">
+                              <div className="flex items-center justify-between text-[12px] md:text-sm text-muted-foreground mt-4 pt-3 border-t border-border/50 group-hover:text-foreground transition-colors">
                                 <div className="flex items-center gap-1">
                                   <Clock className="h-4 w-4" />
                                   {formatDate(template.createdAt)}

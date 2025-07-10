@@ -4,6 +4,7 @@ import { CarouselForm } from "@/components/carousel_page/carousel-form"
 import { GenerationProgress } from "@/components/carousel_page/generation-progress"
 import { CarouselResult } from "@/components/carousel_page/carousel-result"
 import { PageContainer } from "@/components/shared/page-container"
+import { useSearchParams } from "next/navigation"
 
 export function CarouselClientPage() {
   const [stage, setStage] = useState("form")
@@ -12,6 +13,8 @@ export function CarouselClientPage() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const pollingRef = useRef<NodeJS.Timeout | null>(null)
+  const searchParams = useSearchParams()
+  const initialPrompt = searchParams.get("prompt") || ""
 
   // Form submit handler
   const handleFormSubmit = async (data: any) => {
@@ -82,7 +85,7 @@ export function CarouselClientPage() {
             </p>
           </div>
           {stage === "form" && (
-            <CarouselForm onSubmit={handleFormSubmit} />
+            <CarouselForm onSubmit={handleFormSubmit} initialPrompt={initialPrompt} />
           )}
           {stage === "generating" && (
             <GenerationProgress progress={progress} />

@@ -141,11 +141,11 @@ export function Header() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-medium leading-none">Task Management</h4>
                           <div className="space-y-2">
-                            <Link href="/todo" className="flex items-center space-x-2 p-2 rounded-md hover:bg-[var(--muted)]/20 transition-colors">
+                            <Link href="/content-board" className="flex items-center space-x-2 p-2 rounded-md hover:bg-[var(--muted)]/20 transition-colors">
                               <CheckSquare className="h-4 w-4" />
                               <div>
-                                <div className="text-sm font-medium">Todo Management</div>
-                                <div className="text-xs text-[var(--muted-foreground)]">Organize tasks and stay productive</div>
+                                <div className="text-sm font-medium">Content Planning</div>
+                                <div className="text-xs text-[var(--muted-foreground)]">Plan and manage your content</div>
                               </div>
                             </Link>
                           </div>
@@ -280,11 +280,11 @@ export function Header() {
               <div className="space-y-2">
                 <div className="px-4 py-2 text-sm font-medium text-[var(--foreground)]">Features</div>
                 <Link
-                  href="/todo"
+                  href="/content-board"
                   onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-left py-2 px-8 rounded-md transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]/50"
                 >
-                  Todo Management
+                  Content Planning
                 </Link>
                 <Link
                   href="/carousel"

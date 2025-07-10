@@ -20,18 +20,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (savedTheme) {
       setTheme(savedTheme)
       document.documentElement.className = savedTheme
-      
-      // Set initial background based on saved theme
-      const body = document.body
-      if (savedTheme === 'light') {
-        body.style.background = 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 25%, #e2e8f0 50%, #cbd5e1 75%, #94a3b8 100%)'
-        body.style.backgroundSize = '400% 400%'
-        body.style.animation = 'gradientShift 15s ease infinite'
-      } else {
-        body.style.background = 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #1e293b 100%)'
-        body.style.backgroundSize = '400% 400%'
-        body.style.animation = 'gradientShiftDark 20s ease infinite'
-      }
+      // Set only theme background, no gradients or animations
+      document.body.style.background = 'var(--background)'
+      document.body.style.backgroundSize = ''
+      document.body.style.animation = ''
     }
   }, [])
 
@@ -39,18 +31,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(newTheme)
     document.documentElement.className = newTheme
     localStorage.setItem('theme', newTheme)
-    
-    // Update body background based on theme
-    const body = document.body
-    if (newTheme === 'light') {
-      body.style.background = 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 25%, #e2e8f0 50%, #cbd5e1 75%, #94a3b8 100%)'
-      body.style.backgroundSize = '400% 400%'
-      body.style.animation = 'gradientShift 15s ease infinite'
-    } else {
-      body.style.background = 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #1e293b 100%)'
-      body.style.backgroundSize = '400% 400%'
-      body.style.animation = 'gradientShiftDark 20s ease infinite'
-    }
+    // Set only theme background, no gradients or animations
+    document.body.style.background = 'var(--background)'
+    document.body.style.backgroundSize = ''
+    document.body.style.animation = ''
   }
 
   const toggleTheme = () => {

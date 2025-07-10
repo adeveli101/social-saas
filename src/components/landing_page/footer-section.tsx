@@ -56,16 +56,16 @@ export function FooterSection() {
       center={true}
     >
       <div className="max-w-6xl mx-auto mb-12">
-        <div className="rounded-xl bg-[var(--background)] p-10 md:p-12 flex flex-col lg:flex-row gap-8 lg:gap-0 lg:items-start lg:justify-between">
+        <div className="rounded-xl bg-card border border-border p-10 md:p-12 flex flex-col lg:flex-row gap-8 lg:gap-0 lg:items-start lg:justify-between">
           {/* Brand & Social */}
           <div className="lg:w-1/4 mb-8 lg:mb-0 flex flex-col items-center lg:items-start">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-[var(--primary)] to-[var(--primary)]/80 rounded-lg flex items-center justify-center">
-                <span className="text-[var(--primary-foreground)] font-bold text-sm">S</span>
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm">S</span>
               </div>
-              <span className="font-medium text-xl heading-gradient heading text-[var(--heading-foreground)]">Social SaaS</span>
+              <span className="font-medium text-xl text-foreground">Social SaaS</span>
             </div>
-            <p className="text-[var(--heading-foreground)] mb-6 text-sm leading-relaxed text-center lg:text-left">
+            <p className="text-muted-foreground mb-6 text-sm leading-relaxed text-center lg:text-left">
               The all-in-one platform for managing your social media presence. 
               Schedule, analyze, and grow with confidence.
             </p>
@@ -75,7 +75,7 @@ export function FooterSection() {
                   key={social.name}
                   variant="ghost"
                   size="sm"
-                  className="text-[var(--heading-foreground)] hover:text-[var(--primary-foreground)] hover:bg-[var(--primary)]/70"
+                  className="text-muted-foreground hover:text-primary hover:bg-primary/10"
                 >
                   <social.icon className="h-4 w-4" />
                 </Button>
@@ -85,13 +85,13 @@ export function FooterSection() {
           {/* Links */}
           <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-medium heading-gradient heading text-[var(--heading-foreground)] mb-4">Product</h3>
+              <h3 className="font-medium text-foreground mb-4">Product</h3>
               <ul className="space-y-2">
                 {footerLinks.product.map((link) => (
                   <li key={link.name}>
                     <a 
                       href={link.href} 
-                      className="text-[var(--heading-foreground)] hover:text-[var(--primary-foreground)] transition-colors text-sm"
+                      className="text-muted-foreground hover:text-primary transition-colors text-sm"
                     >
                       {link.name}
                     </a>
@@ -100,13 +100,13 @@ export function FooterSection() {
               </ul>
             </div>
             <div>
-              <h3 className="font-medium heading-gradient heading text-[var(--heading-foreground)] mb-4">Company</h3>
+              <h3 className="font-medium text-foreground mb-4">Company</h3>
               <ul className="space-y-2">
                 {footerLinks.company.map((link) => (
                   <li key={link.name}>
                     <a 
                       href={link.href} 
-                      className="text-[var(--heading-foreground)] hover:text-[var(--primary-foreground)] transition-colors text-sm"
+                      className="text-muted-foreground hover:text-primary transition-colors text-sm"
                     >
                       {link.name}
                     </a>
@@ -115,13 +115,13 @@ export function FooterSection() {
               </ul>
             </div>
             <div>
-              <h3 className="font-medium heading-gradient heading text-[var(--heading-foreground)] mb-4">Support</h3>
+              <h3 className="font-medium text-foreground mb-4">Support</h3>
               <ul className="space-y-2">
                 {footerLinks.support.map((link) => (
                   <li key={link.name}>
                     <a 
                       href={link.href} 
-                      className="text-[var(--heading-foreground)] hover:text-[var(--primary-foreground)] transition-colors text-sm"
+                      className="text-muted-foreground hover:text-primary transition-colors text-sm"
                     >
                       {link.name}
                     </a>
@@ -130,17 +130,17 @@ export function FooterSection() {
               </ul>
             </div>
             <div>
-              <h3 className="font-medium heading-gradient heading text-[var(--heading-foreground)] mb-4">Stay Updated</h3>
-              <p className="text-[var(--heading-foreground)] mb-4 text-sm">
+              <h3 className="font-medium text-foreground mb-4">Stay Updated</h3>
+              <p className="text-muted-foreground mb-4 text-sm">
                 Get the latest news and updates delivered to your inbox.
               </p>
               <div className="flex space-x-2">
                 <Input 
                   type="email" 
                   placeholder="Enter your email" 
-                  className="bg-[var(--background)] border-[var(--border)] text-[var(--heading-foreground)] placeholder:text-[var(--muted)] text-sm focus:border-[var(--primary)]/50"
+                  className="bg-background border-border text-foreground placeholder:text-muted-foreground text-sm focus:border-primary/50"
                 />
-                <Button variant="default" size="sm" className="btn-micro-effect bg-[var(--primary)] hover:bg-[var(--primary)]/90">
+                <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90">
                   <Mail className="h-4 w-4" />
                 </Button>
               </div>
@@ -149,13 +149,13 @@ export function FooterSection() {
         </div>
       </div>
       {/* Bottom */}
-      <div className="border-t border-[var(--border)] pt-8" data-aos="fade-up" data-aos-delay="100">
+      <div className="border-t border-border pt-8" data-aos="fade-up" data-aos-delay="100">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between w-full">
-          <div className="flex items-center space-x-2 text-[var(--muted)] text-sm mb-4 md:mb-0 md:justify-start md:w-auto w-full">
+          <div className="flex items-center space-x-2 text-muted-foreground text-sm mb-4 md:mb-0 md:justify-start md:w-auto w-full">
             <span>&copy; {new Date().getFullYear()} Social SaaS. All rights reserved.</span>
             <span className="hidden sm:inline">•</span>
             <span className="hidden sm:inline">Made with</span>
-            <Heart className="h-3 w-3 text-[var(--primary)] hidden sm:inline" />
+            <Heart className="h-3 w-3 text-primary hidden sm:inline" />
             <span className="hidden sm:inline">for creators</span>
           </div>
           <div className="flex space-x-6 md:justify-end md:w-auto w-full">
@@ -163,7 +163,7 @@ export function FooterSection() {
               <a 
                 key={link.name}
                 href={link.href} 
-                className="text-[var(--muted)] hover:text-[var(--primary)] text-sm transition-colors"
+                className="text-muted-foreground hover:text-primary text-sm transition-colors"
               >
                 {link.name}
               </a>

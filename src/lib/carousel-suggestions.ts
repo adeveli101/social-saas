@@ -91,7 +91,12 @@ import templatesData from '../data/templates.json'
 
 export const getDefaultTemplates = async (): Promise<UserTemplate[]> => {
   // JSON dosyasından okunan veriyi UserTemplate tipine cast et
-  return templatesData as UserTemplate[]
+  const templates = templatesData as any[]
+  return templates.map(template => ({
+    ...template,
+    createdAt: new Date(template.createdAt),
+    category: template.category as TemplateCategory
+  }))
 }
 
 export const getTemplates = async (): Promise<UserTemplate[]> => {
@@ -99,7 +104,15 @@ export const getTemplates = async (): Promise<UserTemplate[]> => {
     // Local storage'dan geçici olarak al
     const savedTemplates = JSON.parse(localStorage.getItem('userTemplates') || '[]')
     const defaultTemplates = await getDefaultTemplates()
-    return [...defaultTemplates, ...savedTemplates]
+    
+    // Saved templates'deki createdAt string'lerini Date'e çevir
+    const processedSavedTemplates = savedTemplates.map((template: any) => ({
+      ...template,
+      createdAt: new Date(template.createdAt),
+      category: template.category as TemplateCategory
+    }))
+    
+    return [...defaultTemplates, ...processedSavedTemplates]
   } catch (error) {
     console.error('Template getirme hatası:', error)
     return []

@@ -43,8 +43,8 @@ export default function RootLayout({
             <Header />
             <div className="min-h-screen bg-gradient-main page-fade transition-all">
               {children}
-              <FooterSection />
             </div>
+            <FooterSection />
           </ThemeProvider>
         </body>
       </html>
