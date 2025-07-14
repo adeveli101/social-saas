@@ -23,7 +23,7 @@ export function CarouselClientPage() {
     setProgress({ percent: 5, message: "Starting up..." })
     setError(null)
     try {
-      // 1. Carousel oluşturma isteği
+      // 1. Carousel creation request
       const res = await fetch("/api/carousel/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,7 +31,7 @@ export function CarouselClientPage() {
       })
       if (!res.ok) throw new Error("Failed to start generation.")
       const { id } = await res.json()
-      // 2. Polling başlat
+      // 2. Start polling
       pollStatus(id)
     } catch (err: any) {
       setError(err.message || "Unexpected error.")
@@ -39,7 +39,7 @@ export function CarouselClientPage() {
     }
   }
 
-  // Polling fonksiyonu
+  // Polling function
   const pollStatus = (id: string) => {
     if (pollingRef.current) clearInterval(pollingRef.current)
     pollingRef.current = setInterval(async () => {

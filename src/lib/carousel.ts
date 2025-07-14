@@ -1,5 +1,8 @@
-import { typedSupabase } from './supabase'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
+import type { Database } from './database.types'
+
+type Supabase = SupabaseClient<Database>
 
 export interface Carousel {
   id: string
@@ -22,22 +25,28 @@ export interface CarouselSlide {
   created_at: string
 }
 
-export async function createCarousel(carousel: Omit<Carousel, 'id' | 'created_at' | 'updated_at'>): Promise<string> {
-  const { data, error } = await typedSupabase
+export async function createCarousel(
+  supabase: Supabase,
+  carousel: Omit<Carousel, 'id' | 'created_at' | 'updated_at'>
+): Promise<string> {
+  const { data, error } = await supabase
     .from('carousels')
     .insert([carousel])
     .select('id')
     .single()
 
   if (error) {
-    throw new Error(`Carousel oluşturulamadı: ${error.message}`)
+    throw new Error(`Could not create carousel: ${error.message}`)
   }
 
   return data.id
 }
 
-export async function getCarouselById(carouselId: string): Promise<Carousel | null> {
-  const { data, error } = await typedSupabase
+export async function getCarouselById(
+  supabase: Supabase, 
+  carouselId: string
+): Promise<Carousel | null> {
+  const { data, error } = await supabase
     .from('carousels')
     .select('*')
     .eq('id', carouselId)
@@ -47,27 +56,31 @@ export async function getCarouselById(carouselId: string): Promise<Carousel | nu
     if (error.code === 'PGRST116') {
       return null // Not found
     }
-    throw new Error(`Carousel getirilemedi: ${error.message}`)
+    throw new Error(`Could not retrieve carousel: ${error.message}`)
   }
 
   return data
 }
 
-export async function getCarouselSlides(carouselId: string): Promise<CarouselSlide[]> {
-  const { data, error } = await typedSupabase
+export async function getCarouselSlides(
+  supabase: Supabase,
+  carouselId: string
+): Promise<CarouselSlide[]> {
+  const { data, error } = await supabase
     .from('carousel_slides')
     .select('*')
     .eq('carousel_id', carouselId)
     .order('slide_number', { ascending: true })
 
   if (error) {
-    throw new Error(`Carousel slides getirilemedi: ${error.message}`)
+    throw new Error(`Could not retrieve carousel slides: ${error.message}`)
   }
 
   return data || []
 }
 
 export async function updateCarouselStatus(
+  supabase: Supabase,
   carouselId: string, 
   status: Carousel['status'], 
   finalCaption?: string,
@@ -83,31 +96,35 @@ export async function updateCarouselStatus(
     updateData.error_message = errorMessage
   }
 
-  const { error } = await typedSupabase
+  const { error } = await supabase
     .from('carousels')
     .update(updateData)
     .eq('id', carouselId)
 
   if (error) {
-    throw new Error(`Carousel durumu güncellenemedi: ${error.message}`)
+    throw new Error(`Could not update carousel status: ${error.message}`)
   }
 }
 
-export async function createCarouselSlide(slide: Omit<CarouselSlide, 'id' | 'created_at'>): Promise<string> {
-  const { data, error } = await typedSupabase
+export async function createCarouselSlide(
+  supabase: Supabase,
+  slide: Omit<CarouselSlide, 'id' | 'created_at'>
+): Promise<string> {
+  const { data, error } = await supabase
     .from('carousel_slides')
     .insert([slide])
     .select('id')
     .single()
 
   if (error) {
-    throw new Error(`Carousel slide oluşturulamadı: ${error.message}`)
+    throw new Error(`Could not create carousel slide: ${error.message}`)
   }
 
   return data.id
 }
 
 export async function updateCarouselSlide(
+  supabase: Supabase,
   slideId: string, 
   imageUrl?: string, 
   caption?: string
@@ -122,18 +139,19 @@ export async function updateCarouselSlide(
     updateData.caption = caption
   }
 
-  const { error } = await typedSupabase
+  const { error } = await supabase
     .from('carousel_slides')
     .update(updateData)
     .eq('id', slideId)
 
   if (error) {
-    throw new Error(`Carousel slide güncellenemedi: ${error.message}`)
+    throw new Error(`Could not update carousel slide: ${error.message}`)
   }
 }
 
 // AI ile görsel ve caption üretimini başlatan fonksiyon (asenkron, fire-and-forget)
 export async function triggerAIGeneration(
+  supabase: Supabase,
   carouselId: string,
   prompt: string,
   imageCount: number,
@@ -141,7 +159,7 @@ export async function triggerAIGeneration(
 ) {
   try {
     // Status'u processing olarak güncelle
-    await updateCarouselStatus(carouselId, 'processing')
+    await updateCarouselStatus(supabase, carouselId, 'processing')
 
     // TODO: Burada seçilecek AI servisine göre görsel ve caption üretimi yapılacak
     // 1. AI ile image ve caption üret
@@ -153,23 +171,28 @@ export async function triggerAIGeneration(
     console.log(`Prompt: ${prompt}, Image count: ${imageCount}, User: ${userId}`)
 
     // Şimdilik mock data ile test ediyoruz
-    await simulateAIGeneration(carouselId, imageCount, prompt)
+    await simulateAIGeneration(supabase, carouselId, imageCount, prompt)
     
   } catch (error) {
     console.error('AI generation error:', error)
-    await updateCarouselStatus(carouselId, 'failed', undefined, error instanceof Error ? error.message : 'Unknown error')
+    await updateCarouselStatus(supabase, carouselId, 'failed', undefined, error instanceof Error ? error.message : 'Unknown error')
   }
 }
 
 // Mock AI generation for testing
-async function simulateAIGeneration(carouselId: string, imageCount: number, prompt: string) {
+async function simulateAIGeneration(
+  supabase: Supabase, 
+  carouselId: string, 
+  imageCount: number, 
+  prompt: string
+) {
   // Simulate processing time
   await new Promise(resolve => setTimeout(resolve, 3000))
 
   try {
     // Create slides
     for (let i = 1; i <= imageCount; i++) {
-      await createCarouselSlide({
+      await createCarouselSlide(supabase, {
         carousel_id: carouselId,
         slide_number: i,
         image_url: `https://picsum.photos/400/400?random=${carouselId}-${i}`,
@@ -178,24 +201,25 @@ async function simulateAIGeneration(carouselId: string, imageCount: number, prom
     }
 
     // Update carousel status to completed
-    const finalCaption = `🎯 ${prompt}\n\n✨ Bu carousel'de ${imageCount} farklı görsel bulunuyor!\n\n#${prompt.replace(/\s+/g, '')} #carousel #instagram #content`
-    await updateCarouselStatus(carouselId, 'completed', finalCaption)
+    const finalCaption = `🎯 ${prompt}\n\n✨ This carousel features ${imageCount} different visuals!\n\n#${prompt.replace(/\s+/g, '')} #carousel #instagram #content`
+    await updateCarouselStatus(supabase, carouselId, 'completed', finalCaption)
 
   } catch (error) {
-    await updateCarouselStatus(carouselId, 'failed', undefined, 'Mock generation failed')
+    await updateCarouselStatus(supabase, carouselId, 'failed', undefined, 'Mock generation failed')
   }
 }
 
 // Carousel oluşturma işlemini yöneten ana fonksiyon
 export async function generateCarousel(params: {
+  supabase: Supabase
   prompt: string
   imageCount: number
   userId: string
 }): Promise<string> {
-  const { prompt, imageCount, userId } = params
+  const { supabase, prompt, imageCount, userId } = params
   
   // Carousel kaydını oluştur
-  const carouselId = await createCarousel({
+  const carouselId = await createCarousel(supabase, {
     user_id: userId,
     prompt,
     image_count: imageCount,
@@ -205,7 +229,7 @@ export async function generateCarousel(params: {
   })
   
   // AI generation'ı başlat (asenkron)
-  triggerAIGeneration(carouselId, prompt, imageCount, userId)
+  triggerAIGeneration(supabase, carouselId, prompt, imageCount, userId)
   
   return carouselId
 } 

@@ -1,358 +1,263 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Clock, Star, BookOpen, TrendingUp } from 'lucide-react'
-import { UserTemplate, getTemplates, incrementTemplateUsage, DEFAULT_CATEGORIES, TemplateCategory } from '@/lib/carousel-suggestions'
-import { useRef } from 'react'
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BookOpen, Search, Star, Trash2, Loader2, ChevronDown, TrendingUp } from 'lucide-react';
+import { UserTemplate } from '@/lib/carousel-suggestions';
+import { getUserTemplates, deleteUserTemplate, updateUserTemplate } from '@/lib/user-templates'; 
+import { getDefaultTemplates } from '@/lib/carousel-suggestions';
+import { useUser } from '@clerk/nextjs';
 
-interface TemplateSelectorProps {
-  onTemplateSelect: (template: UserTemplate) => void
-  trigger?: React.ReactNode
-  isLoading?: boolean
+
+function TemplateCard({ template, onSelect, onDelete, isUserTemplate }: { template: UserTemplate, onSelect: (t: UserTemplate) => void, onDelete: (id: string) => void, isUserTemplate: boolean }) {
+  const getTemplateIcon = (purpose: string) => {
+    switch (purpose?.toLowerCase()) {
+      case 'educate': return <BookOpen className="h-4 w-4" />;
+      case 'sell': return <TrendingUp className="h-4 w-4" />;
+      case 'inspire': return <Star className="h-4 w-4" />;
+      default: return <BookOpen className="h-4 w-4" />;
+    }
+  };
+
+  return (
+    <Card className="flex flex-col h-full w-full bg-zinc-800/50 border-zinc-800 hover:bg-zinc-800 transition-all">
+      <CardHeader>
+        <div className="flex justify-between items-start gap-2">
+          <CardTitle className="text-base font-bold text-white">{template.name}</CardTitle>
+          <Badge className="flex items-center gap-1 shrink-0 bg-zinc-700 text-zinc-300 border-zinc-600">
+            {getTemplateIcon(template.purpose)}
+            {template.purpose}
+          </Badge>
+        </div>
+        <CardDescription className="text-zinc-400 line-clamp-2">{template.mainTopic}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col justify-end pt-0">
+        <p className="text-xs text-zinc-500 mb-3">For: {template.audience}</p>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => onSelect(template)} size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+            Use Template
+          </Button>
+          {isUserTemplate && (
+            <Button
+              variant="destructive"
+              size="icon"
+              className="shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (window.confirm('Are you sure?')) {
+                  onDelete(template.id);
+                }
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
 
-export function TemplateSelector({ onTemplateSelect, trigger, isLoading: isExternalLoading }: TemplateSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [templates, setTemplates] = useState<UserTemplate[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<string>('All')
-  const [search, setSearch] = useState('')
-  const [recentTemplates, setRecentTemplates] = useState<UserTemplate[]>([])
-  const searchInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    if (isOpen) {
-      loadTemplates()
-      loadRecentTemplates()
-      setTimeout(() => searchInputRef.current?.focus(), 200)
-    }
-  }, [isOpen])
-
-  const loadTemplates = async () => {
-    setIsLoading(true)
-    try {
-      const loadedTemplates = await getTemplates()
-      setTemplates(loadedTemplates)
-    } catch (error) {
-      console.error('Template loading error:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const loadRecentTemplates = () => {
-    try {
-      const ids = JSON.parse(localStorage.getItem('recentTemplates') || '[]')
-      if (!Array.isArray(ids)) return
-      setRecentTemplates(
-        ids
-          .map((id: string) => templates.find(t => t.id === id))
-          .filter(Boolean) as UserTemplate[]
-      )
-    } catch {}
-  }
+export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { open: boolean, onOpenChange: (o: boolean) => void, onTemplateSelect: (t: UserTemplate) => void }) {
+  const [templates, setTemplates] = useState<UserTemplate[]>([]);
+  const [recentTemplates, setRecentTemplates] = useState<UserTemplate[]>([]);
+  const [isRecentCollapsed, setIsRecentCollapsed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const { user } = useUser();
 
   const updateRecentTemplates = (template: UserTemplate) => {
     try {
-      let ids = JSON.parse(localStorage.getItem('recentTemplates') || '[]')
-      if (!Array.isArray(ids)) ids = []
-      ids = [template.id, ...ids.filter((id: string) => id !== template.id)].slice(0, 5)
-      localStorage.setItem('recentTemplates', JSON.stringify(ids))
-      setRecentTemplates(ids.map((id: string) => templates.find(t => t.id === id)).filter(Boolean) as UserTemplate[])
-    } catch {}
-  }
+      let ids = JSON.parse(localStorage.getItem('recentTemplates') || '[]');
+      if (!Array.isArray(ids)) ids = [];
+      ids = [template.id, ...ids.filter((id: string) => id !== template.id)].slice(0, 3);
+      localStorage.setItem('recentTemplates', JSON.stringify(ids));
+      
+      const foundTemplates = ids
+        .map((id: string) => templates.find(t => t.id === id))
+        .filter(Boolean) as UserTemplate[];
+      setRecentTemplates(foundTemplates);
+    } catch (e) {
+      console.error("Failed to update recent templates in localStorage", e);
+    }
+  };
 
+  useEffect(() => {
+    if (open) {
+      const loadData = async () => {
+        setIsLoading(true);
+        try {
+          const defaultTemplates = await getDefaultTemplates();
+          let userTemplates: UserTemplate[] = [];
+          if (user?.id) {
+            userTemplates = await getUserTemplates(user.id);
+          }
+          const allTemplates = [...defaultTemplates, ...userTemplates];
+          setTemplates(allTemplates);
+          
+          const recentIds = JSON.parse(localStorage.getItem('recentTemplates') || '[]') as string[];
+          const foundRecents = recentIds.map(id => allTemplates.find(t => t.id === id)).filter(Boolean) as UserTemplate[];
+          setRecentTemplates(foundRecents);
+
+        } catch (error) {
+          console.error("Failed to load templates:", error);
+          setTemplates(await getDefaultTemplates());
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadData();
+    }
+  }, [open, user]);
+  
   const handleTemplateSelect = async (template: UserTemplate) => {
+    if (template.user_id && user?.id === template.user_id) {
+        updateUserTemplate(template.id, { usageCount: (template.usageCount || 0) + 1 }).catch(console.error);
+    }
+    updateRecentTemplates(template);
+    onTemplateSelect(template);
+    onOpenChange(false);
+  }
+
+  const handleDelete = async (templateId: string) => {
+    if (!user?.id) return; 
+    setTemplates(prev => prev.filter(t => t.id !== templateId));
     try {
-      await incrementTemplateUsage(template.id)
-      updateRecentTemplates(template)
-      onTemplateSelect(template)
-      setIsOpen(false)
+      await deleteUserTemplate(templateId);
     } catch (error) {
-      console.error('Template usage count update error:', error)
+      alert("Failed to delete template.");
     }
-  }
+  };
+  
+  const categories = useMemo(() => ['All', ...Array.from(new Set(templates.map(t => t.category)))], [templates]);
+  
+  const filteredTemplates = useMemo(() => {
+    return templates.filter(t => {
+      const isRecent = recentTemplates.some(rt => rt.id === t.id);
+      if(isRecent && selectedCategory === 'All' && !search) return false;
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(new Date(date))
-  }
-
-  const getTemplateIcon = (purpose: string) => {
-    switch (purpose.toLowerCase()) {
-      case 'educate':
-        return <BookOpen className="h-4 w-4" />
-      case 'sell':
-        return <TrendingUp className="h-4 w-4" />
-      case 'inspire':
-        return <Star className="h-4 w-4" />
-      default:
-        return <BookOpen className="h-4 w-4" />
-    }
-  }
-
-  const getPurposeColor = (purpose: string) => {
-    switch (purpose.toLowerCase()) {
-      case 'educate':
-        return 'bg-blue-100 text-blue-800'
-      case 'sell':
-        return 'bg-green-100 text-green-800'
-      case 'inspire':
-        return 'bg-purple-100 text-purple-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  // Categories and All
-  const allCategories = ['All', ...DEFAULT_CATEGORIES, ...templates.map(t => t.category).filter(cat => !DEFAULT_CATEGORIES.includes(cat as TemplateCategory))]
-
-  // Search filtering
-  const filteredTemplates = templates.filter(t => {
-    if (selectedCategory !== 'All' && t.category !== selectedCategory) return false
-    if (!search.trim()) return true
-    const q = search.trim().toLowerCase()
-    return (
-      t.name.toLowerCase().includes(q) ||
-      t.mainTopic.toLowerCase().includes(q) ||
-      t.audience.toLowerCase().includes(q) ||
-      t.keyPoints.join(',').toLowerCase().includes(q)
-    )
-  })
+      const categoryMatch = selectedCategory === 'All' || t.category === selectedCategory;
+      const searchMatch = search.trim() === '' || t.name.toLowerCase().includes(search.toLowerCase());
+      return categoryMatch && searchMatch;
+    });
+  }, [templates, selectedCategory, search, recentTemplates]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="gap-2 hover:scale-105 transition-transform hover:shadow-md"
-            disabled={isExternalLoading}
-          >
-            {isExternalLoading ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
-                  <BookOpen className="h-4 w-4" />
-                </motion.div>
-                Loading...
-              </>
-            ) : (
-              <>
-                <BookOpen className="h-4 w-4" />
-                Load Template
-              </>
-            )}
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] min-h-[600px] min-w-[900px] overflow-y-auto p-0">
-        <div className="flex h-[600px]">
-          {/* Category Sidebar */}
-          <div className="w-48 border-r bg-muted/30 p-4 flex flex-col gap-2">
-            {/* Search bar (mobile only) */}
-            <div className="block md:hidden mb-2">
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search templates..."
-                className="w-full px-3 py-2 rounded border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-            {allCategories.map((cat, idx) => (
-              <button
-                key={cat + '-' + idx}
-                className={`text-left px-3 py-2 rounded font-medium transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/30 ${
-                  selectedCategory === cat 
-                    ? 'bg-primary text-primary-foreground shadow-lg scale-105' 
-                    : 'hover:bg-primary/10 text-foreground hover:text-primary'
-                }`}
-                onClick={() => setSelectedCategory(cat)}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="h-[90vh] w-[calc(100vw-80px)] max-w-[1800px] bg-zinc-900 border-zinc-800 text-white p-0 flex flex-col">
+        <DialogHeader className="p-6 pb-4 border-b border-zinc-800">
+          <DialogTitle className="text-2xl">Template Library</DialogTitle>
+          <DialogDescription>Select a pre-made template or one of your own to get started quickly.</DialogDescription>
+        </DialogHeader>
+        
+        <div className="flex-1 flex overflow-hidden">
+          <aside className="w-56 h-full overflow-y-auto bg-black/20 border-r border-zinc-800 p-4 space-y-1">
+            <h4 className="text-sm font-semibold text-zinc-400 px-3 pt-2 pb-3">Categories</h4>
+            {categories.map(category => (
+              <Button 
+                key={category} 
+                variant="ghost"
+                onClick={() => setSelectedCategory(category)}
+                className={`w-full justify-between text-base font-normal px-3 py-2 h-auto ${selectedCategory === category ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
               >
-                {cat}
-              </button>
+                <span>{category}</span>
+                <span className="text-xs opacity-60">{templates.filter(t => category === 'All' || t.category === category).length}</span>
+              </Button>
             ))}
-          </div>
-          {/* Template Cards */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                Choose a Template
-              </DialogTitle>
-              <DialogDescription>
-                Select a saved template to quickly fill in your carousel details.
-              </DialogDescription>
-            </DialogHeader>
-            {/* Search bar (desktop) */}
-            <div className="hidden md:block mb-4">
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search templates..."
-                className="w-full px-4 py-2 rounded border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-            {/* Recently Used Templates */}
-            {recentTemplates.length > 0 && (
-              <div className="mb-6">
-                <div className="font-semibold text-sm text-foreground mb-2">Recently Used</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {recentTemplates.map((template, index) => (
-                    <motion.div
-                      key={template.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ delay: index * 0.07 }}
-                    >
-                      {/* Card rendering, same as below */}
-                      <Card 
-                        className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:border-primary/50 hover:scale-105 w-full max-w-full min-h-[220px] sm:min-h-[220px] md:min-h-[260px] md:h-[260px] flex flex-col p-5 group"
-                        onClick={() => handleTemplateSelect(template)}
-                      >
-                        <CardHeader className="pb-1 pt-0 px-0 flex-shrink-0">
-                              <div className="flex flex-col gap-1 min-w-0">
-                                <CardTitle className="text-base md:text-lg flex items-center gap-2 truncate font-semibold group-hover:text-primary transition-colors">
-                                  {getTemplateIcon(template.purpose)}
-                                  <span className="truncate">{template.name}</span>
-                                </CardTitle>
-                                {/* Category and Purpose Badges under the title */}
-                                <div className="flex flex-row flex-wrap gap-2 mt-0.5 items-center">
-                                  <Badge variant="secondary" className="text-[10px] px-2 py-0.5 bg-muted text-muted-foreground font-normal">
-                                    {template.category}
-                                  </Badge>
-                                  <Badge className={`${getPurposeColor(template.purpose)} text-[10px] px-2 py-0.5 rounded-md shadow-sm`}>
-                                    {template.purpose}
-                                  </Badge>
-                                </div>
-                                <CardDescription className="mt-1 truncate text-xs md:text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                                  {template.mainTopic} • {template.audience}
-                                </CardDescription>
-                              </div>
-                            </CardHeader>
-                            <CardContent className="pt-0 flex-1 flex flex-col justify-between px-0 pb-0">
-                              <div className="space-y-1 flex-1">
-                                <div className="text-xs md:text-sm text-muted-foreground">
-                                  <span className="font-semibold">Key Points:</span>
-                                  <div className="line-clamp-2 mt-0.5 text-[11px] md:text-xs leading-tight group-hover:text-foreground transition-colors">{template.keyPoints.join(', ')}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-between text-[12px] md:text-sm text-muted-foreground mt-4 pt-3 border-t border-border/50 group-hover:text-foreground transition-colors">
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-4 w-4" />
-                                  {formatDate(template.createdAt)}
-                                </div>
-                                {template.usageCount > 0 && (
-                                  <div className="flex items-center gap-1">
-                                    <Star className="h-3 w-3" />
-                                    Popular
-                                  </div>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                    </motion.div>
-                  ))}
-                </div>
+          </aside>
+
+          <main className="flex-1 h-full flex flex-col">
+            <div className="px-6 py-4 border-b border-zinc-800">
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <Input 
+                  placeholder="Search templates..." 
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="pl-10 bg-zinc-800/50 border-zinc-700 h-11 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900"
+                />
               </div>
-            )}
-            <div className="space-y-4 mt-4">
-              {isLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  >
-                    <BookOpen className="h-8 w-8 text-primary" />
-                  </motion.div>
-                </div>
-              ) : (
-                <AnimatePresence>
-                  {filteredTemplates.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No templates found in this category.</p>
-                      <p className="text-sm">Create your first template to get started!</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                      {filteredTemplates.map((template, index) => (
-                        <motion.div
-                          key={template.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ delay: index * 0.07 }}
-                        >
-                          <Card 
-                            className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:border-primary/50 hover:scale-105 w-full max-w-full min-h-[220px] sm:min-h-[220px] md:min-h-[260px] md:h-[260px] flex flex-col p-5 group"
-                            onClick={() => handleTemplateSelect(template)}
-                          >
-                            <CardHeader className="pb-1 pt-0 px-0 flex-shrink-0">
-                              <div className="flex flex-col gap-1 min-w-0">
-                                <CardTitle className="text-base md:text-lg flex items-center gap-2 truncate font-semibold group-hover:text-primary transition-colors">
-                                  {getTemplateIcon(template.purpose)}
-                                  <span className="truncate">{template.name}</span>
-                                </CardTitle>
-                                {/* Category and Purpose Badges under the title */}
-                                <div className="flex flex-row flex-wrap gap-2 mt-0.5 items-center">
-                                  <Badge variant="secondary" className="text-[10px] px-2 py-0.5 bg-muted text-muted-foreground font-normal">
-                                    {template.category}
-                                  </Badge>
-                                  <Badge className={`${getPurposeColor(template.purpose)} text-[10px] px-2 py-0.5 rounded-md shadow-sm`}>
-                                    {template.purpose}
-                                  </Badge>
-                                </div>
-                                <CardDescription className="mt-1 truncate text-xs md:text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                                  {template.mainTopic} • {template.audience}
-                                </CardDescription>
-                              </div>
-                            </CardHeader>
-                            <CardContent className="pt-0 flex-1 flex flex-col justify-between px-0 pb-0">
-                              <div className="space-y-1 flex-1">
-                                <div className="text-xs md:text-sm text-muted-foreground">
-                                  <span className="font-semibold">Key Points:</span>
-                                  <div className="line-clamp-2 mt-0.5 text-[11px] md:text-xs leading-tight group-hover:text-foreground transition-colors">{template.keyPoints.join(', ')}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-between text-[12px] md:text-sm text-muted-foreground mt-4 pt-3 border-t border-border/50 group-hover:text-foreground transition-colors">
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-4 w-4" />
-                                  {formatDate(template.createdAt)}
-                                </div>
-                                {template.usageCount > 0 && (
-                                  <div className="flex items-center gap-1">
-                                    <Star className="h-3 w-3" />
-                                    Popular
-                                  </div>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </AnimatePresence>
-              )}
             </div>
-          </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                {isLoading ? (
+                  <div className="w-full h-full flex items-center justify-center text-zinc-500">
+                    <Loader2 className="animate-spin h-8 w-8" />
+                  </div>
+                ) : (
+                  <>
+                    {recentTemplates.length > 0 && selectedCategory === 'All' && !search && (
+                      <section>
+                         <button
+                          className="w-full flex justify-between items-center text-left text-lg font-bold mb-4"
+                          onClick={() => setIsRecentCollapsed(!isRecentCollapsed)}
+                        >
+                          <span>Recently Used</span>
+                          <motion.div animate={{ rotate: isRecentCollapsed ? -90 : 0 }}>
+                            <ChevronDown className="h-5 w-5 transition-transform" />
+                          </motion.div>
+                        </button>
+                        <AnimatePresence>
+                          {!isRecentCollapsed && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="grid gap-4 justify-center" style={{ gridTemplateColumns: 'repeat(auto-fill, 320px)' }}>
+                                {recentTemplates.map(template => (
+                                  <TemplateCard 
+                                    key={template.id + '-recent'}
+                                    template={template} 
+                                    onSelect={handleTemplateSelect} 
+                                    onDelete={handleDelete} 
+                                    isUserTemplate={!!template.user_id && template.user_id === user?.id}
+                                  />
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </section>
+                    )}
+
+                    <section>
+                      <h2 className="text-lg font-bold mb-4">
+                        {selectedCategory === 'All' ? 'All Templates' : `${selectedCategory} Templates`}
+                      </h2>
+                      {filteredTemplates.length > 0 ? (
+                        <div className="grid gap-4 justify-center" style={{ gridTemplateColumns: 'repeat(auto-fill, 320px)' }}>
+                            {filteredTemplates.map(template => (
+                                <TemplateCard 
+                                  key={template.id} 
+                                  template={template} 
+                                  onSelect={handleTemplateSelect} 
+                                  onDelete={handleDelete} 
+                                  isUserTemplate={!!template.user_id && template.user_id === user?.id}
+                                />
+                            ))}
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-500 min-h-[200px]">
+                            <div className="text-center">
+                                <p className="text-lg font-semibold">No templates found</p>
+                                <p className="text-sm">Try adjusting your search or category.</p>
+                            </div>
+                        </div>
+                      )}
+                    </section>
+                  </>
+                )}
+            </div>
+          </main>
         </div>
       </DialogContent>
     </Dialog>

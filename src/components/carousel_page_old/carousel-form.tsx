@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Sparkles, Image, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap, Save, BookOpen, RotateCcw, RefreshCw, CheckCircle, AlertCircle } from "lucide-react"
+import { Loader2, Sparkles, Image, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap, Save, BookOpen, RotateCcw, RefreshCw, CheckCircle, AlertCircle, ChevronDown } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { X } from "lucide-react"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
@@ -18,6 +18,7 @@ import { TemplateSelector } from "./template-selector"
 import { CONTEXTUAL_SUGGESTIONS, UserTemplate } from "@/lib/carousel-suggestions"
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRef } from 'react'
+import { useTheme } from '@/lib/theme-provider'
 
 const STYLES = [
   { value: "photo", label: "Photo-realistic", icon: <Camera className="h-4 w-4 mr-1" /> },
@@ -54,7 +55,7 @@ const TEMPLATES = [
   },
   {
     label: "How-To Guide",
-    example: "Generate a carousel explaining how to create engaging Instagram carousels. Each slide should cover one step, with a clear title and a practical tip. Tone: educational and supportive. Target audience: small business owners and content creators."
+    example: "Generate a carousel explaining how to create engaging Instagram carousels. Each slide should cover one step, with a clear title, and a practical tip. Tone: educational and supportive. Target audience: small business owners and content creators."
   },
   {
     label: "Customer Testimonial",
@@ -87,29 +88,29 @@ const AUDIENCE_SUGGESTIONS = [
   "Marketing professionals",
   "Fitness enthusiasts",
 ]
-// Key point grupları örneği
+// Key point group example
 const KEYPOINT_GROUPS = [
   {
-    groupName: 'E-Ticaret İçin Öneriler',
+    groupName: 'E-commerce Suggestions',
     suggestions: [
       'Conversion', 'Retention', 'Shipping', 'Analytics', 'Inventory', 'Customer service'
     ]
   },
   {
-    groupName: 'Sağlık Temalı Öneriler',
+    groupName: 'Health-themed Suggestions',
     suggestions: [
       'Exercise', 'Nutrition', 'Mental health', 'Sleep', 'Wellness', 'Habits'
     ]
   },
   {
-    groupName: 'Genel Popüler Konular',
+    groupName: 'General Popular Topics',
     suggestions: [
       'Social media', 'Content strategy', 'Branding', 'Engagement', 'SEO', 'Time management', 'Growth mindset'
     ]
   }
 ]
 
-// Chip renkleri (soft pastel tonlar, Tailwind)
+// Chip colors (soft pastel tones, Tailwind), now theme-aware
 const CHIP_COLORS_LIGHT = [
   'bg-blue-100 text-blue-800',
   'bg-green-100 text-green-800',
@@ -121,19 +122,19 @@ const CHIP_COLORS_LIGHT = [
   'bg-teal-100 text-teal-800',
 ]
 const CHIP_COLORS_DARK = [
-  'bg-blue-900 text-blue-200',
-  'bg-green-900 text-green-200',
-  'bg-purple-900 text-purple-200',
-  'bg-yellow-900 text-yellow-200',
-  'bg-pink-900 text-pink-200',
-  'bg-slate-700 text-slate-200',
-  'bg-orange-900 text-orange-200',
-  'bg-teal-900 text-teal-200',
+  'bg-blue-900/50 text-blue-200 border border-blue-800',
+  'bg-green-900/50 text-green-200 border border-green-800',
+  'bg-purple-900/50 text-purple-200 border border-purple-800',
+  'bg-yellow-900/50 text-yellow-200 border border-yellow-800',
+  'bg-pink-900/50 text-pink-200 border border-pink-800',
+  'bg-slate-800 text-slate-200 border border-slate-700',
+  'bg-orange-900/50 text-orange-200 border border-orange-800',
+  'bg-teal-900/50 text-teal-200 border border-teal-800',
 ]
 
-// Input, Textarea ve SelectTrigger için yeni className
-const inputClass = "w-full max-w-2xl mx-auto text-lg bg-white border-2 border-slate-300 text-foreground placeholder:text-slate-400 rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-const selectTriggerClass = "w-full max-w-2xl mx-auto text-lg bg-white border-2 border-slate-300 text-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+// New className for Input, Textarea, and SelectTrigger, now theme-aware
+const inputClass = "w-full max-w-2xl mx-auto text-lg bg-muted border-2 border-border text-foreground placeholder:text-muted-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+const selectTriggerClass = "w-full max-w-2xl mx-auto text-lg bg-muted border-2 border-border text-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
 
 export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data: any) => void, initialPrompt?: string }) {
   // All hooks at the top, unconditionally
@@ -144,16 +145,9 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
   const [error, setError] = useState('')
   const router = useRouter()
   const { user, isLoaded } = useUser()
-  const CHIP_COLORS = [
-    'bg-[var(--chart-1)] text-[var(--primary-foreground)]', // Digital marketing trends
-    'bg-[var(--chart-2)] text-[var(--primary-foreground)]', // Healthy lifestyle tips
-    'bg-[var(--chart-3)] text-[var(--primary-foreground)]', // Startup growth hacks
-    'bg-[var(--chart-4)] text-[var(--primary-foreground)]', // Personal finance basics
-    'bg-[var(--chart-5)] text-[var(--primary-foreground)]', // Remote work productivity
-    'bg-purple-600 text-white', // Brand storytelling (daha canlı)
-    'bg-yellow-400 text-black', // Bright (daha canlı)
-    'bg-blue-400 text-white',   // Cloudy (daha canlı)
-  ]
+  const { theme } = useTheme()
+  const CHIP_COLORS = theme === 'dark' ? CHIP_COLORS_DARK : CHIP_COLORS_LIGHT
+  
   const [promptMode, setPromptMode] = useState<'classic' | 'structured'>('classic')
   const [mainTopic, setMainTopic] = useState("")
   const [audience, setAudience] = useState("")
@@ -174,6 +168,14 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
   const [resetSuccess, setResetSuccess] = useState(false)
   const [templateLoadSuccess, setTemplateLoadSuccess] = useState(false)
   const [templateSaveSuccess, setTemplateSaveSuccess] = useState(false)
+
+  // Accordion state for keypoint groups
+  const [openKeyPointGroup, setOpenKeyPointGroup] = useState<string | null>(KEYPOINT_GROUPS[0]?.groupName || null)
+
+  // Undo state for clearing the form
+  const [lastClearedState, setLastClearedState] = useState<any>(null)
+  const [showUndo, setShowUndo] = useState(false)
+  const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Autosave structured prompt fields
   useEffect(() => {
@@ -223,7 +225,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
     localStorage.removeItem('carouselFormDraft')
   }
 
-  // Ana konu değiştiğinde dinamik önerileri güncelle
+  // Update dynamic suggestions when the main topic changes
   useEffect(() => {
     if (mainTopic && CONTEXTUAL_SUGGESTIONS[mainTopic]) {
       setDynamicAudienceSuggestions(CONTEXTUAL_SUGGESTIONS[mainTopic].audience)
@@ -241,11 +243,21 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
       // Simulate loading for better UX
       await new Promise(resolve => setTimeout(resolve, 300))
       
-      setMainTopic(template.mainTopic)
-      setAudience(template.audience)
-      setPurpose(template.purpose)
-      setPoints(template.keyPoints)
-      setLastLoadedTemplate(template)
+      if (promptMode === 'structured') {
+        setMainTopic(template.mainTopic)
+        setAudience(template.audience)
+        setPurpose(template.purpose)
+        setPoints(template.keyPoints)
+        setLastLoadedTemplate(template)
+      } else {
+        // For classic mode, generate a descriptive prompt
+        const classicPrompt = 
+          `Create a carousel about "${template.mainTopic}" for ${template.audience}. ` +
+          `The main purpose is to ${template.purpose.toLowerCase()}. ` +
+          (template.keyPoints.length > 0 ? `It should cover these key points: ${template.keyPoints.join(', ')}. ` : '') +
+          `The tone should be engaging and informative.`
+        setPrompt(classicPrompt)
+      }
       
       // Success feedback
       setTemplateLoadSuccess(true)
@@ -282,9 +294,18 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
     }
   }
   
-  // Enhanced classic reset with loading and success feedback
-  const handleClassicReset = async () => {
+  // Enhanced classic reset with loading, success feedback, and UNDO
+  const handleClearAll = async () => {
     setIsResetting(true)
+    
+    // Store current state for undo functionality
+    setLastClearedState({ mainTopic, audience, purpose, points })
+
+    // Clear any existing undo timeout
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current)
+    }
+
     try {
       // Simulate loading for better UX
       await new Promise(resolve => setTimeout(resolve, 400))
@@ -297,14 +318,34 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
       setLastLoadedTemplate(null)
       clearDraft()
       
-      // Success feedback
-      setResetSuccess(true)
-      setTimeout(() => setResetSuccess(false), 2000)
+      // Show undo button for 5 seconds
+      setShowUndo(true)
+      undoTimeoutRef.current = setTimeout(() => {
+        setShowUndo(false)
+        setLastClearedState(null) // Clear undo data after timeout
+      }, 5000)
+
     } catch (error) {
-      console.error('Reset error:', error)
+      console.error('Clear error:', error)
     } finally {
       setIsResetting(false)
     }
+  }
+
+  // Handle undo action
+  const handleUndoClear = () => {
+    if (lastClearedState) {
+      setMainTopic(lastClearedState.mainTopic)
+      setAudience(lastClearedState.audience)
+      setPurpose(lastClearedState.purpose)
+      setPoints(lastClearedState.points)
+    }
+    // Hide undo button and clear state
+    setShowUndo(false)
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current)
+    }
+    setLastClearedState(null)
   }
 
   // Redirect to sign-in if user is not authenticated (after isLoaded)
@@ -399,6 +440,27 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
         
         {/* Success feedback alerts */}
         <AnimatePresence>
+          {showUndo && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-foreground border border-border flex items-center justify-between gap-2 shadow-sm"
+            >
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="font-medium">Form cleared.</span>
+              </div>
+              <Button 
+                variant="link" 
+                className="text-primary p-0 h-auto font-semibold hover:underline"
+                onClick={handleUndoClear}
+              >
+                Undo
+              </Button>
+            </motion.div>
+          )}
+
           {resetSuccess && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -492,7 +554,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
                 }}
                 trigger={
                   <Button 
-                    variant="outline" 
+                    variant="default" // Changed from outline
                     size="sm" 
                     className="gap-2 hover:scale-105 transition-transform hover:shadow-md"
                     disabled={isSavingTemplate}
@@ -548,10 +610,10 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
               ) : (
                 <Button 
                   type="button" 
-                  variant="outline" 
+                  variant="ghost" // Changed from outline
                   size="sm" 
-                  className="gap-2 hover:scale-105 transition-transform hover:shadow-md"
-                  onClick={handleClassicReset}
+                  className="gap-2 hover:scale-105 transition-transform hover:shadow-md text-muted-foreground"
+                  onClick={handleClearAll}
                   disabled={isResetting}
                 >
                   {isResetting ? (
@@ -567,13 +629,15 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
                   ) : (
                     <>
                       <RefreshCw className="h-4 w-4" />
-                      Start Fresh
+                      Clear All
                     </>
                   )}
                 </Button>
               )
             )}
           </div>
+          
+          <hr className="border-border/50" />
 
           {/* Classic Prompt Mode */}
           {promptMode === 'classic' && (
@@ -620,6 +684,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
           {/* Structured Prompt Mode */}
           {promptMode === 'structured' && (
             <div className="space-y-6">
+              {/* --- Section 1: Content Foundation --- */}
               <div className="space-y-2">
                 <Label htmlFor="mainTopic" className="text-foreground font-semibold">Main Topic</Label>
                 <Input
@@ -631,12 +696,11 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
                   className={inputClass}
                 />
                 <AnimatedChipGroup
-                  chips={TOPIC_SUGGESTIONS.map((topic, i) => ({
+                  chips={TOPIC_SUGGESTIONS.map((topic, index) => ({
                     id: topic,
                     label: topic,
                     selected: mainTopic === topic,
-                    color: CHIP_COLORS[i % CHIP_COLORS.length],
-                    className: 'min-h-[2.25rem] px-4 py-1 text-sm rounded-full font-medium flex items-center justify-center'
+                    className: `${CHIP_COLORS[index % CHIP_COLORS.length]} hover:border-primary/50`,
                   }))}
                   onChipClick={(id) => setMainTopic(id)}
                   className="mt-2"
@@ -654,32 +718,35 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
                   className={inputClass}
                 />
                 <AnimatedChipGroup
-                  chips={dynamicAudienceSuggestions.map((aud, i) => ({
+                  chips={dynamicAudienceSuggestions.map((aud, index) => ({
                     id: aud,
                     label: aud,
                     selected: audience === aud,
-                    color: CHIP_COLORS[i % CHIP_COLORS.length],
-                    className: 'min-h-[2.25rem] px-4 py-1 text-sm rounded-full font-medium flex items-center justify-center'
+                    className: `${CHIP_COLORS[index % CHIP_COLORS.length]} hover:border-primary/50`,
                   }))}
                   onChipClick={(id) => setAudience(id)}
                   className="mt-2"
                 />
                 <div className="text-xs text-muted-foreground">Who is this content for?</div>
               </div>
-          <div className="space-y-2">
+              <div className="space-y-2">
                 <Label htmlFor="purpose" className="text-foreground font-semibold">Purpose</Label>
                 <Select value={purpose} onValueChange={setPurpose}>
                   <SelectTrigger className={selectTriggerClass}>
                     <SelectValue placeholder="Select purpose" />
-              </SelectTrigger>
-              <SelectContent>
+                  </SelectTrigger>
+                  <SelectContent>
                     <SelectItem value="Educate">Educate <span className="text-xs text-muted-foreground">(Teach, inform, or explain a topic)</span></SelectItem>
                     <SelectItem value="Sell">Sell <span className="text-xs text-muted-foreground">(Promote a product or service)</span></SelectItem>
                     <SelectItem value="Inspire">Inspire <span className="text-xs text-muted-foreground">(Motivate or encourage your audience)</span></SelectItem>
-              </SelectContent>
-            </Select>
+                  </SelectContent>
+                </Select>
                 <div className="text-xs text-muted-foreground">What is the main goal? (Educate, Sell, Inspire)</div>
               </div>
+
+              <hr className="border-border/50" />
+
+              {/* --- Section 2: Details and Structure --- */}
               {/* Key Points to Cover field */}
               <div className="space-y-2">
                 <Label htmlFor="points" className="text-foreground font-semibold">Key Points to Cover <span className="text-xs text-muted-foreground">(optional)</span></Label>
@@ -740,46 +807,57 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
                     </AnimatePresence>
                   </div>
                 )}
-                {/* Grouped suggestions */}
+                {/* Grouped suggestions - Accordion */}
                 <div className="space-y-2 mt-2">
-                  <AnimatePresence>
                     {KEYPOINT_GROUPS.map((group, groupIdx) => {
                       const groupSuggestions = group.suggestions.filter(s => !points.includes(s) && !removedPoints.includes(s));
                       if (groupSuggestions.length === 0) return null;
+                      const isGroupOpen = openKeyPointGroup === group.groupName;
                       return (
-                        <motion.div
-                          key={group.groupName + '-' + groupIdx}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.22 }}
-                        >
-                          <div className="font-semibold text-xs mb-1 text-muted-foreground">{group.groupName}</div>
-                          <div className="flex flex-wrap gap-2">
-                            <AnimatePresence>
-                              {groupSuggestions.map((s, i) => (
-                                <motion.button
-                      type="button"
-                                  key={group.groupName + '-' + s + '-' + i}
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={{ opacity: 0, scale: 0.8 }}
-                                  transition={{ duration: 0.18, delay: i * 0.03 }}
-                                  onClick={() => {
-                                    setPoints([...points, s]);
-                                    setRemovedPoints(removedPoints.filter(r => r !== s));
-                                  }}
-                                  className={`px-3 py-1 rounded-full border border-transparent text-xs font-medium transition-colors shadow-sm bg-[var(--muted)] text-[var(--muted-foreground)] hover:border-primary hover:text-primary hover:bg-primary/10`}
-                    >
-                      {s}
-                                </motion.button>
-                  ))}
-                            </AnimatePresence>
-                          </div>
-                        </motion.div>
+                        <div key={group.groupName + '-' + groupIdx} className="border border-border rounded-lg overflow-hidden">
+                          <button
+                            type="button"
+                            className="w-full flex justify-between items-center p-3 font-semibold text-sm text-foreground bg-muted/50"
+                            onClick={() => setOpenKeyPointGroup(isGroupOpen ? null : group.groupName)}
+                          >
+                            <span>{group.groupName}</span>
+                            <motion.div animate={{ rotate: isGroupOpen ? 180 : 0 }}>
+                              <ChevronDown className="h-4 w-4" />
+                            </motion.div>
+                          </button>
+                          <AnimatePresence>
+                            {isGroupOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="p-3 flex flex-wrap gap-2">
+                                  {groupSuggestions.map((s, i) => (
+                                    <motion.button
+                                      type="button"
+                                      key={group.groupName + '-' + s + '-' + i}
+                                      initial={{ opacity: 0, scale: 0.8 }}
+                                      animate={{ opacity: 1, scale: 1 }}
+                                      exit={{ opacity: 0, scale: 0.8 }}
+                                      transition={{ duration: 0.18, delay: i * 0.03 }}
+                                      onClick={() => {
+                                        setPoints([...points, s]);
+                                        setRemovedPoints(removedPoints.filter(r => r !== s));
+                                      }}
+                                      className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 shadow-sm hover:scale-105 hover:shadow-md ${CHIP_COLORS[(i + groupIdx * 3) % CHIP_COLORS.length]} hover:border-primary/50`}
+                                    >
+                                      {s}
+                                    </motion.button>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
                       )
                     })}
-                  </AnimatePresence>
                 </div>
                 {/* Removed items */}
                 {removedPoints.length > 0 && (
@@ -812,37 +890,38 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
                   </div>
                 )}
                 <div className="text-xs text-muted-foreground">Add important keywords or topics (press Enter, comma, click a suggestion or Add button).</div>
-          </div>
+              </div>
+               {/* Image Count Slider */}
+              <div className="space-y-2">
+                <Label htmlFor="imageCount" className="text-foreground font-semibold">Number of Slides: <span className="font-bold text-primary">{imageCount}</span></Label>
+                <input
+                  id="imageCount"
+                  type="range"
+                  min={2}
+                  max={10}
+                  value={imageCount}
+                  onChange={e => setImageCount(Number(e.target.value))}
+                  className="w-full accent-primary"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>2</span>
+                  <span>10</span>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Image Count Slider */}
-          <div className="space-y-2">
-            <Label htmlFor="imageCount" className="text-foreground font-semibold">Number of Slides: <span className="font-bold text-primary">{imageCount}</span></Label>
-            <input
-              id="imageCount"
-              type="range"
-              min={2}
-              max={10}
-              value={imageCount}
-              onChange={e => setImageCount(Number(e.target.value))}
-              className="w-full accent-primary"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>2</span>
-              <span>10</span>
-            </div>
-          </div>
+          <hr className="border-border/50" />
 
+          {/* --- Section 3: Visual Style --- */}
           {/* Style Chips */}
           <div className="space-y-2">
             <Label className="text-foreground font-semibold">Image Styles</Label>
             <AnimatedChipGroup
-              chips={STYLES.map((s, i) => ({
+              chips={STYLES.map((s) => ({
                 id: s.value,
                 label: s.label,
                 selected: styles.includes(s.value),
-                color: CHIP_COLORS[i % CHIP_COLORS.length],
                 icon: s.icon
               }))}
               onChipClick={(id) => handleStyleToggle(id)}
@@ -856,7 +935,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
             variant="default"
             type="submit"
             disabled={loading || (promptMode === 'classic' ? !prompt.trim() : !mainTopic.trim() || !audience.trim() || !purpose.trim())}
-            className="w-full text-lg py-6 font-bold flex items-center justify-center hover:scale-105 transition-transform hover:shadow-lg"
+            className="w-full text-lg py-6 font-bold flex items-center justify-center hover:scale-105 transition-transform hover:shadow-lg bg-primary text-primary-foreground"
           >
             {loading ? (
               <>

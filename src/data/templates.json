@@ -39,7 +39,7 @@
     "audience": "Fitness enthusiasts",
     "purpose": "Inspire",
     "keyPoints": ["Exercise", "Nutrition", "Sleep", "Wellness"],
-    "category": "Health",
+    "category": "Personal Growth",
     "createdAt": "2024-05-04T10:00:00Z",
     "usageCount": 0
   },
@@ -61,7 +61,7 @@
     "audience": "Young professionals",
     "purpose": "Educate",
     "keyPoints": ["Budgeting", "Investing", "Saving", "Debt"],
-    "category": "Finance",
+    "category": "Education",
     "createdAt": "2024-05-06T10:00:00Z",
     "usageCount": 0
   },
@@ -72,7 +72,7 @@
     "audience": "Remote workers",
     "purpose": "Inspire",
     "keyPoints": ["Time management", "Communication", "Tools", "Balance"],
-    "category": "Productivity",
+    "category": "Personal Growth",
     "createdAt": "2024-05-07T10:00:00Z",
     "usageCount": 0
   },
@@ -105,8 +105,162 @@
     "audience": "Busy professionals",
     "purpose": "Inspire",
     "keyPoints": ["Habits", "Mental health", "Sleep", "Nutrition"],
-    "category": "Wellness",
+    "category": "Personal Growth",
     "createdAt": "2024-05-10T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-11",
+    "name": "Social Media Marketing Strategy",
+    "mainTopic": "Social media marketing",
+    "audience": "Marketing managers",
+    "purpose": "Educate",
+    "keyPoints": ["Strategy", "Content planning", "Engagement", "ROI"],
+    "category": "Marketing",
+    "createdAt": "2024-05-11T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-12",
+    "name": "Customer Success Stories",
+    "mainTopic": "Customer testimonials",
+    "audience": "Sales teams",
+    "purpose": "Sell",
+    "keyPoints": ["Success stories", "Results", "Testimonials", "Trust"],
+    "category": "Marketing",
+    "createdAt": "2024-05-12T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-13",
+    "name": "Product Launch Campaign",
+    "mainTopic": "Product launch",
+    "audience": "Product managers",
+    "purpose": "Sell",
+    "keyPoints": ["Features", "Benefits", "Launch strategy", "Excitement"],
+    "category": "Marketing",
+    "createdAt": "2024-05-13T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-14",
+    "name": "Online Store Optimization",
+    "mainTopic": "E-commerce optimization",
+    "audience": "Online retailers",
+    "purpose": "Educate",
+    "keyPoints": ["UX design", "Conversion rate", "SEO", "Performance"],
+    "category": "E-commerce",
+    "createdAt": "2024-05-14T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-15",
+    "name": "Dropshipping Success Guide",
+    "mainTopic": "Dropshipping strategies",
+    "audience": "Aspiring entrepreneurs",
+    "purpose": "Educate",
+    "keyPoints": ["Supplier selection", "Marketing", "Customer service", "Scaling"],
+    "category": "E-commerce",
+    "createdAt": "2024-05-15T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-16",
+    "name": "Amazon FBA Tips",
+    "mainTopic": "Amazon selling",
+    "audience": "Amazon sellers",
+    "purpose": "Educate",
+    "keyPoints": ["Product research", "Listing optimization", "PPC", "Reviews"],
+    "category": "E-commerce",
+    "createdAt": "2024-05-16T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-17",
+    "name": "Learning Programming",
+    "mainTopic": "Programming basics",
+    "audience": "Beginner developers",
+    "purpose": "Educate",
+    "keyPoints": ["Languages", "Practice", "Projects", "Career path"],
+    "category": "Education",
+    "createdAt": "2024-05-17T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-18",
+    "name": "Study Techniques",
+    "mainTopic": "Effective studying",
+    "audience": "Students",
+    "purpose": "Educate",
+    "keyPoints": ["Memory techniques", "Time management", "Focus", "Retention"],
+    "category": "Education",
+    "createdAt": "2024-05-18T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-19",
+    "name": "Career Development",
+    "mainTopic": "Professional growth",
+    "audience": "Young professionals",
+    "purpose": "Inspire",
+    "keyPoints": ["Skills", "Networking", "Leadership", "Goal setting"],
+    "category": "Education",
+    "createdAt": "2024-05-19T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-20",
+    "name": "Mindfulness Journey",
+    "mainTopic": "Mental wellness",
+    "audience": "Stressed individuals",
+    "purpose": "Inspire",
+    "keyPoints": ["Meditation", "Stress relief", "Self-care", "Balance"],
+    "category": "Personal Growth",
+    "createdAt": "2024-05-20T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-21",
+    "name": "Goal Achievement",
+    "mainTopic": "Personal development",
+    "audience": "Ambitious individuals",
+    "purpose": "Inspire",
+    "keyPoints": ["Goal setting", "Motivation", "Habits", "Success"],
+    "category": "Personal Growth",
+    "createdAt": "2024-05-21T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-22",
+    "name": "Motivational Monday",
+    "mainTopic": "Weekly motivation",
+    "audience": "General audience",
+    "purpose": "Inspire",
+    "keyPoints": ["Inspiration", "Positivity", "Energy", "Week planning"],
+    "category": "Inspiration",
+    "createdAt": "2024-05-22T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-23",
+    "name": "Success Stories",
+    "mainTopic": "Inspirational stories",
+    "audience": "Dreamers",
+    "purpose": "Inspire",
+    "keyPoints": ["Overcoming challenges", "Perseverance", "Dreams", "Achievement"],
+    "category": "Inspiration",
+    "createdAt": "2024-05-23T10:00:00Z",
+    "usageCount": 0
+  },
+  {
+    "id": "template-24",
+    "name": "Daily Affirmations",
+    "mainTopic": "Positive thinking",
+    "audience": "Self-improvement seekers",
+    "purpose": "Inspire",
+    "keyPoints": ["Affirmations", "Self-love", "Confidence", "Mindset"],
+    "category": "Inspiration",
+    "createdAt": "2024-05-24T10:00:00Z",
     "usageCount": 0
   }
 ] 

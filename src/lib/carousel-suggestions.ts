@@ -75,7 +75,9 @@ export interface UserTemplate {
   keyPoints: string[]
   category: TemplateCategory
   createdAt: Date
+  updatedAt?: Date
   usageCount: number
+  user_id?: string // Optional, only for user-created templates
 }
 
 export const DEFAULT_CATEGORIES: TemplateCategory[] = [
@@ -88,6 +90,7 @@ export const DEFAULT_CATEGORIES: TemplateCategory[] = [
 ]
 
 import templatesData from '../data/templates.json'
+import { v4 as uuidv4 } from 'uuid'
 
 export const getDefaultTemplates = async (): Promise<UserTemplate[]> => {
   // JSON dosyasından okunan veriyi UserTemplate tipine cast et
@@ -95,7 +98,8 @@ export const getDefaultTemplates = async (): Promise<UserTemplate[]> => {
   return templates.map(template => ({
     ...template,
     createdAt: new Date(template.createdAt),
-    category: template.category as TemplateCategory
+    category: template.category as TemplateCategory,
+    // No user_id for default templates
   }))
 }
 
@@ -109,6 +113,7 @@ export const getTemplates = async (): Promise<UserTemplate[]> => {
     const processedSavedTemplates = savedTemplates.map((template: any) => ({
       ...template,
       createdAt: new Date(template.createdAt),
+      updatedAt: template.updatedAt ? new Date(template.updatedAt) : undefined,
       category: template.category as TemplateCategory
     }))
     
@@ -116,44 +121,5 @@ export const getTemplates = async (): Promise<UserTemplate[]> => {
   } catch (error) {
     console.error('Template getirme hatası:', error)
     return []
-  }
-}
-
-// Şablon kullanım sayısını artırma
-export const incrementTemplateUsage = async (templateId: string) => {
-  try {
-    const templates = await getTemplates()
-    const updatedTemplates = templates.map(template => 
-      template.id === templateId 
-        ? { ...template, usageCount: template.usageCount + 1 }
-        : template
-    )
-    
-    // Local storage'ı güncelle
-    const userTemplates = updatedTemplates.filter(t => !DEFAULT_CATEGORIES.find(dt => dt === t.category))
-    localStorage.setItem('userTemplates', JSON.stringify(userTemplates))
-    
-    return updatedTemplates.find(t => t.id === templateId)
-  } catch (error) {
-    console.error('Template kullanım sayısı güncelleme hatası:', error)
-  }
-} 
-
-type SaveTemplateInput = Omit<UserTemplate, 'id' | 'createdAt' | 'usageCount'>
-export const saveTemplate = async (template: SaveTemplateInput) => {
-  try {
-    const newTemplate: UserTemplate = {
-      ...template,
-      id: `template-${Date.now()}`,
-      createdAt: new Date(),
-      usageCount: 0
-    }
-    const savedTemplates = JSON.parse(localStorage.getItem('userTemplates') || '[]')
-    savedTemplates.push(newTemplate)
-    localStorage.setItem('userTemplates', JSON.stringify(savedTemplates))
-    return newTemplate
-  } catch (error) {
-    console.error('Template kaydetme hatası:', error)
-    throw error
   }
 } 

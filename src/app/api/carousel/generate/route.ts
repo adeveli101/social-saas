@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { generateCarousel } from '@/lib/carousel'
+import { createClient } from '@/utils/supabase/server'
 
 // POST /api/carousel/generate
 export async function POST(request: NextRequest) {
@@ -24,7 +25,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const supabase = await createClient()
+
     const carouselId = await generateCarousel({
+      supabase,
       prompt,
       imageCount,
       userId

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { getCarouselById, getCarouselSlides } from '@/lib/carousel'
+import { createClient } from '@/utils/supabase/server'
 
 // GET /api/carousel/[id]
 export async function GET(
@@ -17,7 +18,8 @@ export async function GET(
       )
     }
 
-    const carousel = await getCarouselById(params.id)
+    const supabase = await createClient()
+    const carousel = await getCarouselById(supabase, params.id)
     
     if (!carousel) {
       return NextResponse.json(
@@ -35,7 +37,7 @@ export async function GET(
     }
 
     // Carousel slides'larını getir
-    const slides = await getCarouselSlides(params.id)
+    const slides = await getCarouselSlides(supabase, params.id)
 
     return NextResponse.json({
       ...carousel,
