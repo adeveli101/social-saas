@@ -1,9 +1,9 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
-export function AnimatedGradientText({ text, className = "" }: { text: string, className?: string }) {
+export function AnimatedGradientText({ children, className = "" }: { children: ReactNode, className?: string }) {
   return (
-    <span className={`heading-gradient heading heading-foreground ${className}`}>
-      {text}
-    </span>
+    <div className={`text-gradient-animated inline-flex items-center ${className}`}>
+      {children}
+    </div>
   );
 } 

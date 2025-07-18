@@ -13,35 +13,39 @@ interface Style {
 }
 
 interface StyleSelectorProps {
-  availableStyles: Style[];
-  selectedStyles: string[];
-  onStyleToggle: (styleId: string) => void;
+  selectedStyle: string;
+  onStyleSelect: (style: string) => void;
 }
 
-export function StyleSelector({ availableStyles, selectedStyles, onStyleToggle }: StyleSelectorProps) {
+const styles = [
+    { id: 'photo-realistic', name: 'Photo-realistic' },
+    { id: 'minimalist-vector', name: 'Minimalist Vector' },
+    { id: '3d-characters', name: '3D Characters' },
+    { id: 'artistic', name: 'Artistic' },
+    { id: 'sketch', name: 'Sketch' },
+    { id: 'cinematic', name: 'Cinematic' },
+]
+
+export function StyleSelector({ selectedStyle, onStyleSelect }: StyleSelectorProps) {
   return (
-    <div className="space-y-3">
-      <Label>Visual Style</Label>
-      <div className="flex flex-wrap gap-3">
-        {availableStyles.map((style) => {
-          const isSelected = selectedStyles.includes(style.id);
-          return (
-            <button
-              key={style.id}
-              type="button"
-              onClick={() => onStyleToggle(style.id)}
-              className={cn(
-                "flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all",
-                isSelected
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
-              )}
-            >
-              {isSelected ? <Check className="h-4 w-4" /> : style.icon}
-              <span>{style.label}</span>
-            </button>
-          );
-        })}
+    <div>
+      <Label className="mb-2 block text-gray-200">Visual Style</Label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {styles.map((style) => (
+          <Button
+            key={style.id}
+            type="button"
+            onClick={() => onStyleSelect(style.id)}
+            className={cn(
+              "flex items-center justify-center gap-2 rounded-lg px-2 py-2 text-xs lg:text-sm font-medium transition-all whitespace-nowrap",
+              selectedStyle === style.id
+                ? "bg-blue-500/30 text-blue-200 border border-blue-400/50 shadow-md"
+                : "bg-white/10 text-gray-200 border border-white/20 hover:bg-white/15 hover:text-white"
+            )}
+          >
+            {selectedStyle === style.id ? <Check className="h-3 w-3 lg:h-4 lg:w-4" /> : style.name}
+          </Button>
+        ))}
       </div>
     </div>
   );

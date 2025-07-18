@@ -1,18 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { generateCarousel } from '@/lib/carousel'
 import { createClient } from '@/utils/supabase/server'
+import { z } from 'zod'
+import { generateCarouselWithAI, saveCarouselToDB } from '@/lib/carousel'
 
 // POST /api/carousel/generate
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { userId } = await auth()
+    const { userId } = auth()
     
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return new NextResponse('Unauthorized', { status: 401 })
     }
 
     const body = await request.json()
@@ -25,9 +23,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const supabase = createClient()
+    const { data: user } = await supabase.from('users').select('credits').eq('id', userId).single()
 
-    const carouselId = await generateCarousel({
+    if (!user || user.credits <= 0) {
+      return NextResponse.json(
+        { error: 'Kredi bitti' },
+        { status: 402 }
+      )
+    }
+
+    const carouselId = await generateCarouselWithAI({
       supabase,
       prompt,
       imageCount,

@@ -2,74 +2,56 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sparkles, FolderOpen, RefreshCw, Save } from 'lucide-react';
+import { Book, Save, RotateCcw } from "lucide-react";
+import { PromptMode } from "./carousel-client";
 
 interface ActionButtonsProps {
-  isGenerating: boolean;
-  onGenerate: () => void;
   onLoadTemplate: () => void;
   onSaveTemplate: () => void;
-  onReset: () => void;
-  isGenerateDisabled: boolean;
+  onClear: () => void;
+  isGenerating: boolean;
+  promptMode: PromptMode;
 }
 
 export function ActionButtons({
-  isGenerating,
-  onGenerate,
   onLoadTemplate,
   onSaveTemplate,
-  onReset,
-  isGenerateDisabled,
+  onClear,
+  isGenerating,
+  promptMode,
 }: ActionButtonsProps) {
   return (
-    <div className="space-y-3">
-      <Button
-        size="lg"
-        className="w-full font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-md h-12"
-        onClick={onGenerate}
-        disabled={isGenerating || isGenerateDisabled}
-      >
-        {isGenerating ? (
-          <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Generating...
-          </>
-        ) : (
-          <>
-            <Sparkles className="mr-2 h-5 w-5" />
-            Generate Carousel
-          </>
-        )}
-      </Button>
-      <div className="grid grid-cols-3 gap-2">
-        <Button
-          variant="outline"
-          className="w-full rounded-lg border-zinc-700 hover:bg-zinc-800"
-          onClick={onLoadTemplate}
-          disabled={isGenerating}
+    <div className="grid grid-cols-2 gap-3">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onLoadTemplate} 
+          disabled={isGenerating} 
+          className="bg-transparent border-white/20 text-gray-200 hover:bg-white/10 hover:text-white"
         >
-          <FolderOpen className="mr-2 h-4 w-4" />
-          Load
+            <Book className="h-4 w-4 mr-2" />
+            Load Template
         </Button>
-        <Button
-          variant="outline"
-          className="w-full rounded-lg border-zinc-700 hover:bg-zinc-800"
-          onClick={onSaveTemplate}
-          disabled={isGenerating}
+        <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onSaveTemplate} 
+            disabled={isGenerating || promptMode === 'classic'}
+            className="bg-transparent border-white/20 text-gray-200 hover:bg-white/10 hover:text-white disabled:opacity-50"
         >
-          <Save className="mr-2 h-4 w-4" />
-          Save
+            <Save className="h-4 w-4 mr-2" />
+            Save Template
         </Button>
-        <Button
-          variant="ghost"
-          className="w-full rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
-          onClick={onReset}
-          disabled={isGenerating}
+        <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClear} 
+            disabled={isGenerating}
+            className="col-span-2 text-gray-300 hover:bg-white/10 hover:text-white"
         >
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Reset
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Clear All Fields
         </Button>
       </div>
-    </div>
   );
 } 

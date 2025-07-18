@@ -29,21 +29,23 @@ import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 
 const STATUS_LIST: { key: ContentTask['status']; label: string; icon: React.ReactNode; color: string }[] = [
-  { key: 'idea', label: 'Ideas', icon: <Sparkles className="w-4 h-4" />, color: 'bg-primary/10' },
-  { key: 'in_progress', label: 'In Progress', icon: <Clock className="w-4 h-4" />, color: 'bg-blue-500/10' },
-  { key: 'to_review', label: 'To Review', icon: <AlertCircle className="w-4 h-4" />, color: 'bg-yellow-500/10' },
-  { key: 'ready_to_post', label: 'Ready to Post', icon: <CheckCircle className="w-4 h-4" />, color: 'bg-green-500/10' },
-  { key: 'posted', label: 'Posted', icon: <Zap className="w-4 h-4" />, color: 'bg-muted' },
+  { key: 'idea', label: 'Carousel Ideas', icon: <Sparkles className="w-4 h-4" />, color: 'bg-purple-500/20 border-purple-400/50' },
+  { key: 'in_progress', label: 'Generating', icon: <Clock className="w-4 h-4" />, color: 'bg-blue-500/20 border-blue-400/50' },
+  { key: 'to_review', label: 'Review & Edit', icon: <AlertCircle className="w-4 h-4" />, color: 'bg-yellow-500/20 border-yellow-400/50' },
+  { key: 'ready_to_post', label: 'Ready to Download', icon: <CheckCircle className="w-4 h-4" />, color: 'bg-green-500/20 border-green-400/50' },
+  { key: 'posted', label: 'Downloaded', icon: <Zap className="w-4 h-4" />, color: 'bg-gray-500/20 border-gray-400/50' },
 ]
 
 const PRIORITY_OPTIONS = [
-  { value: 'low', label: 'Low Priority', color: 'bg-muted text-muted-foreground' },
-  { value: 'medium', label: 'Medium Priority', color: 'bg-primary/10 text-primary' },
-  { value: 'high', label: 'High Priority', color: 'bg-destructive/10 text-destructive' },
+  { value: 'low', label: 'Low Priority', color: 'bg-gray-500/20 text-gray-200 border-gray-400/50' },
+  { value: 'medium', label: 'Medium Priority', color: 'bg-blue-500/20 text-blue-200 border-blue-400/50' },
+  { value: 'high', label: 'High Priority', color: 'bg-red-500/20 text-red-200 border-red-400/50' },
 ]
 
 const CATEGORY_SUGGESTIONS = [
-  'Social Media', 'Blog Post', 'Video Content', 'Infographic', 'Story', 'Reel', 'Carousel', 'Quote'
+  'Instagram Carousel', 'LinkedIn Carousel', 'Facebook Carousel', 'Educational Content', 
+  'Product Showcase', 'Tips & Tricks', 'Infographic Style', 'Quote Cards', 'Case Study', 
+  'How-To Guide', 'Statistics', 'Before & After'
 ]
 
 export function KanbanBoard() {
@@ -216,9 +218,9 @@ export function KanbanBoard() {
 
   if (loading) {
     return (
-      <div className="w-full flex justify-center items-center py-20">
-        <div className="flex flex-col items-center gap-4 text-muted-foreground">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="w-full flex justify-center items-center py-20 bg-gradient-natural min-h-screen">
+        <div className="flex flex-col items-center gap-4 text-gray-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
           <p>Loading your content board...</p>
         </div>
       </div>
@@ -226,31 +228,31 @@ export function KanbanBoard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-natural">
       <div className="relative overflow-visible w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-6">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                Content Planning Board
+              <h1 className="text-3xl font-bold tracking-tight text-gray-50">
+                Carousel Planning Board
               </h1>
-              <p className="text-muted-foreground mt-2">
-                Organize and track your content creation workflow
+              <p className="text-gray-200 mt-2">
+                Organize and track your AI carousel creation workflow
               </p>
             </div>
             <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-200">
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add New Content
+                  Add New Carousel
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-md bg-glass backdrop-blur-xl border border-white/10">
                 <DialogHeader>
-                  <DialogTitle>Create New Content Task</DialogTitle>
-                  <DialogDescription>
-                    Add a new content idea to your planning board.
+                  <DialogTitle className="text-gray-50">Create New Carousel Idea</DialogTitle>
+                  <DialogDescription className="text-gray-300">
+                    Add a new carousel concept to your planning board.
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleAddCard} className="space-y-4">
@@ -260,7 +262,7 @@ export function KanbanBoard() {
                       id="title"
                       value={addTitle}
                       onChange={e => setAddTitle(e.target.value)}
-                      placeholder="Enter content title..."
+                      placeholder="Enter carousel idea title..."
                       required
                     />
                   </div>
@@ -307,7 +309,7 @@ export function KanbanBoard() {
                       id="notes"
                       value={addNotes}
                       onChange={e => setAddNotes(e.target.value)}
-                      placeholder="Add notes (optional)"
+                      placeholder="Add carousel details, target audience, key messages..."
                       rows={3}
                     />
                   </div>
@@ -341,10 +343,10 @@ export function KanbanBoard() {
               <SelectTrigger className="w-44"><SelectValue placeholder="All Accounts" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Accounts</SelectItem>
-                <SelectItem value="instagram">Instagram</SelectItem>
-                <SelectItem value="twitter">Twitter</SelectItem>
+                <SelectItem value="social">Social Post</SelectItem>
                 <SelectItem value="linkedin">LinkedIn</SelectItem>
-                <SelectItem value="facebook">Facebook</SelectItem>
+                <SelectItem value="twitter">X (Twitter)</SelectItem>
+                <SelectItem value="blog">Blog Post</SelectItem>
               </SelectContent>
             </Select>
             <Select value={assigned} onValueChange={setAssigned}>

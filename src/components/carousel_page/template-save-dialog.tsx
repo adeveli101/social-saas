@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save, Sparkles, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { UserTemplate } from '@/lib/carousel-suggestions';
-import { createUserTemplate } from '@/lib/user-templates';
+import { saveUserTemplate } from '@/lib/user-templates';
 import { useUser } from '@clerk/nextjs';
 
 
@@ -43,7 +43,7 @@ export function TemplateSaveDialog({ isOpen, onOpenChange, formState, onTemplate
     setIsSaving(true);
     setError('');
     try {
-      const newTemplate = await createUserTemplate({
+      const newTemplate = await saveUserTemplate({
         name: templateName.trim(),
         mainTopic: formState.mainPrompt,
         audience: formState.audience,
@@ -74,45 +74,45 @@ export function TemplateSaveDialog({ isOpen, onOpenChange, formState, onTemplate
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+      <DialogContent className="bg-glass backdrop-blur-xl border-white/10 text-gray-50 max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-blue-500" />
+          <DialogTitle className="flex items-center gap-2 text-gray-50">
+            <Sparkles className="h-5 w-5 text-blue-400" />
             Save as Template
           </DialogTitle>
-          <DialogDescription className="text-zinc-400">
+          <DialogDescription className="text-gray-200">
             Save the current configuration as a reusable template.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="templateName">Template Name</Label>
+            <Label htmlFor="templateName" className="text-gray-200">Template Name</Label>
             <Input
               id="templateName"
               placeholder="e.g. Weekly Marketing Tips"
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
-              className="bg-zinc-800 border-zinc-700 focus-visible:ring-blue-500"
+              className="bg-white/5 border-white/20 text-gray-100 placeholder:text-gray-400 focus:border-blue-400/50 focus:ring-blue-400/30"
             />
           </div>
 
           <div className="space-y-2">
-             <Label>Preview</Label>
-             <div className="p-3 bg-black/40 rounded-lg space-y-1 text-sm text-zinc-300 border border-zinc-800">
+             <Label className="text-gray-200">Preview</Label>
+             <div className="p-3 bg-white/5 rounded-lg space-y-1 text-sm text-gray-200 border border-white/10">
                <p><strong>Topic:</strong> {formState.mainPrompt || "Not set"}</p>
                <p><strong>Audience:</strong> {formState.audience}</p>
              </div>
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-red-400">
+            <div className="flex items-center gap-2 text-red-300">
               <AlertCircle className="h-4 w-4" />
               <p>{error}</p>
             </div>
           )}
 
            {isSaved && (
-            <div className="flex items-center gap-2 text-green-400">
+            <div className="flex items-center gap-2 text-emerald-300">
               <Check className="h-4 w-4" />
               <p>Template saved!</p>
             </div>
@@ -120,8 +120,8 @@ export function TemplateSaveDialog({ isOpen, onOpenChange, formState, onTemplate
 
         </div>
         <div className="flex justify-end gap-3">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isSaving}>Cancel</Button>
-          <Button onClick={handleSave} disabled={isSaving || !templateName.trim()} className="bg-blue-600 hover:bg-blue-700">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isSaving} className="text-gray-300 hover:bg-white/10 hover:text-white">Cancel</Button>
+          <Button onClick={handleSave} disabled={isSaving || !templateName.trim()} className="bg-blue-500 hover:bg-blue-600 text-white">
             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
             {isSaving ? 'Saving...' : 'Save Template'}
           </Button>

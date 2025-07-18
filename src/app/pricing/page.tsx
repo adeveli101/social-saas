@@ -3,21 +3,18 @@ import { auth } from '@clerk/nextjs/server'
 import { PricingCards } from '@/components/paywall/pricing-cards'
 import { getUserCurrentPlan } from '@/lib/clerk'
 import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers'
-import { PageContainer } from '@/components/shared/page-container'
 
 export const metadata: Metadata = {
-  title: 'Pricing - Social SaaS',
-  description: 'Choose the perfect plan for your social media management needs',
+  title: 'Pricing - AI Carousel Studio',
+  description: 'Find the Right Visiona Plan for You. Create stunning AI-powered carousels with flexible pricing.',
 }
 
 export default async function PricingPage() {
   const { userId } = await auth()
-  let currentPlan = 'free'
+  let currentPlan = 'starter'
 
   if (userId) {
     try {
-      const cookieStore = cookies()
       const supabase = await createClient()
       currentPlan = await getUserCurrentPlan(userId, supabase)
     } catch (error) {
@@ -26,57 +23,60 @@ export default async function PricingPage() {
   }
 
   return (
-    <PageContainer>
-      <main className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold heading-gradient heading mb-4">
-            Simple, Transparent Pricing
+    <div className="min-h-screen bg-gradient-natural">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="relative container mx-auto px-4 py-4 text-center">
+          <h1 className="text-2xl md:text-3xl font-bold mb-3">
+            <span className="text-gray-50">Choose Your </span>
+            <span className="text-gradient-animated">Plan</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Choose the perfect plan for your social media management needs. 
-            Start free and upgrade as you grow.
+          
+          <p className="text-sm text-gray-200 max-w-md mx-auto mb-4">
+            Simple, transparent pricing for everyone.
           </p>
-        </div>
-        
-        <PricingCards currentPlan={currentPlan} />
-        
-        {/* FAQ Section */}
-        <div className="mt-24 max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 heading-gradient heading">
-            Frequently Asked Questions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4 p-6 bg-[var(--card)] border border-[var(--border)] rounded-lg">
-              <h3 className="text-lg font-semibold text-foreground">Can I change plans anytime?</h3>
-              <p className="text-muted-foreground">
-                Yes! You can upgrade or downgrade your plan at any time. 
-                Changes take effect immediately.
-              </p>
+
+          {/* Value Proposition */}
+          <div className="flex flex-wrap justify-center items-center gap-3 text-xs text-gray-200">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center">
+                <span className="text-emerald-300 text-[8px]">✓</span>
+              </div>
+              <span>Cancel anytime</span>
             </div>
-            <div className="space-y-4 p-6 bg-[var(--card)] border border-[var(--border)] rounded-lg">
-              <h3 className="text-lg font-semibold text-foreground">Is there a free trial?</h3>
-              <p className="text-muted-foreground">
-                We offer a 14-day free trial on all paid plans. 
-                No credit card required to start.
-              </p>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full bg-blue-500/20 border border-blue-400/50 flex items-center justify-center">
+                <span className="text-blue-300 text-[8px]">⚡</span>
+              </div>
+              <span>Instant activation</span>
             </div>
-            <div className="space-y-4 p-6 bg-[var(--card)] border border-[var(--border)] rounded-lg">
-              <h3 className="text-lg font-semibold text-foreground">What payment methods do you accept?</h3>
-              <p className="text-muted-foreground">
-                We accept all major credit cards, PayPal, and bank transfers 
-                for annual plans.
-              </p>
-            </div>
-            <div className="space-y-4 p-6 bg-[var(--card)] border border-[var(--border)] rounded-lg">
-              <h3 className="text-lg font-semibold text-foreground">Can I cancel anytime?</h3>
-              <p className="text-muted-foreground">
-                Absolutely. You can cancel your subscription at any time 
-                with no cancellation fees.
-              </p>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full bg-purple-500/20 border border-purple-400/50 flex items-center justify-center">
+                <span className="text-purple-300 text-[8px]">🎨</span>
+              </div>
+              <span>Premium styles</span>
             </div>
           </div>
         </div>
-      </main>
-    </PageContainer>
+      </div>
+
+      {/* Pricing Cards */}
+      <div className="container mx-auto px-4 py-2">
+        <PricingCards currentPlan={currentPlan} />
+      </div>
+
+      {/* Simple Footer CTA */}
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p className="text-gray-200 text-sm mb-3">
+          Questions? We're here to help.
+        </p>
+        <a 
+          href="mailto:support@socialsaas.app" 
+          className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+        >
+          Contact Support
+        </a>
+      </div>
+    </div>
   )
 } 

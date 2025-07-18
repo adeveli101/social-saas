@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Download, Copy, Check, AlertCircle, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 interface CarouselPreviewProps {
   carouselId: string
@@ -173,7 +175,7 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
           <Card className="bg-background border-border">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Instagram Caption</span>
+              <span>Generated Caption</span>
               <Button 
                 onClick={copyCaption}
                 variant="outline" 
@@ -239,7 +241,7 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
         <CardContent>
           <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
             <li>Download images in order (slide-1, slide-2, ...)</li>
-            <li>Create new post on Instagram</li>
+            <li>Create new post on your favorite social media platform</li>
             <li>Select downloaded images in order</li>
             <li>Copy and paste the caption</li>
             <li>Share!</li>

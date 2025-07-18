@@ -1,112 +1,99 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, Zap, Crown } from "lucide-react"
-import Link from "next/link"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+'use client'
 
-interface WelcomeSectionProps {
-  plan: string
-}
+import { useEffect, useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { useUser } from '@clerk/nextjs'
+import { Crown, Sparkles } from 'lucide-react'
 
-// Plan badge renkleri
-const getPlanBadgeClass = (plan: string) => {
-  switch (plan.toLowerCase()) {
-    case 'free':
-      return 'bg-green-100 text-green-700 border-green-200';
-    case 'pro':
-      return 'bg-blue-100 text-blue-700 border-blue-200';
-    case 'business':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    default:
-      return 'bg-primary/10 text-primary border-primary/20';
+export function WelcomeSection() {
+  const { user, isLoaded } = useUser()
+
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Good morning'
+    if (hour < 18) return 'Good afternoon'
+    return 'Good evening'
   }
-};
 
-const getPlanTextClass = (plan: string) => {
-  switch (plan.toLowerCase()) {
-    case 'free':
-      return 'text-green-700';
-    case 'pro':
-      return 'text-blue-700';
-    default:
-      return 'text-primary';
+  const getUserName = () => {
+    if (!user) return ''
+    return user.firstName || user.fullName || user.emailAddresses[0]?.emailAddress || ''
   }
-};
 
-const getPlanIcon = (plan: string, className = "") => {
-  switch (plan.toLowerCase()) {
-    case 'free':
-      return <Zap className={className} />;
-    case 'pro':
-      return <Crown className={className} />;
-    default:
-      return <Crown className={className} />;
+  const getUserPlan = () => {
+    if (!user) return 'free'
+    return (user.publicMetadata?.plan as string) || 'free'
   }
-};
 
-export function WelcomeSection({ plan }: WelcomeSectionProps) {
-  const currentDate = new Date()
-  const currentTime = currentDate.toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  })
-  const currentDay = currentDate.toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  })
+  const getPlanDisplayName = (plan: string) => {
+    switch (plan) {
+      case 'pro':
+        return 'Pro'
+      case 'premium':
+        return 'Premium'
+      default:
+        return 'Free'
+    }
+  }
 
-  // Plan adını düzgün göster
-  const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase();
+  const getPlanIcon = (plan: string) => {
+    switch (plan) {
+      case 'pro':
+      case 'premium':
+        return <Crown className="h-4 w-4" />
+      default:
+        return <Sparkles className="h-4 w-4" />
+    }
+  }
+
+  const getPlanBadgeClass = (plan: string) => {
+    switch (plan) {
+      case 'premium':
+        return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none'
+      case 'pro':
+        return 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-none'
+      default:
+        return 'bg-[var(--muted)] text-[var(--muted-foreground)] border-[var(--border)]'
+    }
+  }
+
+  if (!isLoaded) {
+    return (
+      <Card className="bg-glass backdrop-blur-sm border-white/10 shadow-lg">
+        <CardContent className="p-6">
+          <div className="animate-pulse">
+            <div className="h-6 bg-white/20 rounded w-48 mb-2"></div>
+            <div className="h-4 bg-white/20 rounded w-32"></div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const userName = getUserName()
+  const userPlan = getUserPlan()
 
   return (
-    <Card className="mb-8 bg-gradient-to-r from-[var(--card)] to-[var(--background)] border-[var(--primary)]/20">
+    <Card className="bg-glass backdrop-blur-sm border-white/10 shadow-lg hover:shadow-xl hover:border-white/20 transition-all duration-300">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Welcome back! 👋
+            <h1 className="text-2xl font-bold text-gray-50 mb-1">
+              {getGreeting()}{userName ? `, ${userName}` : ''}!
             </h1>
-            <p className="text-muted-foreground mb-4">
-              Here's what's happening with your social media accounts today.
+            <p className="text-gray-200">
+              Ready to create amazing AI-powered carousel content?
             </p>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>{currentDay}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <span>{currentTime}</span>
-              </div>
-            </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href="/pricing" tabIndex={0} aria-label="View or change your subscription plan">
-                    <Badge 
-                      variant="secondary" 
-                      className={`bg-[var(--card)] border border-[var(--border)] ${getPlanTextClass(plan)} cursor-pointer hover:opacity-90 transition-colors`}
-                    >
-                      <span className="flex items-center gap-1">
-                        {getPlanIcon(plan, `h-4 w-4 ${getPlanTextClass(plan)}`)}
-                        {planLabel}
-                      </span>
-                    </Badge>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  View or change your subscription plan
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-foreground">Social SaaS</div>
-              <div className="text-sm text-muted-foreground">Management Platform</div>
-            </div>
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant="secondary" 
+              className={getPlanBadgeClass(userPlan)}
+            >
+              {getPlanIcon(userPlan)}
+              <span className="ml-1">{getPlanDisplayName(userPlan)}</span>
+            </Badge>
           </div>
         </div>
       </CardContent>

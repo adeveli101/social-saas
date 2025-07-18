@@ -1,26 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers'
-import { canAccessFeature } from '@/lib/clerk'
+import { auth } from '@clerk/nextjs/server'
+import { PLANS } from '@/lib/plans'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { userId } = await auth()
+    const { userId } = auth()
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized', hasAccess: false }, { status: 401 })
     }
 
     const body = await request.json()
     const { feature, requiredPlan } = body
 
-    if (!feature) {
-      return NextResponse.json({ error: 'Feature is required' }, { status: 400 })
+    if (!feature || !requiredPlan) {
+      return NextResponse.json({ error: 'Feature and required plan are required' }, { status: 400 })
     }
 
-    const cookieStore = cookies()
-    const supabase = await createClient()
+    const supabase = createClient()
     
     const hasAccess = await canAccessFeature(feature, userId, supabase, requiredPlan)
 

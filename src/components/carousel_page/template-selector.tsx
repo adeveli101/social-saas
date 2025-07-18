@@ -25,21 +25,21 @@ function TemplateCard({ template, onSelect, onDelete, isUserTemplate }: { templa
   };
 
   return (
-    <Card className="flex flex-col h-full w-full bg-zinc-800/50 border-zinc-800 hover:bg-zinc-800 transition-all">
+    <Card className="flex flex-col h-full w-full bg-glass backdrop-blur-sm border-white/10 hover:bg-white/5 hover:border-white/20 transition-all">
       <CardHeader>
         <div className="flex justify-between items-start gap-2">
-          <CardTitle className="text-base font-bold text-white">{template.name}</CardTitle>
-          <Badge className="flex items-center gap-1 shrink-0 bg-zinc-700 text-zinc-300 border-zinc-600">
+          <CardTitle className="text-base font-bold text-gray-50">{template.name}</CardTitle>
+          <Badge className="flex items-center gap-1 shrink-0 bg-blue-500/20 text-blue-300 border-blue-400/30">
             {getTemplateIcon(template.purpose)}
             {template.purpose}
           </Badge>
         </div>
-        <CardDescription className="text-zinc-400 line-clamp-2">{template.mainTopic}</CardDescription>
+        <CardDescription className="text-gray-200 line-clamp-2">{template.mainTopic}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col justify-end pt-0">
-        <p className="text-xs text-zinc-500 mb-3">For: {template.audience}</p>
+        <p className="text-xs text-gray-300 mb-3">For: {template.audience}</p>
         <div className="flex items-center gap-2">
-          <Button onClick={() => onSelect(template)} size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+          <Button onClick={() => onSelect(template)} size="sm" className="w-full bg-blue-500 hover:bg-blue-600 text-white">
             Use Template
           </Button>
           {isUserTemplate && (
@@ -151,21 +151,21 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[90vh] w-[calc(100vw-80px)] max-w-[1800px] bg-zinc-900 border-zinc-800 text-white p-0 flex flex-col">
-        <DialogHeader className="p-6 pb-4 border-b border-zinc-800">
-          <DialogTitle className="text-2xl">Template Library</DialogTitle>
-          <DialogDescription>Select a pre-made template or one of your own to get started quickly.</DialogDescription>
+      <DialogContent className="h-[calc(100vh-8rem)] w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] md:w-[90vw] lg:w-[92vw] xl:w-[94vw] 2xl:w-[96vw] max-w-none bg-glass backdrop-blur-xl border-white/10 text-gray-50 p-0 flex flex-col fixed top-135 left-1/2 transform -translate-x-1/2">
+        <DialogHeader className="p-4 pb-3 border-b border-white/10">
+          <DialogTitle className="text-xl text-gray-50">Template Library</DialogTitle>
+          <DialogDescription className="text-gray-200 text-sm">Select a pre-made template or one of your own to get started quickly.</DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 flex overflow-hidden">
-          <aside className="w-56 h-full overflow-y-auto bg-black/20 border-r border-zinc-800 p-4 space-y-1">
-            <h4 className="text-sm font-semibold text-zinc-400 px-3 pt-2 pb-3">Categories</h4>
+          <aside className="w-48 h-full overflow-y-auto bg-white/5 border-r border-white/10 p-3 space-y-1">
+            <h4 className="text-sm font-semibold text-gray-300 px-2 pt-1 pb-2">Categories</h4>
             {categories.map(category => (
               <Button 
                 key={category} 
                 variant="ghost"
                 onClick={() => setSelectedCategory(category)}
-                className={`w-full justify-between text-base font-normal px-3 py-2 h-auto ${selectedCategory === category ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
+                className={`w-full justify-between text-sm font-normal px-2 py-1.5 h-auto ${selectedCategory === category ? 'bg-blue-500/30 text-blue-200 hover:bg-blue-500/40' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
               >
                 <span>{category}</span>
                 <span className="text-xs opacity-60">{templates.filter(t => category === 'All' || t.category === category).length}</span>
@@ -174,21 +174,21 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
           </aside>
 
           <main className="flex-1 h-full flex flex-col">
-            <div className="px-6 py-4 border-b border-zinc-800">
+            <div className="px-4 py-3 border-b border-white/10">
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input 
                   placeholder="Search templates..." 
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="pl-10 bg-zinc-800/50 border-zinc-700 h-11 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900"
+                  className="pl-9 bg-white/5 border-white/20 text-gray-100 placeholder:text-gray-400 h-9 focus:border-blue-400/50 focus:ring-blue-400/30"
                 />
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
                 {isLoading ? (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-500">
+                  <div className="w-full h-full flex items-center justify-center text-gray-400">
                     <Loader2 className="animate-spin h-8 w-8" />
                   </div>
                 ) : (
@@ -212,7 +212,7 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="grid gap-4 justify-center" style={{ gridTemplateColumns: 'repeat(auto-fill, 320px)' }}>
+                              <div className="grid gap-4 justify-center grid-cols-[repeat(auto-fill,minmax(300px,320px))]">
                                 {recentTemplates.map(template => (
                                   <TemplateCard 
                                     key={template.id + '-recent'}
@@ -234,7 +234,7 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
                         {selectedCategory === 'All' ? 'All Templates' : `${selectedCategory} Templates`}
                       </h2>
                       {filteredTemplates.length > 0 ? (
-                        <div className="grid gap-4 justify-center" style={{ gridTemplateColumns: 'repeat(auto-fill, 320px)' }}>
+                        <div className="grid gap-4 justify-center grid-cols-[repeat(auto-fill,minmax(300px,320px))]">
                             {filteredTemplates.map(template => (
                                 <TemplateCard 
                                   key={template.id} 

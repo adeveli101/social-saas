@@ -49,125 +49,121 @@ export function FooterSection() {
   useEffect(() => { AOS.init({ once: true, duration: 700 }) }, [])
 
   return (
-    <Section 
-      className="py-16 mt-12"
-      animate={true}
-      containerClassName="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto"
-      center={true}
-    >
-      <div className="max-w-6xl mx-auto mb-12">
-        <div className="rounded-xl bg-card border border-border p-10 md:p-12 flex flex-col lg:flex-row gap-8 lg:gap-0 lg:items-start lg:justify-between">
-          {/* Brand & Social */}
-          <div className="lg:w-1/4 mb-8 lg:mb-0 flex flex-col items-center lg:items-start">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">S</span>
-              </div>
-              <span className="font-medium text-xl text-foreground">Social SaaS</span>
-            </div>
-            <p className="text-muted-foreground mb-6 text-sm leading-relaxed text-center lg:text-left">
-              The all-in-one platform for managing your social media presence. 
-              Schedule, analyze, and grow with confidence.
-            </p>
-            <div className="flex space-x-3">
-              {socialLinks.map((social) => (
-                <Button
-                  key={social.name}
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-primary hover:bg-primary/10"
-                >
-                  <social.icon className="h-4 w-4" />
-                </Button>
-              ))}
-            </div>
-          </div>
-          {/* Links */}
-          <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-medium text-foreground mb-4">Product</h3>
-              <ul className="space-y-2">
-                {footerLinks.product.map((link) => (
-                  <li key={link.name}>
-                    <a 
-                      href={link.href} 
-                      className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-medium text-foreground mb-4">Company</h3>
-              <ul className="space-y-2">
-                {footerLinks.company.map((link) => (
-                  <li key={link.name}>
-                    <a 
-                      href={link.href} 
-                      className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-medium text-foreground mb-4">Support</h3>
-              <ul className="space-y-2">
-                {footerLinks.support.map((link) => (
-                  <li key={link.name}>
-                    <a 
-                      href={link.href} 
-                      className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-medium text-foreground mb-4">Stay Updated</h3>
-              <p className="text-muted-foreground mb-4 text-sm">
-                Get the latest news and updates delivered to your inbox.
-              </p>
-              <div className="flex space-x-2">
-                <Input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="bg-background border-border text-foreground placeholder:text-muted-foreground text-sm focus:border-primary/50"
-                />
-                <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90">
-                  <Mail className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+    <Section className="py-20 border-t border-slate-300 bg-gradient-natural">
+      <div className="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto">
+        {/* Newsletter Section */}
+        <div className="text-center mb-16" data-aos="fade-up">
+          <h3 className="text-3xl font-bold text-gray-50 mb-4">
+            Stay in the loop
+          </h3>
+          <p className="text-gray-100 mb-8 max-w-md mx-auto">
+            Get the latest updates, tips, and insights delivered to your inbox.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <Input
+              placeholder="Enter your email"
+              className="flex-1 bg-white/5 backdrop-blur-sm border-white/20 text-gray-100 placeholder:text-gray-300 focus:border-white/40"
+            />
+            <Button className="bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white border-none">
+              <Mail className="h-4 w-4 mr-2" />
+              Subscribe
+            </Button>
           </div>
         </div>
-      </div>
-      {/* Bottom */}
-      <div className="border-t border-border pt-8" data-aos="fade-up" data-aos-delay="100">
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-between w-full">
-          <div className="flex items-center space-x-2 text-muted-foreground text-sm mb-4 md:mb-0 md:justify-start md:w-auto w-full">
-            <span>&copy; {new Date().getFullYear()} Social SaaS. All rights reserved.</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="hidden sm:inline">Made with</span>
-            <Heart className="h-3 w-3 text-primary hidden sm:inline" />
-            <span className="hidden sm:inline">for creators</span>
+
+        {/* Links Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12" data-aos="fade-up">
+          <div>
+            <h4 className="text-gray-50 font-semibold mb-4">Product</h4>
+            <ul className="space-y-2">
+              {footerLinks.product.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    className="text-gray-200 hover:text-white transition-colors duration-300 text-sm"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="flex space-x-6 md:justify-end md:w-auto w-full">
-            {footerLinks.legal.map((link) => (
-              <a 
-                key={link.name}
-                href={link.href} 
-                className="text-muted-foreground hover:text-primary text-sm transition-colors"
+
+          <div>
+            <h4 className="text-gray-50 font-semibold mb-4">Company</h4>
+            <ul className="space-y-2">
+              {footerLinks.company.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    className="text-gray-200 hover:text-white transition-colors duration-300 text-sm"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-gray-50 font-semibold mb-4">Support</h4>
+            <ul className="space-y-2">
+              {footerLinks.support.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    className="text-gray-200 hover:text-white transition-colors duration-300 text-sm"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-gray-50 font-semibold mb-4">Legal</h4>
+            <ul className="space-y-2">
+              {footerLinks.legal.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    className="text-gray-200 hover:text-white transition-colors duration-300 text-sm"
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="border-t border-white/15 pt-8 flex flex-col md:flex-row justify-between items-center" data-aos="fade-up">
+          <div className="flex items-center space-x-2 mb-4 md:mb-0">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">S</span>
+            </div>
+            <span className="text-gray-50 font-bold text-xl">Social SaaS</span>
+          </div>
+
+          <div className="flex space-x-6 mb-4 md:mb-0">
+            {socialLinks.map((social) => (
+              <a
+                key={social.name}
+                href={social.href}
+                className="text-gray-200 hover:text-white transition-colors duration-300"
+                aria-label={social.name}
               >
-                {link.name}
+                <social.icon className="h-5 w-5" />
               </a>
             ))}
+          </div>
+
+          <div className="flex items-center text-gray-200 text-sm">
+            <span>Made with </span>
+            <Heart className="h-4 w-4 mx-1 text-red-300 fill-current" />
+            <span> © 2024 Social SaaS</span>
           </div>
         </div>
       </div>

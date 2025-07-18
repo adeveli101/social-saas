@@ -41,7 +41,7 @@ export const CONTEXTUAL_SUGGESTIONS: ContextualSuggestions = {
     audience: ["Remote workers", "Freelancers", "Managers", "Teams"],
     keyPoints: ["Time management", "Communication", "Tools", "Balance", "Focus", "Collaboration"]
   },
-  "Instagram content ideas": {
+  "Social media content ideas": {
     mainTopic: ["Story strategies", "Reel trends", "Carousel formats", "Engagement tactics"],
     audience: ["Content creators", "Small businesses", "Influencers", "Brands"],
     keyPoints: ["Stories", "Reels", "Carousels", "Engagement", "Hashtags", "Analytics"]
@@ -91,6 +91,20 @@ export const DEFAULT_CATEGORIES: TemplateCategory[] = [
 
 import templatesData from '../data/templates.json'
 import { v4 as uuidv4 } from 'uuid'
+import { SuggestionCategory } from "@/lib/types"
+
+export const suggestionCategories: SuggestionCategory[] = [
+  {
+    name: "For You",
+    suggestions: {
+      "Social media content ideas": {
+        prompt: "Generate a list of 10 engaging social media content ideas for a small coffee shop.",
+        style: "Minimalist",
+        image_count: 5,
+      },
+    },
+  },
+]
 
 export const getDefaultTemplates = async (): Promise<UserTemplate[]> => {
   // JSON dosyasından okunan veriyi UserTemplate tipine cast et

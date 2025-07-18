@@ -38,42 +38,32 @@ export const AnimatedWords: React.FC<AnimatedWordsProps> = ({
     };
   }, [index, interval, words.length]);
 
-  // Find the longest word for width calculation
-  const longestWord = words.reduce((a, b) => (a.length > b.length ? a : b), "");
+  // Get the current gradient class - Ultra-dark gradient theme
+  const currentGradient = gradients?.[index] || "text-gradient-animated";
 
   return (
-    <span
-      style={{
-        display: "inline-block",
-        minWidth: width ? width : undefined,
-        transition: "min-width 0.2s cubic-bezier(0.4,0,0.2,1)",
-        verticalAlign: "bottom",
-      }}
-      className={className}
-    >
-      {/* Hidden span for measuring width */}
+    <div className="relative inline-block" style={{ minWidth: width }}>
+      {/* Invisible element for measuring maximum width */}
       <span
         ref={measureRef}
-        className="absolute opacity-0 pointer-events-none select-none font-inherit text-inherit"
-        aria-hidden
+        className="invisible absolute top-0 left-0 text-gradient-animated whitespace-nowrap"
+        aria-hidden="true"
       >
-        {longestWord}
+        {words.reduce((longest, word) => 
+          word.length > longest.length ? word : longest, ""
+        )}
       </span>
-      {/* Animated word */}
+      
+      {/* Visible animated element with enhanced visibility */}
       <span
         ref={spanRef}
-        className={
-          `inline-block transition-all duration-400 ease-in-out ` +
-          (fade
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 -translate-y-2") +
-          " bg-clip-text text-transparent font-semibold drop-shadow-sm " +
-          (gradients && gradients[index] ? gradients[index] : "bg-gradient-to-r from-[var(--heading-gradient-from)] via-[var(--heading-gradient-via)] to-[var(--heading-gradient-to)]")
-        }
-        style={{ willChange: "opacity, transform" }}
+        className={`${currentGradient} whitespace-nowrap transition-opacity duration-500 drop-shadow-lg ${
+          fade ? "opacity-100" : "opacity-0"
+        } ${className}`}
+        style={{ filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.3))' }}
       >
         {words[index]}
       </span>
-    </span>
+    </div>
   );
 }; 

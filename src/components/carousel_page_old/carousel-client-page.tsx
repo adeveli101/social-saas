@@ -5,6 +5,7 @@ import { GenerationProgress } from "@/components/carousel_page/generation-progre
 import { CarouselResult } from "@/components/carousel_page/carousel-result"
 import { PageContainer } from "@/components/shared/page-container"
 import { useSearchParams } from "next/navigation"
+import { useUser } from "@clerk/nextjs"
 
 export function CarouselClientPage() {
   const [stage, setStage] = useState("form")
@@ -15,6 +16,8 @@ export function CarouselClientPage() {
   const pollingRef = useRef<NodeJS.Timeout | null>(null)
   const searchParams = useSearchParams()
   const initialPrompt = searchParams.get("prompt") || ""
+
+  const { user } = useUser()
 
   // Form submit handler
   const handleFormSubmit = async (data: any) => {
@@ -76,12 +79,11 @@ export function CarouselClientPage() {
       <main className="w-full max-w-4xl px-4 md:px-8 mx-auto py-16">
         <div className="w-full">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold heading-gradient heading mb-4">
-              AI Instagram Carousel Creator
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 heading-gradient">
+              AI-Powered Content Creator
             </h1>
-            <p className="text-xl text-foreground max-w-xl mx-auto">
-              Create Instagram carousel posts with AI. 
-              Images and captions are automatically generated.
+            <p className="text-lg md:text-xl text-[var(--muted-foreground)] max-w-2xl mx-auto">
+              Create engaging social media posts with AI. Just enter your topic, and we'll handle the rest.
             </p>
           </div>
           {stage === "form" && (

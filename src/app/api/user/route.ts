@@ -1,70 +1,63 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers'
-import { getCurrentUser, upgradeUserPlan } from '@/lib/clerk'
+import { auth } from '@clerk/nextjs/server'
 
-export async function GET(request: NextRequest) {
+// GET /api/user
+// Get user profile and plan
+export async function GET(request: Request) {
   try {
-    const { userId } = await auth()
-    
+    const { userId } = auth()
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }
-
-    const supabase = await createClient()
-    
-    // Clerk user bilgilerini al ve Supabase'de kullanıcıyı oluştur/al
-    const userData = await getCurrentUser(supabase)
-    
-    if (!userData) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    return NextResponse.json({
-      user: {
-        id: userId,
-        email: userData.clerk.emailAddresses[0]?.emailAddress,
-        firstName: userData.clerk.firstName,
-        lastName: userData.clerk.lastName,
-        plan: userData.supabase.plan,
-        createdAt: userData.supabase.created_at,
-        updatedAt: userData.supabase.updated_at
-      }
-    })
-  } catch (error) {
-    console.error('Error fetching user:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, full_name, email, plan, credits')
+    if (error) throw error
+    return new NextResponse(JSON.stringify(data), { status: 200 })
+  } catch (error: any) {
+    return new NextResponse(JSON.stringify({ error: error.message }), { status: 500 })
   }
 }
 
-export async function PUT(request: NextRequest) {
+// POST /api/user
+// Create or update user profile
+export async function POST(request: Request) {
   try {
-    const { userId } = await auth()
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await request.json()
-    const { plan } = body
+    const { userId, email, fullName } = body
 
-    if (!plan) {
-      return NextResponse.json({ error: 'Plan is required' }, { status: 400 })
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'User ID is required' }), { status: 400 })
     }
 
-    const supabase = await createClient()
-    
-    // Plan güncelleme işlemi
-    const success = await upgradeUserPlan(userId, plan, supabase)
+    const supabase = createClient()
 
-    if (!success) {
-      return NextResponse.json({ error: 'Failed to update plan' }, { status: 500 })
+    // Check if user exists
+    const { data: existingUser, error: findError } = await supabase
+      .from('users')
+      .select('id, full_name, email, plan, credits')
+      .eq('id', userId)
+    if (findError) throw findError
+
+    if (existingUser && existingUser.length > 0) {
+      // User exists, update
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ full_name: fullName, email: email })
+        .eq('id', userId)
+      if (updateError) throw updateError
+      return new NextResponse(JSON.stringify({ message: 'User updated' }), { status: 200 })
+    } else {
+      // User does not exist, create
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert({ id: userId, full_name: fullName, email: email })
+      if (insertError) throw insertError
+      return new NextResponse(JSON.stringify({ message: 'User created' }), { status: 201 })
     }
-
-    return NextResponse.json({ success: true, plan })
-  } catch (error) {
-    console.error('Error updating user:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error: any) {
+    return new NextResponse(JSON.stringify({ error: error.message }), { status: 500 })
   }
 } 

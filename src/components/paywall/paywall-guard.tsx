@@ -91,43 +91,43 @@ export function PaywallGuard({
   }
 
   const defaultFallback = (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto bg-glass backdrop-blur-sm border border-white/10">
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800">
-          <Lock className="h-6 w-6 text-slate-400" />
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-glass border border-white/20">
+          <Lock className="h-6 w-6 text-gray-300" />
         </div>
-        <CardTitle className="text-xl">Premium Feature</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl text-gray-50">Premium Feature</CardTitle>
+        <CardDescription className="text-gray-200">
           This feature requires a {requiredPlanData?.name} plan or higher
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+        <div className="flex items-center justify-between p-3 bg-glass border border-white/10 rounded-lg">
           <div className="flex items-center space-x-2">
             {getFeatureIcon(currentPlan)}
-            <span className="text-sm">Current: {currentPlanData?.name}</span>
+            <span className="text-sm text-gray-200">Current: {currentPlanData?.name}</span>
           </div>
-          <Badge variant="secondary">{currentPlanData?.name}</Badge>
+          <Badge className="bg-white/10 text-gray-200 border border-white/20">{currentPlanData?.name}</Badge>
         </div>
         
-        <div className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+        <div className="flex items-center justify-between p-3 bg-blue-500/20 border border-blue-400/50 rounded-lg">
           <div className="flex items-center space-x-2">
             {getFeatureIcon(requiredPlan)}
-            <span className="text-sm">Required: {requiredPlanData?.name}</span>
+            <span className="text-sm text-blue-200">Required: {requiredPlanData?.name}</span>
           </div>
-          <Badge className="bg-blue-600">{requiredPlanData?.name}</Badge>
+          <Badge className="bg-blue-500/30 text-blue-200 border border-blue-400/50">{requiredPlanData?.name}</Badge>
         </div>
 
         <Dialog open={showUpgrade} onOpenChange={setShowUpgrade}>
           <DialogTrigger asChild>
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+            <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg">
               Upgrade to {requiredPlanData?.name}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl bg-glass backdrop-blur-xl border border-white/10">
             <DialogHeader>
-              <DialogTitle>Upgrade Your Plan</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-gray-50">Upgrade Your Plan</DialogTitle>
+              <DialogDescription className="text-gray-200">
                 Unlock {feature} and many more features with {requiredPlanData?.name}
               </DialogDescription>
             </DialogHeader>
@@ -140,14 +140,14 @@ export function PaywallGuard({
                   return (
                     <Card 
                       key={plan.id}
-                      className={`relative ${
-                        isRequiredPlan ? 'border-blue-500 bg-blue-500/10' : ''
-                      } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
+                      className={`relative bg-glass backdrop-blur-sm border ${
+                        isRequiredPlan ? 'border-blue-400/50 bg-blue-500/20' : 'border-white/10'
+                      } ${isCurrentPlan ? 'ring-2 ring-emerald-400/50' : ''}`}
                     >
                       <CardHeader className="text-center pb-2">
-                        <CardTitle className="text-lg">{plan.name}</CardTitle>
+                        <CardTitle className="text-lg text-gray-50">{plan.name}</CardTitle>
                         <div className="text-2xl font-bold text-blue-400">
-                          ${plan.price}/month
+                          ${plan.monthlyPrice}/month
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-3">

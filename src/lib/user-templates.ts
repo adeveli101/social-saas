@@ -1,12 +1,9 @@
-import { createClient } from '@/utils/supabase/client'
+import { createBrowserSupabaseClient } from '@/utils/supabase/client'
 import { v4 as uuidv4 } from 'uuid'
 import type { UserTemplate } from './carousel-suggestions'
 
-const supabase = createClient()
-
-// --- Supabase CRUD ---
-
-export async function getUserTemplates(userId: string): Promise<UserTemplate[]> {
+export const getUserTemplates = async (userId: string) => {
+  const supabase = createBrowserSupabaseClient()
   try {
     console.log('Fetching templates for user:', userId)
     
@@ -44,7 +41,8 @@ export async function getUserTemplates(userId: string): Promise<UserTemplate[]> 
   }
 }
 
-export async function createUserTemplate(template: Omit<UserTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount' | 'user_id'>, userId: string): Promise<UserTemplate> {
+export const saveUserTemplate = async (template: Omit<UserTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>, userId: string) => {
+  const supabase = createBrowserSupabaseClient()
   const newTemplate = {
     name: template.name,
     main_topic: template.mainTopic,
@@ -80,7 +78,8 @@ export async function createUserTemplate(template: Omit<UserTemplate, 'id' | 'cr
   }
 }
 
-export async function updateUserTemplate(templateId: string, updates: Partial<UserTemplate>): Promise<UserTemplate> {
+export const updateUserTemplate = async (templateId: string, updates: Partial<UserTemplate>) => {
+  const supabase = createBrowserSupabaseClient()
   // Convert UserTemplate format to database format
   const dbUpdates: any = { updated_at: new Date().toISOString() }
   if (updates.name) dbUpdates.name = updates.name
@@ -115,7 +114,8 @@ export async function updateUserTemplate(templateId: string, updates: Partial<Us
   }
 }
 
-export async function deleteUserTemplate(templateId: string): Promise<void> {
+export const deleteUserTemplate = async (templateId: string) => {
+  const supabase = createBrowserSupabaseClient()
   const { error } = await supabase
     .from('user_templates')
     .delete()

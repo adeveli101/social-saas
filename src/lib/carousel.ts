@@ -201,7 +201,7 @@ async function simulateAIGeneration(
     }
 
     // Update carousel status to completed
-    const finalCaption = `🎯 ${prompt}\n\n✨ This carousel features ${imageCount} different visuals!\n\n#${prompt.replace(/\s+/g, '')} #carousel #instagram #content`
+    const finalCaption = `🎯 ${prompt}\n\n✨ This carousel features ${imageCount} different visuals!\n\n#${prompt.replace(/\s+/g, '')} #socialmedia #contentcreation #digitalmarketing`;
     await updateCarouselStatus(supabase, carouselId, 'completed', finalCaption)
 
   } catch (error) {

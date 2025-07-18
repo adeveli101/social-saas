@@ -387,7 +387,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
         `Target audience: ${audience.trim()}\n` +
         `Purpose: ${purpose}\n` +
         (points.length > 0 ? `Key points to cover: ${points.join(", ")}\n` : "") +
-        `Write a detailed, engaging Instagram carousel in English based on these instructions.`
+        `Write a detailed, engaging social media post in English based on these instructions.`
       clearDraft()
     }
     if (promptMode === 'classic' && !prompt.trim()) return
@@ -400,7 +400,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
       <CardHeader>
         <CardTitle className="text-4xl font-bold text-center mb-2">Describe Your Carousel</CardTitle>
         <CardDescription className="text-center text-muted-foreground">
-          Enter your topic, choose the number of slides and style(s). We'll create your Instagram carousel with AI magic!
+          Enter your topic, choose the number of slides and style(s). We'll create your social media content with AI magic!
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -667,7 +667,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
                 <Label htmlFor="prompt" className="text-foreground font-semibold">Topic / Prompt</Label>
             <Textarea
               id="prompt"
-                  placeholder="e.g. '5 productivity tips for entrepreneurs' or 'Beginner's guide to houseplants'"
+                  placeholder="e.g., 'A 5-part series on the benefits of mindfulness meditation for busy professionals.'"
               value={prompt}
                   onChange={e => setPrompt(e.target.value)}
                   required={promptMode === 'classic'}

@@ -1,7 +1,7 @@
-import { createClient } from '@/utils/supabase/client'
+import { createBrowserSupabaseClient } from '@/utils/supabase/client'
 import type { ContentTask } from './database.types'
 
-const supabase = createClient()
+const supabase = createBrowserSupabaseClient()
 
 // Tüm görevleri getir
 export async function getContentTasks(userId: string): Promise<ContentTask[]> {
