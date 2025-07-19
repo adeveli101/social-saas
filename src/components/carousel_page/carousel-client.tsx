@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import { ControlPanel } from "@/components/carousel_page/control-panel";
 import { PreviewPanel } from "@/components/carousel_page/preview-panel";
 import { Camera, Palette, Sparkles, Brush, PenTool, Aperture, CheckCircle, AlertCircle, Edit3, Eye } from "lucide-react";
@@ -15,6 +16,12 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { StyleSelector } from './style-selector';
 import { AspectRatioGroup } from './aspect-ratio-group';
 import { GenerationHistory } from './generation-history';
+
+// Initialize Supabase client for real-time subscriptions
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 
 export type PromptMode = 'classic' | 'structured';
@@ -197,45 +204,80 @@ export function CarouselClientPage() {
   };
 
 
-  // Polling effect
+  // Real-time subscription effect
   useEffect(() => {
     if (generationStage !== 'generating' || !generationId) {
       return;
     }
 
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/carousel/${generationId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch generation status.');
-        }
-        const data = await response.json();
-
-        setProgress({
-          percent: data.progress || 0,
-          message: data.status || 'Generating...',
-          currentSlide: data.current_slide_index,
-        });
-
-        if (data.progress === 100 && data.slides.length > 0) {
-          setGenerationStage('result');
-          setResultData({ slides: data.slides });
+    // Subscribe to job status changes
+    const subscription = supabase
+      .channel(`job-${generationId}`)
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'generation_jobs',
+          filter: `id=eq.${generationId}`
+        },
+        (payload) => {
+          const job = payload.new as any;
           
-          // Update carousel states
-          setCarouselImages(data.slides.map((slide: any) => slide.image_url || ''));
-          setCarouselData(data);
-          setCarouselId(generationId);
-          
-          clearInterval(interval);
-        }
-      } catch (err: any) {
-        setError(err.message || 'An unknown error occurred.');
-        setGenerationStage('error');
-        clearInterval(interval);
-      }
-    }, 2000); // Poll every 2 seconds
+          // Update progress
+          setProgress({
+            percent: job.progress_percent || 0,
+            message: job.progress_message || 'Generating...',
+            currentSlide: job.result?.current_slide_index,
+          });
 
-    return () => clearInterval(interval);
+          // Check if job is completed
+          if (job.status === 'completed' && job.result) {
+            setGenerationStage('result');
+            setResultData({ slides: job.result.slides || [] });
+            
+            // Update carousel states
+            setCarouselImages(job.result.slides?.map((slide: any) => slide.image_url || '') || []);
+            setCarouselData(job.result);
+            setCarouselId(generationId);
+            
+            // Unsubscribe from real-time updates
+            subscription.unsubscribe();
+          }
+
+          // Check if job failed
+          if (job.status === 'failed') {
+            setError(job.error?.message || 'Generation failed');
+            setGenerationStage('error');
+            subscription.unsubscribe();
+          }
+        }
+      )
+      .on('postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'carousels',
+          filter: `id=eq.${generationId}`
+        },
+        (payload) => {
+          const carousel = payload.new as any;
+          
+          // Update carousel progress
+          if (carousel.progress_percent !== undefined) {
+            setProgress({
+              percent: carousel.progress_percent,
+              message: carousel.progress_message || 'Generating...',
+              currentSlide: carousel.generation_metadata?.current_slide_index,
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription on unmount or when generation stage changes
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [generationStage, generationId]);
 
   const handleTemplateSelect = (template: UserTemplate) => {
@@ -321,7 +363,8 @@ Instructions: Generate a compelling and visually consistent carousel based on th
             body: JSON.stringify({
                 prompt: finalPrompt,
                 imageCount: finalFormState.numberOfSlides,
-                styles: finalFormState.styles
+                styles: finalFormState.styles,
+                aspectRatio: finalFormState.aspectRatio
             }),
         });
 
@@ -331,7 +374,15 @@ Instructions: Generate a compelling and visually consistent carousel based on th
         }
 
         const data = await response.json();
-        setGenerationId(data.id);
+        
+        // Set the job ID for real-time tracking
+        setGenerationId(data.job_id || data.id);
+        
+        // Update initial progress
+        setProgress({
+          percent: 0,
+          message: 'Job created, starting generation...',
+        });
         
     } catch (err: any) {
         setError(err.message || 'An unknown error occurred.');
