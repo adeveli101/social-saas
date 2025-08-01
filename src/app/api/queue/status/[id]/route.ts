@@ -12,7 +12,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'UNAUTHORIZED', message: 'Authentication required' },
@@ -46,7 +46,7 @@ export async function GET(
     }
 
     // Get carousel progress information
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: carousel, error: carouselError } = await supabase
       .from('carousels')
       .select('progress_percent, progress_message, estimated_completion_time')

@@ -40,8 +40,11 @@ const config: Config = {
         'gradient-primary': theme.gradients.primary,
         'gradient-secondary': theme.gradients.secondary,
         'gradient-dark': theme.gradients.dark,
-        'gradient-blue': theme.gradients.blue,
-        'gradient-purple': theme.gradients.purple,
+        'gradient-success': theme.gradients.success,
+        'gradient-warning': theme.gradients.warning,
+        'gradient-danger': theme.gradients.danger,
+        'gradient-info': theme.gradients.info,
+        'gradient-light': theme.gradients.light,
       },
       
       fontFamily: {

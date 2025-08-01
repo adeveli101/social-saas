@@ -484,6 +484,8 @@ Instructions: Generate a compelling and visually consistent carousel based on th
                 setFormState={setFormState}
                 onGenerate={handleGenerate}
                 isGenerating={generationStage === 'generating'}
+                availableStyles={[]}
+                audienceOptions={[]}
                 onLoadTemplate={() => setTemplateSelectorOpen(true)}
                 onSaveTemplate={() => setTemplateSaveOpen(true)}
                 // Props for new system
@@ -517,6 +519,8 @@ Instructions: Generate a compelling and visually consistent carousel based on th
                   setFormState={setFormState}
                   onGenerate={handleGenerate}
                   isGenerating={generationStage === 'generating'}
+                  availableStyles={[]}
+                  audienceOptions={[]}
                   onLoadTemplate={() => setTemplateSelectorOpen(true)}
                   onSaveTemplate={() => setTemplateSaveOpen(true)}
                   // Props for new system

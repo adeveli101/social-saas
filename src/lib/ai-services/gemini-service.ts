@@ -10,12 +10,9 @@ import type {
   TextGenerationRequest,
   TextGenerationResult,
   ContentStrategyRequest,
-  ContentStrategyResult,
-  AIServiceError,
-  RateLimitError,
-  QuotaExceededError,
-  InvalidPromptError
+  ContentStrategyResult
 } from './types'
+import { InvalidPromptError, RateLimitError, QuotaExceededError, AIServiceError } from './types'
 import { PromptEngineer } from './prompt-templates'
 
 export class GeminiService {

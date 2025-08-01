@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getContentTasks, updateContentTask, moveContentTask, createContentTask, deleteContentTask } from '@/lib/content-board'
-import type { ContentTask } from '@/lib/database.types'
+import type { Database } from '@/lib/database.types'
+
+type ContentTask = Database['public']['Tables']['content_tasks']['Row']
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
 import { CardDetailModal } from './card-detail-modal'
@@ -168,12 +170,14 @@ export function KanbanBoard() {
       const newTask = await createContentTask({
         user_id: userId,
         title: addTitle,
+        description: null,
         status: 'idea',
         planned_date: addPlannedDate || null,
         category: addCategory ? [addCategory] : [],
         priority: addPriority,
         notes: addNotes,
         carousel_id: null,
+        due_date: null,
       })
       setTasks(tasks => [newTask, ...tasks])
       setAddTitle('')
@@ -461,7 +465,7 @@ export function KanbanBoard() {
                     id={task.id}
                     title={task.title}
                     category={task.category || []}
-                    priority={task.priority}
+                    priority={task.priority as 'low' | 'medium' | 'high'}
                     plannedDate={task.planned_date}
                     notes={task.notes}
                     onClick={() => setSelectedTask(task)}

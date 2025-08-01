@@ -1,5 +1,7 @@
 import { createBrowserSupabaseClient } from '@/utils/supabase/client'
-import type { ContentTask } from './database.types'
+import type { Database } from './database.types'
+
+type ContentTask = Database['public']['Tables']['content_tasks']['Row']
 
 const supabase = createBrowserSupabaseClient()
 

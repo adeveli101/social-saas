@@ -7,11 +7,16 @@ type Supabase = SupabaseClient<Database>
 export interface Carousel {
   id: string
   user_id: string
+  clerk_user_id: string | null
   prompt: string
   image_count: number
-  status: 'pending' | 'processing' | 'completed' | 'failed'
+  status: string // Allow any string to match database
   final_caption: string | null
   error_message: string | null
+  progress_percent: number | null
+  progress_message: string | null
+  generation_metadata: any | null
+  estimated_completion_time: string | null
   created_at: string
   updated_at: string
 }
@@ -221,11 +226,16 @@ export async function generateCarousel(params: {
   // Carousel kaydını oluştur
   const carouselId = await createCarousel(supabase, {
     user_id: userId,
+    clerk_user_id: userId,
     prompt,
     image_count: imageCount,
     status: 'pending',
     final_caption: null,
-    error_message: null
+    error_message: null,
+    progress_percent: null,
+    progress_message: null,
+    generation_metadata: null,
+    estimated_completion_time: null
   })
   
   // AI generation'ı başlat (asenkron)

@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Save, Sparkles, Check, Plus, AlertCircle } from 'lucide-react'
 import { UserTemplate, DEFAULT_CATEGORIES, TemplateCategory } from '@/lib/carousel-suggestions'
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select'
-import { createUserTemplate } from '@/lib/user-templates'
+import { createUserTemplate } from '../../../lib/user-templates'
 import { useUser } from '@clerk/nextjs'
 
 interface TemplateSaveDialogProps {

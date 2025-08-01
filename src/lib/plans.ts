@@ -81,6 +81,9 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   }
 ]
 
+// Export PLANS for backward compatibility
+export const PLANS = SUBSCRIPTION_PLANS
+
 // Feature limits checker
 export function getFeatureLimit(planId: string, feature: keyof SubscriptionPlan['limits']): number | 'unlimited' {
   const plan = SUBSCRIPTION_PLANS.find(p => p.id === planId)

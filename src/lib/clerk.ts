@@ -17,7 +17,7 @@ export async function getCurrentUser(supabase: any) {
   const { userId } = await auth()
   if (!userId) return null
   
-  const clerkUser = await clerkClient.users.getUser(userId)
+  const clerkUser = await (await clerkClient()).users.getUser(userId)
   
   // Supabase'de kullanıcıyı oluştur veya al
   const { data: existingUser } = await supabase
@@ -105,7 +105,7 @@ export async function upgradeUserPlan(userId: string, planId: string, supabase: 
       .eq('clerk_id', userId)
     
     // Clerk'te metadata'yı güncelle
-    await clerkClient.users.updateUser(userId, {
+    await (await clerkClient()).users.updateUser(userId, {
       publicMetadata: { plan: planId }
     })
     
@@ -128,5 +128,41 @@ export async function getUserCurrentPlan(userId: string, supabase: any): Promise
   } catch (error) {
     console.error('Error getting user plan:', error)
     return 'free'
+  }
+}
+
+// Credit management
+export async function getUserCredits(userId: string, supabase: any): Promise<number> {
+  try {
+    const { data: user } = await supabase
+      .from('users')
+      .select('credits')
+      .eq('clerk_id', userId)
+      .single()
+    
+    return user?.credits || 0
+  } catch (error) {
+    console.error('Error getting user credits:', error)
+    return 0
+  }
+}
+
+export async function deductCredits(userId: string, amount: number, supabase: any): Promise<boolean> {
+  try {
+    const currentCredits = await getUserCredits(userId, supabase)
+    
+    if (currentCredits < amount) {
+      return false
+    }
+    
+    await supabase
+      .from('users')
+      .update({ credits: currentCredits - amount })
+      .eq('clerk_id', userId)
+    
+    return true
+  } catch (error) {
+    console.error('Error deducting credits:', error)
+    return false
   }
 } 

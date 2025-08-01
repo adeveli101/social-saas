@@ -442,7 +442,7 @@ export class SupabaseStorageManager {
       if (file instanceof Buffer) {
         imageFile = new File([file], 'image.jpg', { type: 'image/jpeg' })
       } else {
-        imageFile = file
+        imageFile = file as File
       }
 
       // Create canvas for optimization

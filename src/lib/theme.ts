@@ -164,6 +164,18 @@ export const theme = {
     normal: '250ms ease-in-out',
     slow: '350ms ease-in-out',
   },
+
+  // Gradients
+  gradients: {
+    primary: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    secondary: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    success: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    warning: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    danger: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+    info: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    dark: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
+    light: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+  },
 }
 
 // CSS Variables for easy use in Tailwind

@@ -6,11 +6,11 @@ import { auth } from '@clerk/nextjs/server'
 // Get user profile and plan
 export async function GET(request: Request) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data, error } = await supabase
       .from('users')
       .select('id, full_name, email, plan, credits')
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return new NextResponse(JSON.stringify({ error: 'User ID is required' }), { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Check if user exists
     const { data: existingUser, error: findError } = await supabase

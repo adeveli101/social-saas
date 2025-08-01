@@ -12,15 +12,19 @@ import type {
   JobCreationData,
   JobUpdateData,
   JobFilter,
-  JobError,
-  QueueError
+  JobError
 } from '@/types/queue-system'
+import { QueueError } from '@/types/queue-system'
 
 export class QueueManager {
   private supabase;
 
   constructor() {
     this.supabase = createClient();
+  }
+
+  private async getSupabase() {
+    return await this.supabase;
   }
 
   // =============================================================================
@@ -32,7 +36,8 @@ export class QueueManager {
    */
   async createJob(data: JobCreationData): Promise<string> {
     try {
-      const { data: job, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data: job, error } = await supabase
         .from('generation_jobs')
         .insert({
           carousel_id: data.carouselId,
@@ -62,7 +67,8 @@ export class QueueManager {
    */
   async getJob(jobId: string): Promise<GenerationJob | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from('generation_jobs')
         .select('*')
         .eq('id', jobId)
@@ -106,7 +112,8 @@ export class QueueManager {
         updateData.completed_at = new Date().toISOString();
       }
 
-      const { error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { error } = await supabase
         .from('generation_jobs')
         .update(updateData)
         .eq('id', jobId);
@@ -127,7 +134,8 @@ export class QueueManager {
    */
   async getNextJob(): Promise<GenerationJob | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from('generation_jobs')
         .select('*')
         .eq('status', 'queued')
@@ -172,7 +180,7 @@ export class QueueManager {
       await this.updateJobStatus(jobId, 'queued', {
         scheduled_at: scheduledAt,
         retry_count: job.retry_count + 1,
-        error_message: null // Clear previous error
+        error_message: undefined // Clear previous error
       });
     } catch (error) {
       if (error instanceof QueueError) {
@@ -191,7 +199,8 @@ export class QueueManager {
    */
   async getUserJobs(userId: string, filter?: JobFilter): Promise<GenerationJob[]> {
     try {
-      let query = this.supabase
+      const supabase = await this.getSupabase();
+      let query = supabase
         .from('generation_jobs')
         .select('*')
         .eq('user_id', userId);
@@ -234,7 +243,8 @@ export class QueueManager {
    */
   async getJobsByStatus(status: JobStatus, limit: number = 10): Promise<GenerationJob[]> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from('generation_jobs')
         .select('*')
         .eq('status', status)
@@ -265,7 +275,8 @@ export class QueueManager {
     total: number;
   }> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from('generation_jobs')
         .select('status');
 

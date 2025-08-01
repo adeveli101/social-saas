@@ -12,7 +12,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     
     if (!userId) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function GET(
       )
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get carousel data with enhanced progress tracking
     const { data: carousel, error } = await supabase

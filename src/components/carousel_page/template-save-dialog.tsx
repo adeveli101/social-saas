@@ -49,11 +49,11 @@ export function TemplateSaveDialog({ isOpen, onOpenChange, formState, onTemplate
         audience: formState.audience,
         purpose: formState.purpose,
         keyPoints: formState.keyPoints,
-        category: 'General' // Simplified for now
+        category: 'Other' // Simplified for now
       }, user.id);
       
       setIsSaved(true);
-      onTemplateSaved?.(newTemplate);
+      onTemplateSaved?.(newTemplate as any);
       
       setTimeout(() => {
         onOpenChange(false);

@@ -17,7 +17,7 @@ import {
 import { AnimatePresence } from 'framer-motion';
 
 // --- TYPE DEFINITIONS ---
-type GenerationStage = 'form' | 'generating' | 'result';
+type GenerationStage = 'form' | 'generating' | 'result' | 'error';
 
 interface Slide {
   imageUrl: string;
@@ -32,6 +32,7 @@ interface PreviewPanelProps {
   generationStage: GenerationStage;
   carouselData: any;
   carouselId: string | null;
+  progress?: { percent: number; message: string; currentSlide?: number };
 }
 
 // --- UI COMPONENTS ---
@@ -78,7 +79,7 @@ const SlideCard = ({ slide, aspectRatio }: { slide?: Slide, aspectRatio: string 
 
 // --- MAIN PREVIEW PANEL ---
 
-export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGenerating, generationStage, carouselData, carouselId }: PreviewPanelProps) {
+export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGenerating, generationStage, carouselData, carouselId, progress }: PreviewPanelProps) {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [count, setCount] = useState(0)
@@ -141,7 +142,7 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
             <div className="w-full max-w-sm">
                 <Carousel setApi={setApi} className="w-full">
                     <CarouselContent>
-                        {(hasResult ? slides : Array.from({ length: numberOfSlides })).map((slide, index) => (
+                        {(hasResult ? slides : Array.from({ length: numberOfSlides })).map((slide: any, index: number) => (
                         <CarouselItem key={hasResult ? `result-${index}` : `skeleton-${index}`}>
                             <SlideCard 
                                 slide={hasResult ? (slide as Slide) : undefined} 

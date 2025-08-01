@@ -21,7 +21,7 @@ const generateSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     
     if (!userId) {
       return NextResponse.json(
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = generateSchema.parse(body)
     
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // 1. Check user credits
     const { data: user, error: userError } = await supabase
@@ -57,11 +57,16 @@ export async function POST(request: Request) {
     // 2. Create carousel record
     const carouselId = await createCarousel(supabase, {
       user_id: userId,
+      clerk_user_id: userId,
       prompt: validatedData.prompt,
       image_count: validatedData.imageCount,
       status: 'pending',
       final_caption: null,
-      error_message: null
+      error_message: null,
+      progress_percent: null,
+      progress_message: null,
+      generation_metadata: null,
+      estimated_completion_time: null
     })
 
     // 3. Create job in queue

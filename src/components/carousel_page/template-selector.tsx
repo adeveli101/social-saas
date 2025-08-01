@@ -97,7 +97,7 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
           const defaultTemplates = await getDefaultTemplates();
           let userTemplates: UserTemplate[] = [];
           if (user?.id) {
-            userTemplates = await getUserTemplates(user.id);
+            userTemplates = await getUserTemplates(user.id) as any;
           }
           const allTemplates = [...defaultTemplates, ...userTemplates];
           setTemplates(allTemplates);
@@ -119,7 +119,8 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
   
   const handleTemplateSelect = async (template: UserTemplate) => {
     if (template.user_id && user?.id === template.user_id) {
-        updateUserTemplate(template.id, { usageCount: (template.usageCount || 0) + 1 }).catch(console.error);
+        // Note: usageCount tracking removed as it's not in database schema
+        // updateUserTemplate(template.id, { usageCount: (template.usageCount || 0) + 1 }).catch(console.error);
     }
     updateRecentTemplates(template);
     onTemplateSelect(template);

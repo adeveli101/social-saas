@@ -12,12 +12,9 @@ import type {
   TextGenerationRequest,
   TextGenerationResult,
   ContentStrategyRequest,
-  ContentStrategyResult,
-  AIServiceError,
-  RateLimitError,
-  QuotaExceededError,
-  InvalidPromptError
+  ContentStrategyResult
 } from './types'
+import { InvalidPromptError, RateLimitError, QuotaExceededError, AIServiceError } from './types'
 import { PromptEngineer } from './prompt-templates'
 
 export class OpenAIService {
@@ -69,6 +66,10 @@ export class OpenAIService {
 
       const processingTime = Date.now() - startTime
       const cost = this.calculateImageCost(request.quality === 'hd', size)
+
+      if (!response.data || response.data.length === 0) {
+        throw new Error('No image data received from OpenAI')
+      }
 
       return {
         success: true,
@@ -208,7 +209,7 @@ export class OpenAIService {
       case '1:1':
         return '1024x1024'
       case '4:5':
-        return '1024x1280'
+        return '1024x1024' // DALL-E doesn't support 4:5, use 1:1
       case '9:16':
         return '1024x1792'
       default:

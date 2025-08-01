@@ -27,6 +27,10 @@ export class JobProcessor {
     this.supabase = createClient();
   }
 
+  private async getSupabase() {
+    return await this.supabase;
+  }
+
   // =============================================================================
   // Core Processing Methods
   // =============================================================================
@@ -333,7 +337,8 @@ export class JobProcessor {
   ): Promise<void> {
     try {
       // Update carousel status and final caption
-      await this.supabase
+      const supabase = await this.getSupabase();
+      await supabase
         .from('carousels')
         .update({
           status: 'completed',
@@ -346,7 +351,7 @@ export class JobProcessor {
 
       // Create carousel slides
       for (const slide of slides) {
-        await this.supabase
+        await supabase
           .from('carousel_slides')
           .insert({
             carousel_id: carouselId,
@@ -375,7 +380,8 @@ export class JobProcessor {
     message: string
   ): Promise<void> {
     try {
-      await this.supabase
+      const supabase = await this.getSupabase();
+      await supabase
         .from('carousels')
         .update({
           progress_percent: percent,
@@ -410,7 +416,8 @@ export class JobProcessor {
       });
 
       // Update carousel status
-      await this.supabase
+      const supabase = await this.getSupabase();
+      await supabase
         .from('carousels')
         .update({
           status: 'failed',

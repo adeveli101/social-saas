@@ -31,9 +31,10 @@ export const ImageEditorDialog = ({ isOpen, onClose, onSave, imageUrl }: ImageEd
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-fit p-0 border-0">
-        <ImageEditor 
+                <ImageEditor
           imageUrl={imageUrl}
           onSave={handleSaveAndClose}
+          onCancel={onClose}
         />
       </DialogContent>
     </Dialog>

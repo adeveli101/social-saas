@@ -16,9 +16,9 @@ import type {
   TextGenerationResult,
   ContentStrategyRequest,
   ContentStrategyResult,
-  AIServiceError,
   AIServiceOptions
 } from './types'
+import { AIServiceError } from './types'
 
 export class AIServiceOrchestrator {
   private services: Map<AIServiceProvider, any> = new Map()
@@ -324,8 +324,8 @@ export class AIServiceOrchestrator {
   /**
    * Check health of all services
    */
-  async healthCheck(): Promise<Record<AIServiceProvider, boolean>> {
-    const health: Record<AIServiceProvider, boolean> = {}
+  async healthCheck(): Promise<Partial<Record<AIServiceProvider, boolean>>> {
+    const health: Partial<Record<AIServiceProvider, boolean>> = {}
 
     for (const [provider, service] of this.services) {
       try {

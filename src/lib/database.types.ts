@@ -6,6 +6,23 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+// ContentTask type for content board
+export interface ContentTask {
+  id: string
+  user_id: string
+  title: string
+  description: string | null
+  notes: string | null
+  status: 'idea' | 'in_progress' | 'to_review' | 'ready_to_post' | 'posted'
+  priority: 'low' | 'medium' | 'high'
+  due_date: string | null
+  planned_date: string | null
+  category: string[]
+  carousel_id: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -194,6 +211,93 @@ export interface Database {
           completed?: boolean
           priority?: string
           due_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_tasks: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          notes: string | null
+          status: string
+          priority: string
+          due_date: string | null
+          planned_date: string | null
+          category: string[]
+          carousel_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          notes?: string | null
+          status?: string
+          priority?: string
+          due_date?: string | null
+          planned_date?: string | null
+          category?: string[]
+          carousel_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string | null
+          notes?: string | null
+          status?: string
+          priority?: string
+          due_date?: string | null
+          planned_date?: string | null
+          category?: string[]
+          carousel_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_templates: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          main_topic: string
+          audience: string
+          purpose: string
+          key_points: string[]
+          category: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          main_topic: string
+          audience: string
+          purpose: string
+          key_points: string[]
+          category: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          main_topic?: string
+          audience?: string
+          purpose?: string
+          key_points?: string[]
+          category?: string
           created_at?: string
           updated_at?: string
         }

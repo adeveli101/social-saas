@@ -54,7 +54,7 @@ export function TemplateSelector({ onTemplateSelect, trigger, isLoading: isExter
       if (user && user.id) {
         try {
           const userTemplates = await getUserTemplates(user.id)
-          loadedTemplates = [...defaultTemplates, ...userTemplates]
+          loadedTemplates = [...defaultTemplates, ...userTemplates] as any
         } catch (error) {
           console.error('Failed to load user templates, falling back to defaults only:', error)
           loadedTemplates = defaultTemplates
@@ -111,7 +111,8 @@ export function TemplateSelector({ onTemplateSelect, trigger, isLoading: isExter
     try {
       // Only increment usage count for user templates, not default templates
       if (template.user_id && user && user.id === template.user_id) {
-        await updateUserTemplate(template.id, { usageCount: template.usageCount + 1 })
+        // Note: usageCount tracking removed as it's not in database schema
+        // await updateUserTemplate(template.id, { usageCount: template.usageCount + 1 })
       }
       updateRecentTemplates(template)
       onTemplateSelect(template)

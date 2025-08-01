@@ -114,6 +114,7 @@ export interface JobUpdateData {
   result?: CarouselGenerationResult;
   error_message?: string;
   retry_count?: number;
+  scheduled_at?: string;
   started_at?: string;
   completed_at?: string;
 }
