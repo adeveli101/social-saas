@@ -6,9 +6,11 @@ export function EnvCheck() {
   const [envStatus, setEnvStatus] = useState<{
     supabase: boolean
     clerk: boolean
+    loading: boolean
   }>({
     supabase: false,
-    clerk: false
+    clerk: false,
+    loading: true
   })
 
   useEffect(() => {
@@ -26,14 +28,31 @@ export function EnvCheck() {
 
       setEnvStatus({
         supabase: !!(supabaseUrl && supabaseKey),
-        clerk: !!clerkKey
+        clerk: !!clerkKey,
+        loading: false
       })
     }
 
-    checkEnv()
+    // Sadece production'da kontrol et
+    if (process.env.NODE_ENV === 'production') {
+      checkEnv()
+    } else {
+      // Development'ta her zaman geçerli kabul et
+      setEnvStatus({
+        supabase: true,
+        clerk: true,
+        loading: false
+      })
+    }
   }, [])
 
-  if (!envStatus.supabase || !envStatus.clerk) {
+  // Loading durumunda hiçbir şey gösterme
+  if (envStatus.loading) {
+    return null
+  }
+
+  // Sadece production'da ve eksik environment variables varsa göster
+  if (process.env.NODE_ENV === 'production' && (!envStatus.supabase || !envStatus.clerk)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
