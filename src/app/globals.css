@@ -1,8 +1,9 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "aos/dist/aos.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@custom-variant dark (&:is(.dark *));
+/* AOS CSS - Production ready import */
+@import "aos/dist/aos.css";
 
 @theme inline {
   --color-background: var(--background);

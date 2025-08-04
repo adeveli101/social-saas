@@ -1,15 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/lib/theme-provider'
 import "./globals.css";
+import "aos/dist/aos.css";
 import { FooterSection } from "@/components/landing_page/footer-section"
 import { Header } from "@/components/shared/header"
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Social SaaS - Modern Social Media Management",
@@ -32,7 +27,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${inter.variable} antialiased text-foreground min-h-screen`}
+          className="antialiased text-foreground min-h-screen font-sans"
         >
           <ThemeProvider>
             <Header />

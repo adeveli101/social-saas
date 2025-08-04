@@ -429,93 +429,103 @@ export class SupabaseStorageManager {
     options: ImageOptimizationOptions = {}
   ): Promise<{ data?: File; error?: StorageError }> {
     try {
+      // Only run in browser
+      if (typeof window === 'undefined' || typeof File === 'undefined' || typeof Blob === 'undefined') {
+        return {
+          error: {
+            message: 'Image optimization is only supported in the browser environment.',
+            code: 'UNSUPPORTED_ENVIRONMENT',
+          },
+        };
+      }
       const {
         quality = IMAGE_QUALITY,
         maxWidth = MAX_WIDTH,
         maxHeight = MAX_HEIGHT,
         format = 'jpeg',
-        progressive = true
-      } = options
+        progressive = true,
+      } = options;
 
       // Convert buffer to file if needed
-      let imageFile: File
+      let imageFile: File;
       if (file instanceof Buffer) {
-        imageFile = new File([file], 'image.jpg', { type: 'image/jpeg' })
+        const uint8 = new Uint8Array(file);
+        imageFile = new File([uint8], 'image.jpg', { type: 'image/jpeg' });
       } else {
-        imageFile = file as File
+        imageFile = file as File;
       }
 
       // Create canvas for optimization
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')!
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
 
       // Create image element
-      const img = new Image()
-      const imageUrl = URL.createObjectURL(imageFile)
+      const img = new Image();
+      const imageUrl = URL.createObjectURL(imageFile);
 
       return new Promise((resolve) => {
         img.onload = () => {
           // Calculate new dimensions
-          let { width, height } = img
-          
+          let { width, height } = img;
+
           if (width > maxWidth || height > maxHeight) {
-            const ratio = Math.min(maxWidth / width, maxHeight / height)
-            width *= ratio
-            height *= ratio
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width *= ratio;
+            height *= ratio;
           }
 
           // Set canvas dimensions
-          canvas.width = width
-          canvas.height = height
+          canvas.width = width;
+          canvas.height = height;
 
           // Draw and optimize image
-          ctx.drawImage(img, 0, 0, width, height)
+          ctx.drawImage(img, 0, 0, width, height);
 
           // Convert to blob
           canvas.toBlob(
             (blob) => {
               if (blob) {
                 const optimizedFile = new File([blob], imageFile.name, {
-                  type: `image/${format}`
-                })
-                resolve({ data: optimizedFile })
+                  type: `image/${format}`,
+                });
+                resolve({ data: optimizedFile });
               } else {
                 resolve({
                   error: {
                     message: 'Failed to optimize image',
-                    code: 'OPTIMIZATION_ERROR'
-                  }
-                })
+                    code: 'OPTIMIZATION_ERROR',
+                  },
+                });
               }
             },
             `image/${format}`,
             quality
-          )
+          );
 
           // Clean up
-          URL.revokeObjectURL(imageUrl)
-        }
+          URL.revokeObjectURL(imageUrl);
+        };
 
         img.onerror = () => {
-          URL.revokeObjectURL(imageUrl)
+          URL.revokeObjectURL(imageUrl);
           resolve({
             error: {
               message: 'Failed to load image for optimization',
-              code: 'IMAGE_LOAD_ERROR'
-            }
-          })
-        }
+              code: 'IMAGE_LOAD_ERROR',
+            },
+          });
+        };
 
-        img.src = imageUrl
-      })
+        img.src = imageUrl;
+      });
     } catch (error) {
       return {
         error: {
           message: 'Image optimization failed',
           code: 'OPTIMIZATION_ERROR',
-          details: error instanceof Error ? error.message : 'Unknown error'
-        }
-      }
+          details: error instanceof Error ? error.message : 'Unknown error',
+        },
+      };
     }
   }
 
