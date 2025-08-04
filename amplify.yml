@@ -15,10 +15,6 @@ frontend:
     baseDirectory: .next
     files:
       - '**/*'
-    - path: .next/**
-    - path: public/**
-    - path: node_modules/**
-    - path: styles/**
   cache:
     paths:
       - node_modules/**/*
