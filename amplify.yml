@@ -6,10 +6,10 @@ frontend:
         - nvm install 20
         - nvm use 20
         - node --version
-        - echo "Environment variables check:"
-        - echo "SUPABASE_URL: $NEXT_PUBLIC_SUPABASE_URL"
-        - echo "CLERK_PUBLISHABLE: $NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
-        - echo "CLERK_SECRET: $CLERK_SECRET_KEY"
+        - echo "Environment variables check"
+        - echo "SUPABASE_URL $NEXT_PUBLIC_SUPABASE_URL"
+        - echo "CLERK_PUBLISHABLE $NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
+        - echo "CLERK_SECRET $CLERK_SECRET_KEY"
         - npm ci
     build:
       commands:
