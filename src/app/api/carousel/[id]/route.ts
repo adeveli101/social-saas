@@ -9,10 +9,11 @@ import { QueueManager } from '@/lib/queue'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
+    const { id } = await params
     
     if (!userId) {
       return NextResponse.json(
@@ -21,7 +22,7 @@ export async function GET(
       )
     }
 
-    if (!params.id) {
+    if (!id) {
       return NextResponse.json(
         { success: false, error: 'MISSING_CAROUSEL_ID', message: 'Carousel ID is required' },
         { status: 400 }
@@ -37,7 +38,7 @@ export async function GET(
         *,
         carousel_slides (*)
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -71,7 +72,7 @@ export async function GET(
         const { data: jobs } = await supabase
           .from('generation_jobs')
           .select('id, status, error_message, retry_count, created_at')
-          .eq('carousel_id', params.id)
+          .eq('carousel_id', id)
           .order('created_at', { ascending: false })
           .limit(1)
           .single()
@@ -98,16 +99,15 @@ export async function GET(
         jobInfo,
         progress: {
           percent: carousel.progress_percent || 0,
-          message: carousel.progress_message || 'Processing...',
+          message: carousel.progress_message || '',
           estimatedCompletion: carousel.estimated_completion_time
         }
       }
     })
-
   } catch (error) {
-    console.error('Carousel fetch error:', error)
+    console.error('Carousel API error:', error)
     return NextResponse.json(
-      { success: false, error: 'INTERNAL_ERROR', message: 'Failed to fetch carousel' },
+      { success: false, error: 'INTERNAL_ERROR', message: 'Internal server error' },
       { status: 500 }
     )
   }

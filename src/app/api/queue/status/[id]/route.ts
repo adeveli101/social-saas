@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { QueueManager } from '@/lib/queue'
 import { createClient } from '@/utils/supabase/server'
-
-// =============================================================================
-// Job Status API - Get real-time status of specific job
-// =============================================================================
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
+    const { id } = await params
+    
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'UNAUTHORIZED', message: 'Authentication required' },
@@ -20,15 +17,29 @@ export async function GET(
       )
     }
 
-    if (!params.id) {
+    if (!id) {
       return NextResponse.json(
         { success: false, error: 'MISSING_JOB_ID', message: 'Job ID is required' },
         { status: 400 }
       )
     }
 
-    const queueManager = new QueueManager()
-    const job = await queueManager.getJob(params.id)
+    const supabase = await createClient()
+    
+    // Get job status
+    const { data: job, error } = await supabase
+      .from('generation_jobs')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      console.error('Job status fetch error:', error)
+      return NextResponse.json(
+        { success: false, error: 'FETCH_ERROR', message: 'Failed to fetch job status' },
+        { status: 500 }
+      )
+    }
 
     if (!job) {
       return NextResponse.json(
@@ -37,7 +48,7 @@ export async function GET(
       )
     }
 
-    // Check if user owns this job
+    // Check user ownership
     if (job.user_id !== userId) {
       return NextResponse.json(
         { success: false, error: 'FORBIDDEN', message: 'Access denied' },
@@ -45,40 +56,23 @@ export async function GET(
       )
     }
 
-    // Get carousel progress information
-    const supabase = await createClient()
-    const { data: carousel, error: carouselError } = await supabase
-      .from('carousels')
-      .select('progress_percent, progress_message, estimated_completion_time')
-      .eq('id', job.carousel_id)
-      .single()
-
-    if (carouselError) {
-      console.error('Error fetching carousel progress:', carouselError)
-    }
-
     return NextResponse.json({
       success: true,
       data: {
         id: job.id,
         status: job.status,
-        progress: {
-          percent: carousel?.progress_percent || 0,
-          message: carousel?.progress_message || 'Processing...'
-        },
-        createdAt: job.created_at,
-        estimatedCompletion: carousel?.estimated_completion_time || job.completed_at,
-        result: job.result,
+        progress: job.progress_percent || 0,
+        message: job.progress_message || '',
         error: job.error_message,
         retryCount: job.retry_count,
-        maxRetries: job.max_retries
+        createdAt: job.created_at,
+        updatedAt: job.updated_at
       }
     })
-
   } catch (error) {
-    console.error('Job status check error:', error)
+    console.error('Job status API error:', error)
     return NextResponse.json(
-      { success: false, error: 'INTERNAL_ERROR', message: 'Failed to get job status' },
+      { success: false, error: 'INTERNAL_ERROR', message: 'Internal server error' },
       { status: 500 }
     )
   }
