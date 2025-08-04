@@ -5,6 +5,9 @@ import "./globals.css";
 import "aos/dist/aos.css";
 import { FooterSection } from "@/components/landing_page/footer-section"
 import { Header } from "@/components/shared/header"
+import { ErrorBoundary } from "@/components/error-boundary"
+import { EnvCheck } from "@/components/env-check"
+import { DebugInfo } from "@/components/debug-info"
 
 export const metadata: Metadata = {
   title: "Social SaaS - Modern Social Media Management",
@@ -29,13 +32,17 @@ export default function RootLayout({
         <body
           className="antialiased text-foreground min-h-screen font-sans"
         >
-          <ThemeProvider>
-            <Header />
-            <div className="min-h-screen bg-gradient-main page-fade transition-all">
-              {children}
-            </div>
-            <FooterSection />
-          </ThemeProvider>
+          <ErrorBoundary>
+            <EnvCheck />
+            <ThemeProvider>
+              <Header />
+              <div className="min-h-screen bg-gradient-main page-fade transition-all">
+                {children}
+              </div>
+              <FooterSection />
+              <DebugInfo />
+            </ThemeProvider>
+          </ErrorBoundary>
         </body>
       </html>
     </ClerkProvider>

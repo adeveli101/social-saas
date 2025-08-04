@@ -4,8 +4,13 @@ import { SUBSCRIPTION_PLANS, type SubscriptionPlan } from './plans'
 
 // Clerk konfigürasyonu
 export const clerkConfig = {
-  publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
-  secretKey: process.env.CLERK_SECRET_KEY!,
+  publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '',
+  secretKey: process.env.CLERK_SECRET_KEY || '',
+}
+
+// Environment variables kontrolü
+if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  console.error('Clerk publishable key is not configured');
 }
 
 // Re-export types for convenience
