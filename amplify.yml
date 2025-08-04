@@ -3,14 +3,11 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Installing dependencies..."
-        - npm install --legacy-peer-deps
-        - echo "Dependencies installed successfully"
+        - nvm use 20
+        - npm ci
     build:
       commands:
-        - echo "Building application..."
-        - npm run build
-        - echo "Build completed successfully"
+        - npm run build:production
   artifacts:
     baseDirectory: .next
     files:
@@ -18,6 +15,4 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-      - .next/cache/**/*
-      - .next/static/**/*
-      - .npm-cache/**/* 
+      - .next/cache/**/* 
