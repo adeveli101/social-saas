@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, Users, Star } from "lucide-react"
 import { AnimatedWords } from "@/components/shared/AnimatedWords"
+import { Suspense } from "react"
 
 export function HeroSection() {
   const contentTypes = ["TikToks", "Reels", "Carousels", "Stories", "Posts"]
@@ -19,10 +20,12 @@ export function HeroSection() {
             </span>
             
             <span className="block text-6xl md:text-8xl font-extrabold my-2">
-              <AnimatedWords
-                words={contentTypes}
-                className="text-gradient-animated drop-shadow-lg"
-              />
+              <Suspense fallback={<span className="text-gradient-animated">Content</span>}>
+                <AnimatedWords
+                  words={contentTypes}
+                  className="text-gradient-animated drop-shadow-lg"
+                />
+              </Suspense>
             </span>
 
             <span className="block mt-4 text-2xl md:text-4xl font-medium text-gray-50">

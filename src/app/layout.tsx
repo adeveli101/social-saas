@@ -8,6 +8,7 @@ import { Header } from "@/components/shared/header"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { EnvCheck } from "@/components/env-check"
 import { DebugInfo } from "@/components/debug-info"
+import { ErrorFallback } from "@/components/error-fallback"
 
 export const metadata: Metadata = {
   title: "Social SaaS - Modern Social Media Management",
@@ -32,7 +33,7 @@ export default function RootLayout({
         <body
           className="antialiased text-foreground min-h-screen font-sans"
         >
-          <ErrorBoundary>
+          <ErrorBoundary fallback={<ErrorFallback error={new Error('Unknown error')} />}>
             <EnvCheck />
             <ThemeProvider>
               <Header />
