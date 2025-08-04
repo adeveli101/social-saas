@@ -68,7 +68,7 @@ export default async function PricingPage() {
       {/* Simple Footer CTA */}
       <div className="container mx-auto px-4 py-8 text-center">
         <p className="text-gray-200 text-sm mb-3">
-          Questions? We're here to help.
+          Questions? We&apos;re here to help.
         </p>
         <a 
           href="mailto:support@socialsaas.app" 

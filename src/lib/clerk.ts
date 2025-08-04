@@ -1,6 +1,7 @@
 import { clerkClient } from '@clerk/nextjs/server'
 import { auth } from '@clerk/nextjs/server'
 import { SUBSCRIPTION_PLANS, type SubscriptionPlan } from './plans'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 // Clerk konfigürasyonu
 export const clerkConfig = {
@@ -18,7 +19,7 @@ export type { SubscriptionPlan, UserSubscription } from './plans'
 export { SUBSCRIPTION_PLANS } from './plans'
 
 // Auth yardımcı fonksiyonları
-export async function getCurrentUser(supabase: any) {
+export async function getCurrentUser(supabase: SupabaseClient) {
   const { userId } = await auth()
   if (!userId) return null
   
@@ -66,7 +67,7 @@ export async function requireAuth() {
 }
 
 // Paywall yardımcı fonksiyonları
-export async function hasActiveSubscription(userId: string, supabase: any): Promise<boolean> {
+export async function hasActiveSubscription(userId: string, supabase: SupabaseClient): Promise<boolean> {
   const plan = await getUserCurrentPlan(userId, supabase)
   return plan !== 'free'
 }
@@ -74,7 +75,7 @@ export async function hasActiveSubscription(userId: string, supabase: any): Prom
 export async function canAccessFeature(
   feature: string,
   userId: string,
-  supabase: any,
+  supabase: SupabaseClient,
   requiredPlan?: string
 ): Promise<boolean> {
   const currentPlan = await getUserCurrentPlan(userId, supabase)
@@ -101,7 +102,7 @@ export async function canAccessFeature(
 }
 
 // Plan yönetimi
-export async function upgradeUserPlan(userId: string, planId: string, supabase: any) {
+export async function upgradeUserPlan(userId: string, planId: string, supabase: SupabaseClient) {
   try {
     // Supabase'de planı güncelle
     await supabase
@@ -121,7 +122,7 @@ export async function upgradeUserPlan(userId: string, planId: string, supabase: 
   }
 }
 
-export async function getUserCurrentPlan(userId: string, supabase: any): Promise<string> {
+export async function getUserCurrentPlan(userId: string, supabase: SupabaseClient): Promise<string> {
   try {
     const { data: user } = await supabase
       .from('users')
@@ -137,7 +138,7 @@ export async function getUserCurrentPlan(userId: string, supabase: any): Promise
 }
 
 // Credit management
-export async function getUserCredits(userId: string, supabase: any): Promise<number> {
+export async function getUserCredits(userId: string, supabase: SupabaseClient): Promise<number> {
   try {
     const { data: user } = await supabase
       .from('users')
@@ -152,7 +153,7 @@ export async function getUserCredits(userId: string, supabase: any): Promise<num
   }
 }
 
-export async function deductCredits(userId: string, amount: number, supabase: any): Promise<boolean> {
+export async function deductCredits(userId: string, amount: number, supabase: SupabaseClient): Promise<boolean> {
   try {
     const currentCredits = await getUserCredits(userId, supabase)
     
