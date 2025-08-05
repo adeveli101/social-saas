@@ -97,7 +97,7 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
           const defaultTemplates = await getDefaultTemplates();
           let userTemplates: UserTemplate[] = [];
           if (user?.id) {
-            userTemplates = await getUserTemplates(user.id) as any;
+            userTemplates = await getUserTemplates(user.id) as UserTemplate[];
           }
           const allTemplates = [...defaultTemplates, ...userTemplates];
           setTemplates(allTemplates);

@@ -15,6 +15,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel"
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 // --- TYPE DEFINITIONS ---
 type GenerationStage = 'form' | 'generating' | 'result' | 'error';
@@ -30,7 +31,7 @@ interface PreviewPanelProps {
   carouselImages: string[];
   isGenerating: boolean;
   generationStage: GenerationStage;
-  carouselData: any;
+  carouselData: { slides: Slide[] } | null;
   carouselId: string | null;
   progress?: { percent: number; message: string; currentSlide?: number };
 }
@@ -67,7 +68,7 @@ const SlideCard = ({ slide, aspectRatio }: { slide?: Slide, aspectRatio: string 
             'aspect-[9/16]'
         )}>
             {slide ? (
-                <img src={slide.imageUrl} alt="Generated slide" className="h-full w-full object-cover" />
+                <Image src={slide.imageUrl} alt="Generated slide" fill className="object-cover" />
             ) : (
                 <div className="h-full w-full flex items-center justify-center bg-glass border-2 border-dashed border-white/20 rounded-lg">
                     <Wand2 className="h-12 w-12 text-gray-400/40" />
@@ -142,7 +143,7 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
             <div className="w-full max-w-sm">
                 <Carousel setApi={setApi} className="w-full">
                     <CarouselContent>
-                        {(hasResult ? slides : Array.from({ length: numberOfSlides })).map((slide: any, index: number) => (
+                        {(hasResult ? slides : Array(numberOfSlides).fill(undefined)).map((slide: Slide | undefined, index: number) => (
                         <CarouselItem key={hasResult ? `result-${index}` : `skeleton-${index}`}>
                             <SlideCard 
                                 slide={hasResult ? (slide as Slide) : undefined} 

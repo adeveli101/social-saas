@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -36,44 +36,9 @@ export function TemplateSelector({ onTemplateSelect, trigger, isLoading: isExter
       // loadRecentTemplates will be called after templates are loaded
       setTimeout(() => searchInputRef.current?.focus(), 200)
     }
-  }, [isOpen, isLoaded])
+  }, [isOpen])
 
-  // Load recent templates when templates state changes
-  useEffect(() => {
-    if (templates.length > 0) {
-      loadRecentTemplates()
-    }
-  }, [templates])
-
-  const loadTemplates = async () => {
-    setIsLoading(true)
-    try {
-      let loadedTemplates: UserTemplate[] = []
-      const defaultTemplates = await getDefaultTemplates()
-      
-      if (user && user.id) {
-        try {
-          const userTemplates = await getUserTemplates(user.id)
-          loadedTemplates = [...defaultTemplates, ...userTemplates] as any
-        } catch (error) {
-          console.error('Failed to load user templates, falling back to defaults only:', error)
-          loadedTemplates = defaultTemplates
-        }
-      } else {
-        loadedTemplates = defaultTemplates
-      }
-      setTemplates(loadedTemplates)
-      // Recent templates will be loaded via useEffect above
-    } catch (error) {
-      console.error('Template loading error:', error)
-      // Fallback to empty array if even default templates fail
-      setTemplates([])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const loadRecentTemplates = () => {
+  const loadRecentTemplates = useCallback(() => {
     try {
       const ids = JSON.parse(localStorage.getItem('recentTemplates') || '[]')
       console.log('Recent template IDs from localStorage:', ids)
@@ -95,7 +60,44 @@ export function TemplateSelector({ onTemplateSelect, trigger, isLoading: isExter
       console.error('Error loading recent templates:', error)
       setRecentTemplates([])
     }
+  }, [templates])
+
+  // Load recent templates when templates state changes
+  useEffect(() => {
+    if (templates.length > 0) {
+      loadRecentTemplates()
+    }
+  }, [loadRecentTemplates])
+
+  const loadTemplates = async () => {
+    setIsLoading(true)
+    try {
+      let loadedTemplates: UserTemplate[] = []
+      const defaultTemplates = await getDefaultTemplates()
+      
+      if (user && user.id) {
+        try {
+          const userTemplates = await getUserTemplates(user.id)
+          loadedTemplates = [...defaultTemplates, ...userTemplates] as UserTemplate[]
+        } catch (error) {
+          console.error('Failed to load user templates, falling back to defaults only:', error)
+          loadedTemplates = defaultTemplates
+        }
+      } else {
+        loadedTemplates = defaultTemplates
+      }
+      setTemplates(loadedTemplates)
+      // Recent templates will be loaded via useEffect above
+    } catch (error) {
+      console.error('Template loading error:', error)
+      // Fallback to empty array if even default templates fail
+      setTemplates([])
+    } finally {
+      setIsLoading(false)
+    }
   }
+
+
 
   const updateRecentTemplates = (template: UserTemplate) => {
     try {

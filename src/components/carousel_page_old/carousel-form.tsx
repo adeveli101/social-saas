@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Sparkles, Image, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap, Save, BookOpen, RotateCcw, RefreshCw, CheckCircle, AlertCircle, ChevronDown } from "lucide-react"
+import { Loader2, Sparkles, Palette, Camera, Brush, PenTool, Aperture, Sun, Cloud, Zap, Save, BookOpen, RotateCcw, RefreshCw, CheckCircle, AlertCircle, ChevronDown } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { X } from "lucide-react"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
@@ -136,7 +136,7 @@ const CHIP_COLORS_DARK = [
 const inputClass = "w-full max-w-2xl mx-auto text-lg bg-muted border-2 border-border text-foreground placeholder:text-muted-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
 const selectTriggerClass = "w-full max-w-2xl mx-auto text-lg bg-muted border-2 border-border text-foreground rounded-xl px-5 py-3 shadow-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
 
-export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data: any) => void, initialPrompt?: string }) {
+export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data: Record<string, unknown>) => void, initialPrompt?: string }) {
   // All hooks at the top, unconditionally
   const [prompt, setPrompt] = useState(initialPrompt)
   const [imageCount, setImageCount] = useState(5)
@@ -173,7 +173,12 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
   const [openKeyPointGroup, setOpenKeyPointGroup] = useState<string | null>(KEYPOINT_GROUPS[0]?.groupName || null)
 
   // Undo state for clearing the form
-  const [lastClearedState, setLastClearedState] = useState<any>(null)
+  const [lastClearedState, setLastClearedState] = useState<{
+    mainTopic: string;
+    audience: string;
+    purpose: string;
+    points: string[];
+  } | null>(null)
   const [showUndo, setShowUndo] = useState(false)
   const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -400,7 +405,7 @@ export function CarouselForm({ onSubmit, initialPrompt = "" }: { onSubmit: (data
       <CardHeader>
         <CardTitle className="text-4xl font-bold text-center mb-2">Describe Your Carousel</CardTitle>
         <CardDescription className="text-center text-muted-foreground">
-          Enter your topic, choose the number of slides and style(s). We'll create your social media content with AI magic!
+          Enter your topic, choose the number of slides and style(s). We&apos;ll create your social media content with AI magic!
         </CardDescription>
       </CardHeader>
       <CardContent>

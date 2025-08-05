@@ -1,17 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
-import { Database } from '@/lib/database.types'
-import { QueueManager } from '@/lib/queue'
-import { JobStatus, JobType, JobPriority } from '@/types/queue-system'
 
 // Test environment configuration
 const TEST_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321'
 const TEST_SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'test-key'
 
 // Test Supabase client
-export const testSupabase = createClient<Database>(TEST_SUPABASE_URL, TEST_SUPABASE_ANON_KEY)
-
-// Test Queue Manager instance
-export const testQueueManager = new QueueManager(testSupabase)
+export const testSupabase = createClient(TEST_SUPABASE_URL, TEST_SUPABASE_ANON_KEY)
 
 // Test user data
 export const TEST_USER_ID = 'test-user-123'
@@ -20,8 +14,8 @@ export const TEST_USER_EMAIL = 'test@example.com'
 // Mock job data for testing
 export const mockJobData = {
   user_id: TEST_USER_ID,
-  job_type: JobType.CAROUSEL_GENERATION,
-  priority: JobPriority.NORMAL,
+  job_type: 'CAROUSEL_GENERATION',
+  priority: 'NORMAL',
   payload: {
     prompt: 'Test carousel prompt',
     style: 'modern',
@@ -79,7 +73,11 @@ export class DatabaseTestHelpers {
       ...jobData
     }
 
-    const { data, error } = await testQueueManager.createJob(job)
+    const { data, error } = await testSupabase
+      .from('generation_jobs')
+      .insert(job)
+      .select()
+      .single()
     
     if (error) {
       throw new Error(`Failed to create test job: ${error.message}`)
@@ -114,7 +112,11 @@ export class DatabaseTestHelpers {
    * Get job by ID
    */
   static async getJobById(jobId: string) {
-    const { data, error } = await testQueueManager.getJobById(jobId)
+    const { data, error } = await testSupabase
+      .from('generation_jobs')
+      .select('*')
+      .eq('id', jobId)
+      .single()
     
     if (error) {
       throw new Error(`Failed to get job: ${error.message}`)
@@ -126,8 +128,18 @@ export class DatabaseTestHelpers {
   /**
    * Update job status
    */
-  static async updateJobStatus(jobId: string, status: JobStatus, progress?: number) {
-    const { data, error } = await testQueueManager.updateJobStatus(jobId, status, progress)
+  static async updateJobStatus(jobId: string, status: string, progress?: number) {
+    const updateData: Record<string, unknown> = { status }
+    if (progress !== undefined) {
+      updateData.progress_percent = progress
+    }
+
+    const { data, error } = await testSupabase
+      .from('generation_jobs')
+      .update(updateData)
+      .eq('id', jobId)
+      .select()
+      .single()
     
     if (error) {
       throw new Error(`Failed to update job status: ${error.message}`)
@@ -140,7 +152,10 @@ export class DatabaseTestHelpers {
    * Get user's jobs
    */
   static async getUserJobs(userId: string = TEST_USER_ID) {
-    const { data, error } = await testQueueManager.getUserJobs(userId)
+    const { data, error } = await testSupabase
+      .from('generation_jobs')
+      .select('*')
+      .eq('user_id', userId)
     
     if (error) {
       throw new Error(`Failed to get user jobs: ${error.message}`)
@@ -153,7 +168,10 @@ export class DatabaseTestHelpers {
    * Get pending jobs
    */
   static async getPendingJobs() {
-    const { data, error } = await testQueueManager.getPendingJobs()
+    const { data, error } = await testSupabase
+      .from('generation_jobs')
+      .select('*')
+      .eq('status', 'pending')
     
     if (error) {
       throw new Error(`Failed to get pending jobs: ${error.message}`)
@@ -170,7 +188,7 @@ export class MockJobHelpers {
   /**
    * Create a mock job with specific status
    */
-  static async createMockJobWithStatus(status: JobStatus, progress: number = 0) {
+  static async createMockJobWithStatus(status: string, progress: number = 0) {
     const job = await DatabaseTestHelpers.createTestJob()
     
     await DatabaseTestHelpers.updateJobStatus(job.id, status, progress)
@@ -181,8 +199,8 @@ export class MockJobHelpers {
   /**
    * Create multiple mock jobs
    */
-  static async createMultipleMockJobs(count: number, status: JobStatus = JobStatus.PENDING) {
-    const jobs = []
+  static async createMultipleMockJobs(count: number, status: string = 'pending') {
+    const jobs: unknown[] = []
     
     for (let i = 0; i < count; i++) {
       const job = await DatabaseTestHelpers.createTestJob({
@@ -192,7 +210,7 @@ export class MockJobHelpers {
         }
       })
       
-      if (status !== JobStatus.PENDING) {
+      if (status !== 'pending') {
         await DatabaseTestHelpers.updateJobStatus(job.id, status)
       }
       
@@ -220,8 +238,10 @@ export class MockJobHelpers {
       cost: 0.15
     }
     
-    await testQueueManager.updateJobResult(job.id, result)
-    await DatabaseTestHelpers.updateJobStatus(job.id, JobStatus.COMPLETED, 100)
+    await testSupabase
+      .from('generation_jobs')
+      .update({ result, status: 'completed', progress_percent: 100 })
+      .eq('id', job.id)
     
     return await DatabaseTestHelpers.getJobById(job.id)
   }
@@ -244,7 +264,10 @@ export class CleanupHelpers {
    */
   static async cleanupJob(jobId: string) {
     try {
-      await testQueueManager.deleteJob(jobId)
+      await testSupabase
+        .from('generation_jobs')
+        .delete()
+        .eq('id', jobId)
       console.log(`✅ Job ${jobId} cleaned up`)
     } catch (error) {
       console.error(`❌ Error cleaning up job ${jobId}:`, error)
@@ -275,7 +298,7 @@ export class TestAssertions {
   /**
    * Assert job has expected status
    */
-  static assertJobStatus(job: any, expectedStatus: JobStatus) {
+  static assertJobStatus(job: { status: string }, expectedStatus: string) {
     if (job.status !== expectedStatus) {
       throw new Error(`Expected job status to be ${expectedStatus}, but got ${job.status}`)
     }
@@ -284,7 +307,7 @@ export class TestAssertions {
   /**
    * Assert job has expected progress
    */
-  static assertJobProgress(job: any, expectedProgress: number) {
+  static assertJobProgress(job: { progress_percent: number }, expectedProgress: number) {
     if (job.progress_percent !== expectedProgress) {
       throw new Error(`Expected job progress to be ${expectedProgress}, but got ${job.progress_percent}`)
     }
@@ -293,7 +316,7 @@ export class TestAssertions {
   /**
    * Assert job has results
    */
-  static assertJobHasResults(job: any) {
+  static assertJobHasResults(job: { result?: unknown }) {
     if (!job.result) {
       throw new Error('Expected job to have results, but none found')
     }
@@ -302,7 +325,7 @@ export class TestAssertions {
   /**
    * Assert job has error
    */
-  static assertJobHasError(job: any) {
+  static assertJobHasError(job: { error?: unknown }) {
     if (!job.error) {
       throw new Error('Expected job to have error, but none found')
     }
@@ -346,14 +369,4 @@ export class TestSetup {
     await CleanupHelpers.cleanupAll()
     console.log('✅ Test environment cleaned up')
   }
-}
-
-// Export all utilities for easy import
-export {
-  testSupabase,
-  testQueueManager,
-  TEST_USER_ID,
-  TEST_USER_EMAIL,
-  mockJobData,
-  mockCarouselData
 } 

@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface CarouselFormProps {
-  onSubmit: (data: any) => Promise<void>
+  onSubmit: (data: Record<string, unknown>) => Promise<void>
   initialPrompt: string
 }
 

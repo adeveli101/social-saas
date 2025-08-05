@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 
 interface ImageEditorProps {
   imageUrl: string
@@ -12,7 +13,7 @@ export function ImageEditor({ imageUrl, onSave, onCancel }: ImageEditorProps) {
       <h3 className="text-lg font-semibold mb-4">Image Editor</h3>
       <div className="space-y-2">
         <p className="text-sm text-gray-600">Image editor component - Development in progress</p>
-        <img src={imageUrl} alt="Edit" className="max-w-full h-auto" />
+        <Image src={imageUrl} alt="Edit" width={400} height={300} className="max-w-full h-auto" />
         <div className="flex gap-2">
           <button onClick={() => onSave(imageUrl)} className="px-4 py-2 bg-blue-500 text-white rounded">
             Save

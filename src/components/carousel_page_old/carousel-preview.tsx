@@ -8,6 +8,7 @@ import { Loader2, Download, Copy, Check, AlertCircle, ArrowLeft } from "lucide-r
 import Link from "next/link"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import Image from 'next/image'
 
 interface CarouselPreviewProps {
   carouselId: string
@@ -208,9 +209,11 @@ export function CarouselPreview({ carouselId }: CarouselPreviewProps) {
           <Card key={slide.id} className="overflow-hidden bg-background border-border">
             <CardContent className="p-0">
               <div className="relative">
-                <img
+                <Image
                   src={slide.image_url || ''}
                   alt={`Slide ${slide.slide_number}`}
+                  width={400}
+                  height={256}
                   className="w-full h-64 object-cover"
                 />
                 <div className="absolute top-2 right-2">

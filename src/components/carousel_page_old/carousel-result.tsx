@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Download, Copy, ArrowLeft, ArrowRight, Info } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import Image from 'next/image'
 
-export function CarouselResult({ result, onRestart }: { result: any, onRestart: () => void }) {
+export function CarouselResult({ result, onRestart }: { result: Record<string, unknown>, onRestart: () => void }) {
   const [current, setCurrent] = useState(0)
   const [copied, setCopied] = useState(false)
-  const slides = result?.slides || []
+  const slides = (result?.slides as Array<{ imageUrl: string; caption: string }>) || []
 
   const handleCopy = async (text: string) => {
     await navigator.clipboard.writeText(text)
@@ -24,11 +25,15 @@ export function CarouselResult({ result, onRestart }: { result: any, onRestart: 
 
   // Download all images as a zip (placeholder, requires external library for actual zip)
   const handleDownloadAll = () => {
-    slides.forEach((slide: any, i: number) => handleDownload(slide.imageUrl, `slide-${i + 1}.jpg`))
+    slides.forEach((slide: { imageUrl: string; caption: string }, i: number) => handleDownload(slide.imageUrl, `slide-${i + 1}.jpg`))
   }
 
   // Copy all captions
-  const handleCopyAll = () => handleCopy(result.caption)
+  const handleCopyAll = () => {
+    // Collect all captions from slides and join with double line breaks
+    const captions = slides.map(slide => slide.caption).join("\n\n")
+    handleCopy(captions)
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-6">
@@ -68,9 +73,11 @@ export function CarouselResult({ result, onRestart }: { result: any, onRestart: 
           <Button variant="ghost" size="icon" onClick={() => setCurrent(c => Math.min(slides.length - 1, c + 1))} disabled={current === slides.length - 1}><ArrowRight /></Button>
         </div>
         {slides.length > 0 && (
-          <img
+          <Image
             src={slides[current].imageUrl}
             alt={`Slide ${current + 1}`}
+            width={300}
+            height={300}
             className="w-full max-w-xs aspect-square object-cover rounded-lg shadow mb-4"
             draggable={false}
           />

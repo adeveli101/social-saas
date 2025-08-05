@@ -1,6 +1,6 @@
 import React from "react"
 
-export function GenerationProgress({ progress }: { progress: any }) {
+export function GenerationProgress({ progress }: { progress: { percent?: number; message?: string } }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[300px]">
       <div className="w-full max-w-md text-center">

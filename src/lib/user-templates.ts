@@ -1,24 +1,25 @@
 import { createBrowserSupabaseClient } from '@/utils/supabase/client'
 import { UserTemplate } from '@/lib/types'
 import { v4 as uuidv4 } from 'uuid'
+import type { Database } from '@/lib/database.types'
 
-export const getUserTemplates = async (userId: string) => {
+export const getUserTemplates = async (_userId: string) => {
   const supabase = createBrowserSupabaseClient()
   const { data, error } = await supabase
     .from('user_templates')
     .select('*')
-    .eq('user_id', userId)
+    .eq('user_id', _userId)
     .order('created_at', { ascending: false })
   if (error) throw new Error('Failed to fetch templates')
-  
+  if (!data) return []
   // Convert database response to UserTemplate format
-  return data.map(item => ({
+  return data.map((item) => ({
     id: item.id,
     name: item.name,
     mainTopic: item.main_topic,
     audience: item.audience,
     purpose: item.purpose,
-    keyPoints: typeof item.key_points === 'string' ? JSON.parse(item.key_points) : item.key_points,
+    keyPoints: Array.isArray(item.key_points) ? item.key_points : typeof item.key_points === 'string' ? JSON.parse(item.key_points) : [],
     category: item.category,
     createdAt: new Date(item.created_at),
     updatedAt: new Date(item.updated_at),
@@ -85,7 +86,7 @@ export const saveUserTemplate = async (template: Omit<UserTemplate, 'id' | 'crea
 export const updateUserTemplate = async (templateId: string, updates: Partial<UserTemplate>) => {
   const supabase = createBrowserSupabaseClient()
   // Convert UserTemplate format to database format
-  const dbUpdates: any = { updated_at: new Date().toISOString() }
+  const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() }
   if (updates.name) dbUpdates.name = updates.name
   if (updates.mainTopic) dbUpdates.main_topic = updates.mainTopic
   if (updates.audience) dbUpdates.audience = updates.audience

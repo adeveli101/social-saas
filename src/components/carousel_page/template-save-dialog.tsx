@@ -53,7 +53,7 @@ export function TemplateSaveDialog({ isOpen, onOpenChange, formState, onTemplate
       }, user.id);
       
       setIsSaved(true);
-      onTemplateSaved?.(newTemplate as any);
+      onTemplateSaved?.(newTemplate as UserTemplate);
       
       setTimeout(() => {
         onOpenChange(false);

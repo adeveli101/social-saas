@@ -11,11 +11,9 @@ import { UserTemplate } from '@/lib/carousel-suggestions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button'; // For Undo button
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { StyleSelector } from './style-selector';
-import { AspectRatioGroup } from './aspect-ratio-group';
-import { GenerationHistory } from './generation-history';
+
 
 // Initialize Supabase client for real-time subscriptions
 const supabase = createClient(
@@ -84,7 +82,7 @@ export function CarouselClientPage() {
 
   // Carousel result states
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
-  const [carouselData, setCarouselData] = useState<any>(null);
+  const [carouselData, setCarouselData] = useState<{ slides: Slide[] } | null>(null);
   const [carouselId, setCarouselId] = useState<string | null>(null);
 
   // Dialog states
@@ -221,7 +219,13 @@ export function CarouselClientPage() {
           filter: `id=eq.${generationId}`
         },
         (payload) => {
-          const job = payload.new as any;
+          const job = payload.new as { 
+            progress_percent?: number; 
+            progress_message?: string; 
+            status?: string; 
+            result?: { slides?: Array<{ image_url?: string }>; current_slide_index?: number }; 
+            error?: { message?: string } 
+          };
           
           // Update progress
           setProgress({
@@ -233,11 +237,17 @@ export function CarouselClientPage() {
           // Check if job is completed
           if (job.status === 'completed' && job.result) {
             setGenerationStage('result');
-            setResultData({ slides: job.result.slides || [] });
+            setResultData({ slides: (job.result.slides || []).map(slide => ({
+              imageUrl: slide.image_url || '',
+              caption: ''
+            })) });
             
             // Update carousel states
-            setCarouselImages(job.result.slides?.map((slide: any) => slide.image_url || '') || []);
-            setCarouselData(job.result);
+            setCarouselImages(job.result.slides?.map((slide: { image_url?: string }) => slide.image_url || '') || []);
+            setCarouselData({ slides: (job.result.slides || []).map(slide => ({
+              imageUrl: slide.image_url || '',
+              caption: ''
+            })) });
             setCarouselId(generationId);
             
             // Unsubscribe from real-time updates
@@ -260,7 +270,11 @@ export function CarouselClientPage() {
           filter: `id=eq.${generationId}`
         },
         (payload) => {
-          const carousel = payload.new as any;
+          const carousel = payload.new as { 
+            progress_percent?: number; 
+            progress_message?: string; 
+            generation_metadata?: { current_slide_index?: number } 
+          };
           
           // Update carousel progress
           if (carousel.progress_percent !== undefined) {
@@ -384,8 +398,8 @@ Instructions: Generate a compelling and visually consistent carousel based on th
           message: 'Job created, starting generation...',
         });
         
-    } catch (err: any) {
-        setError(err.message || 'An unknown error occurred.');
+    } catch (err: unknown) {
+        setError((err as Error).message || 'An unknown error occurred.');
         setGenerationStage('error');
     }
   };
