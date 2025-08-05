@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Sparkles, Download, RefreshCw, Wand2 } from 'lucide-react';
+import { Sparkles, Download, RefreshCw, Wand2, RectangleVertical, Square, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -16,6 +16,11 @@ import {
 } from "@/components/ui/carousel"
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { AspectRatioGroup } from './aspect-ratio-group';
+import { SlideCountSelector } from './slide-count-selector';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 // --- TYPE DEFINITIONS ---
 type GenerationStage = 'form' | 'generating' | 'result' | 'error';
@@ -34,6 +39,8 @@ interface PreviewPanelProps {
   carouselData: { slides: Slide[] } | null;
   carouselId: string | null;
   progress?: { percent: number; message: string; currentSlide?: number };
+  onAspectRatioChange?: (ratio: '1:1' | '4:5' | '9:16') => void;
+  onSlideCountChange?: (count: number) => void;
 }
 
 // --- UI COMPONENTS ---
@@ -62,7 +69,7 @@ const LoadingOverlay = ({ progress }: { progress?: PreviewPanelProps['progress']
 
 const SlideCard = ({ slide, aspectRatio }: { slide?: Slide, aspectRatio: string }) => (
     <Card className="h-full w-full bg-transparent border-none shadow-none">
-        <CardContent className={cn("relative flex items-center justify-center h-full w-full p-0 overflow-hidden rounded-lg", 
+        <CardContent className={cn("relative flex items-center justify-center h-full w-full p-0 overflow-hidden rounded-lg shadow-lg", 
             aspectRatio === '1:1' ? 'aspect-square' : 
             aspectRatio === '4:5' ? 'aspect-[4/5]' :
             'aspect-[9/16]'
@@ -70,17 +77,91 @@ const SlideCard = ({ slide, aspectRatio }: { slide?: Slide, aspectRatio: string 
             {slide ? (
                 <Image src={slide.imageUrl} alt="Generated slide" fill className="object-cover" />
             ) : (
-                <div className="h-full w-full flex items-center justify-center bg-glass border-2 border-dashed border-white/20 rounded-lg">
-                    <Wand2 className="h-12 w-12 text-gray-400/40" />
+                <div className="h-full w-full flex items-center justify-center bg-glass/80 backdrop-blur-sm border-2 border-dashed border-white/30 rounded-lg">
+                    <Wand2 className="h-16 w-16 text-gray-400/60" />
                 </div>
             )}
         </CardContent>
     </Card>
 );
 
+// --- COMPACT FORMAT & SLIDE COUNT SELECTOR ---
+const CompactFormatSelector = ({ 
+  aspectRatio, 
+  numberOfSlides, 
+  onAspectRatioChange, 
+  onSlideCountChange 
+}: { 
+  aspectRatio: '1:1' | '4:5' | '9:16';
+  numberOfSlides: number;
+  onAspectRatioChange?: (ratio: '1:1' | '4:5' | '9:16') => void;
+  onSlideCountChange?: (count: number) => void;
+}) => {
+  const ratioOptions = [
+    { value: '4:5', label: '4:5', icon: RectangleVertical, name: 'Carousel' },
+    { value: '1:1', label: '1:1', icon: Square, name: 'Square' },
+    { value: '9:16', label: '9:16', icon: Smartphone, name: 'Reels' },
+  ];
+
+  return (
+    <div className="w-full flex flex-col items-center space-y-3">
+      {/* Format Selection Group */}
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4">
+        <div className="flex items-center justify-center gap-3">
+          <span className="text-sm font-medium text-gray-300">Format:</span>
+          <div className="flex gap-2">
+            {ratioOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => onAspectRatioChange?.(option.value as '1:1' | '4:5' | '9:16')}
+                className={cn(
+                  "relative flex items-center gap-2 px-4 py-2.5 rounded-md border transition-all duration-200",
+                  aspectRatio === option.value 
+                    ? "border-blue-400 bg-blue-500/20 text-white" 
+                    : "border-white/20 text-gray-300 hover:border-white/40 hover:bg-white/10"
+                )}
+              >
+                <option.icon className="h-4 w-4" />
+                <span className="text-sm font-medium">{option.label}</span>
+                {aspectRatio === option.value && (
+                  <div className="w-2 h-2 bg-blue-400 rounded-full ml-1"></div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Slide Count Selection Group */}
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4">
+        <div className="flex items-center justify-center gap-4">
+          <span className="text-sm font-medium text-gray-300">Slides:</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onSlideCountChange?.(Math.max(2, numberOfSlides - 1))}
+              disabled={numberOfSlides <= 2}
+              className="w-10 h-10 rounded-md border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
+            >
+              -
+            </button>
+            <span className="w-12 text-center text-lg font-bold text-blue-400">{numberOfSlides}</span>
+            <button
+              onClick={() => onSlideCountChange?.(Math.min(10, numberOfSlides + 1))}
+              disabled={numberOfSlides >= 10}
+              className="w-10 h-10 rounded-md border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // --- MAIN PREVIEW PANEL ---
 
-export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGenerating, generationStage, carouselData, carouselId, progress }: PreviewPanelProps) {
+export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGenerating, generationStage, carouselData, carouselId, progress, onAspectRatioChange, onSlideCountChange }: PreviewPanelProps) {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [count, setCount] = useState(0)
@@ -138,9 +219,21 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
         )}
       </div>
 
+      {/* Compact Format & Slide Count Selector */}
+      {(onAspectRatioChange || onSlideCountChange) && (
+        <div className="w-full mt-3">
+          <CompactFormatSelector 
+            aspectRatio={aspectRatio}
+            numberOfSlides={numberOfSlides}
+            onAspectRatioChange={onAspectRatioChange}
+            onSlideCountChange={onSlideCountChange}
+          />
+        </div>
+      )}
+
       {/* Main Carousel Area */}
        <div className="w-full flex flex-col items-center justify-start py-6">
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-md lg:max-w-lg">
                 <Carousel setApi={setApi} className="w-full">
                     <CarouselContent>
                         {(hasResult ? slides : Array(numberOfSlides).fill(undefined)).map((slide: Slide | undefined, index: number) => (
@@ -156,7 +249,7 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
             </div>
             
             {/* Caption Area */}
-             <div className="w-full max-w-sm px-2 mt-3 text-sm">
+             <div className="w-full max-w-md lg:max-w-lg px-2 mt-3 text-sm">
                 <AnimatePresence mode="wait">
                     <motion.p
                         key={selectedIndex}
@@ -181,7 +274,7 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
             </div>
 
             {/* Standalone Navigation Controls */}
-            <div className="flex items-center justify-center gap-2 rounded-full bg-glass border border-white/10 p-1 shadow-lg backdrop-blur-sm mt-4">
+            <div className="flex items-center justify-center gap-2 rounded-full bg-glass/80 backdrop-blur-sm border border-white/20 p-2 shadow-lg mt-6">
                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-gray-200 hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:text-gray-500" onClick={() => api?.scrollPrev()} disabled={!api?.canScrollPrev()}>
                     <span className="sr-only">Previous slide</span>
                     &larr;

@@ -58,9 +58,9 @@ export function ControlPanel({
   onClear,
 }: ControlPanelProps) {
   return (
-    <div className="h-full flex flex-col bg-glass backdrop-blur-sm border-white/10 overflow-hidden">
-      {/* Main Content - Scrollable */}
-      <div className="flex-1 p-3 sm:p-4 space-y-4 overflow-y-auto min-h-0" style={{ maxHeight: 'calc(100% - 80px)' }}>
+    <div className="h-fit flex flex-col bg-glass backdrop-blur-sm border-white/10">
+      {/* Main Content - No scroll needed */}
+      <div className="p-3 sm:p-4 space-y-4">
         
         <div className="text-center">
           <h2 className="text-lg font-bold text-gray-50">AI Content Generator</h2>
@@ -111,22 +111,6 @@ export function ControlPanel({
         )}
 
         <Separator className="bg-white/20" />
-
-        {/* Number of Slides */}
-        <div className="space-y-3">
-          <Label htmlFor="imageCount" className="text-gray-200">Number of Slides: <span className="font-bold text-blue-400">{formState.numberOfSlides}</span></Label>
-          <Slider
-            id="imageCount"
-            min={2}
-            max={10}
-            step={1}
-            value={[formState.numberOfSlides]}
-            onValueChange={(value) => setFormState(prev => ({ ...prev, numberOfSlides: value[0] }))}
-            className="w-full"
-          />
-        </div>
-
-        <Separator className="bg-white/20" />
         
         <StyleSelector
           selectedStyle={formState.styles[0] || ''}
@@ -134,16 +118,11 @@ export function ControlPanel({
         />
 
         <Separator className="bg-white/20" />
-        
-        <AspectRatioGroup 
-            selectedRatio={formState.aspectRatio}
-            onRatioSelect={(ratio) => setFormState(prev => ({...prev, aspectRatio: ratio}))}
-        />
 
       </div>
       
-      {/* Footer - Fixed at bottom */}
-      <div className="flex-shrink-0 p-3 bg-glass border-t border-white/10">
+      {/* Footer - Generate button */}
+      <div className="p-3 bg-glass border-t border-white/10">
         <Button
           onClick={onGenerate}
           disabled={isGenerating}

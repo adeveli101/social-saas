@@ -11,6 +11,7 @@ import { UserTemplate } from '@/lib/carousel-suggestions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button'; // For Undo button
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
@@ -41,7 +42,7 @@ export const INITIAL_STATE: CarouselFormState = {
   audience: 'Small business owners',
   purpose: 'Educate',
   numberOfSlides: 5,
-  aspectRatio: '1:1',
+  aspectRatio: '4:5', // Instagram Carousel format as default
 };
 
 const AVAILABLE_STYLES = [
@@ -460,7 +461,7 @@ Instructions: Generate a compelling and visually consistent carousel based on th
         <div className="w-full max-w-screen-2xl mx-auto rounded-xl border border-white/10 bg-glass backdrop-blur-sm shadow-2xl shadow-blue-500/10">
           
           {/* Mobile Tab Navigation - Only visible on mobile/tablet */}
-          <div className="lg:hidden border-b border-white/10 bg-glass">
+          <div className="lg:hidden border-b border-white/20 bg-glass/80 backdrop-blur-md">
             <RadioGroup 
               value={activeTab} 
               onValueChange={(value) => setActiveTab(value as 'input' | 'preview')}
@@ -470,7 +471,12 @@ Instructions: Generate a compelling and visually consistent carousel based on th
                 <RadioGroupItem value="input" id="input-tab" className="peer sr-only" />
                 <Label 
                   htmlFor="input-tab" 
-                  className="flex items-center justify-center gap-2 p-4 cursor-pointer text-gray-200 peer-checked:text-gray-50 peer-checked:bg-white/10 border-r border-white/10 transition-all duration-200 hover:bg-white/5"
+                  className={cn(
+                    "flex items-center justify-center gap-2 p-4 cursor-pointer transition-all duration-300 border-r border-white/10",
+                    activeTab === 'input'
+                      ? "text-white bg-gradient-to-r from-blue-500/25 to-cyan-500/25 border-blue-400/40 shadow-sm font-medium"
+                      : "text-gray-300 hover:bg-white/5 hover:text-white"
+                  )}
                 >
                   <Edit3 className="w-4 h-4" />
                   <span className="font-medium">Input</span>
@@ -480,7 +486,12 @@ Instructions: Generate a compelling and visually consistent carousel based on th
                 <RadioGroupItem value="preview" id="preview-tab" className="peer sr-only" />
                 <Label 
                   htmlFor="preview-tab" 
-                  className="flex items-center justify-center gap-2 p-4 cursor-pointer text-gray-200 peer-checked:text-gray-50 peer-checked:bg-white/10 transition-all duration-200 hover:bg-white/5"
+                  className={cn(
+                    "flex items-center justify-center gap-2 p-4 cursor-pointer transition-all duration-300",
+                    activeTab === 'preview'
+                      ? "text-white bg-gradient-to-r from-purple-500/25 to-pink-500/25 border-purple-400/40 shadow-sm font-medium"
+                      : "text-gray-300 hover:bg-white/5 hover:text-white"
+                  )}
                 >
                   <Eye className="w-4 h-4" />
                   <span className="font-medium">Preview</span>
@@ -490,9 +501,14 @@ Instructions: Generate a compelling and visually consistent carousel based on th
           </div>
 
           {/* Desktop Grid Layout */}
-          <div className="hidden lg:grid lg:grid-cols-[minmax(440px,460px)_1fr] xl:grid-cols-[minmax(460px,480px)_1fr] min-h-[600px]">
+          <div className="hidden lg:grid lg:grid-cols-[minmax(440px,460px)_1fr] xl:grid-cols-[minmax(460px,480px)_1fr] h-fit">
             {/* Input Panel - Left side (desktop only) */}
-            <div className="w-full flex flex-col bg-glass border-r border-white/10 min-w-0">
+            <div className={cn(
+              "w-full flex flex-col bg-glass/90 backdrop-blur-sm min-w-0 border-r transition-all duration-300 h-fit",
+              activeTab === 'input' || activeTab === 'input' // Desktop'da her zaman input aktif
+                ? "border-blue-400/30 shadow-sm"
+                : "border-white/15"
+            )}>
               <ControlPanel
                 formState={formState}
                 setFormState={setFormState}
@@ -511,7 +527,12 @@ Instructions: Generate a compelling and visually consistent carousel based on th
             </div>
 
             {/* Preview Panel - Right side (desktop only) */}
-            <div className="flex-1 w-full p-4 md:p-6 bg-glass">
+            <div className={cn(
+              "flex-1 w-full p-4 md:p-6 bg-glass/90 backdrop-blur-sm transition-all duration-300 h-fit",
+              activeTab === 'preview' || activeTab === 'preview' // Desktop'da her zaman preview aktif
+                ? "border-l border-purple-400/30 shadow-sm"
+                : "border-l border-white/15"
+            )}>
               <PreviewPanel
                 numberOfSlides={formState.numberOfSlides}
                 aspectRatio={formState.aspectRatio}
@@ -520,6 +541,8 @@ Instructions: Generate a compelling and visually consistent carousel based on th
                 generationStage={generationStage}
                 carouselData={carouselData}
                 carouselId={carouselId}
+                onAspectRatioChange={(ratio) => setFormState(prev => ({ ...prev, aspectRatio: ratio }))}
+                onSlideCountChange={(count) => setFormState(prev => ({ ...prev, numberOfSlides: count }))}
               />
             </div>
           </div>
@@ -527,7 +550,12 @@ Instructions: Generate a compelling and visually consistent carousel based on th
           {/* Mobile Tab Content */}
           <div className="lg:hidden min-h-[600px]">
             {activeTab === 'input' && (
-              <div className="w-full bg-glass min-w-0">
+              <div className={cn(
+                "w-full bg-glass/90 backdrop-blur-sm min-w-0 border-t transition-all duration-300",
+                activeTab === 'input'
+                  ? "border-blue-400/30 shadow-sm"
+                  : "border-white/15"
+              )}>
                 <ControlPanel
                   formState={formState}
                   setFormState={setFormState}
@@ -547,7 +575,12 @@ Instructions: Generate a compelling and visually consistent carousel based on th
             )}
 
             {activeTab === 'preview' && (
-              <div className="w-full p-4 bg-glass">
+              <div className={cn(
+                "w-full p-4 bg-glass/90 backdrop-blur-sm border-t transition-all duration-300",
+                activeTab === 'preview'
+                  ? "border-purple-400/30 shadow-sm"
+                  : "border-white/15"
+              )}>
                 <PreviewPanel
                   numberOfSlides={formState.numberOfSlides}
                   aspectRatio={formState.aspectRatio}
@@ -556,6 +589,8 @@ Instructions: Generate a compelling and visually consistent carousel based on th
                   generationStage={generationStage}
                   carouselData={carouselData}
                   carouselId={carouselId}
+                  onAspectRatioChange={(ratio) => setFormState(prev => ({ ...prev, aspectRatio: ratio }))}
+                  onSlideCountChange={(count) => setFormState(prev => ({ ...prev, numberOfSlides: count }))}
                 />
               </div>
             )}
