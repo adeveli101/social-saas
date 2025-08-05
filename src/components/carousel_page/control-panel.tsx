@@ -63,8 +63,8 @@ export function ControlPanel({
       <div className="p-3 sm:p-4 space-y-4">
         
         <div className="text-center">
-          <h2 className="text-lg font-bold text-gray-50">AI Content Generator</h2>
-          <p className="text-xs text-gray-200">Craft your next viral post.</p>
+          <h2 className="text-lg font-bold text-white">AI Content Generator</h2>
+          <p className="text-sm text-gray-100">Craft your next viral post.</p>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
@@ -73,7 +73,7 @@ export function ControlPanel({
               size="sm" 
               onClick={onLoadTemplate} 
               disabled={isGenerating} 
-              className="bg-transparent border-white/20 text-gray-200 hover:bg-white/10 hover:text-white"
+              className="bg-transparent border-white/30 text-white hover:bg-white/15 hover:text-white focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
             >
                 <Book className="h-4 w-4 mr-2" />
                 Load
@@ -83,7 +83,7 @@ export function ControlPanel({
                 size="sm" 
                 onClick={onSaveTemplate} 
                 disabled={isGenerating || promptMode === 'classic'}
-                className="bg-transparent border-white/20 text-gray-200 hover:bg-white/10 hover:text-white disabled:opacity-50"
+                className="bg-transparent border-white/30 text-white hover:bg-white/15 hover:text-white disabled:opacity-50 focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
             >
                 <Save className="h-4 w-4 mr-2" />
                 Save
@@ -93,14 +93,14 @@ export function ControlPanel({
                 size="sm" 
                 onClick={onClear} 
                 disabled={isGenerating}
-                className="text-gray-300 hover:bg-white/10 hover:text-white"
+                className="text-white hover:bg-white/15 hover:text-white focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
             >
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Clear
             </Button>
         </div>
         
-        <Separator className="bg-white/20" />
+        <Separator className="bg-white/30" />
         
         <PromptModeSwitcher promptMode={promptMode} setPromptMode={setPromptMode} />
         
@@ -110,14 +110,14 @@ export function ControlPanel({
           <StructuredPromptForm structuredState={structuredState} />
         )}
 
-        <Separator className="bg-white/20" />
+        <Separator className="bg-white/30" />
         
         <StyleSelector
           selectedStyle={formState.styles[0] || ''}
           onStyleSelect={(style) => setFormState(prev => ({ ...prev, styles: [style] }))}
         />
 
-        <Separator className="bg-white/20" />
+        <Separator className="bg-white/30" />
 
       </div>
       
@@ -126,7 +126,7 @@ export function ControlPanel({
         <Button
           onClick={onGenerate}
           disabled={isGenerating}
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2.5 text-base hover:shadow-lg transition-all duration-300"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-bold py-2.5 text-base hover:shadow-lg transition-all duration-300 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
         >
           {isGenerating ? 
             ( <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating...</> ) : 

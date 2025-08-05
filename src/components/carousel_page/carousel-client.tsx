@@ -505,7 +505,7 @@ Instructions: Generate a compelling and visually consistent carousel based on th
             {/* Input Panel - Left side (desktop only) */}
             <div className={cn(
               "w-full flex flex-col bg-glass/90 backdrop-blur-sm min-w-0 border-r transition-all duration-300 h-fit",
-              activeTab === 'input' || activeTab === 'input' // Desktop'da her zaman input aktif
+              activeTab === 'input' // Desktop'da input panel her zaman aktif
                 ? "border-blue-400/30 shadow-sm"
                 : "border-white/15"
             )}>
@@ -529,7 +529,7 @@ Instructions: Generate a compelling and visually consistent carousel based on th
             {/* Preview Panel - Right side (desktop only) */}
             <div className={cn(
               "flex-1 w-full p-4 md:p-6 bg-glass/90 backdrop-blur-sm transition-all duration-300 h-fit",
-              activeTab === 'preview' || activeTab === 'preview' // Desktop'da her zaman preview aktif
+              activeTab === 'preview' // Desktop'da preview panel her zaman aktif
                 ? "border-l border-purple-400/30 shadow-sm"
                 : "border-l border-white/15"
             )}>

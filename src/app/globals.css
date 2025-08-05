@@ -48,55 +48,55 @@
 :root {
   --radius: 0.625rem;
   
-  /* Modern Gradient Theme - Unified Design System */
-  /* Base Colors - Optimized for gradient backgrounds */
-  --background: #0f1419;          /* Deep slate for contrast with gradients */
+  /* Modern Gradient Theme - WCAG AA Compliant Design System */
+  /* Base Colors - Enhanced contrast for accessibility */
+  --background: #0a0a0f;          /* Deep slate for contrast with gradients */
   --foreground: #ffffff;          /* Pure white for best readability */
-  --card: rgba(30, 41, 59, 0.8);  /* Semi-transparent cards for glass effect */
-  --card-foreground: #f8fafc;     /* Light text on cards */
-  --popover: rgba(15, 23, 42, 0.95); /* Popover with backdrop blur support */
-  --popover-foreground: #f8fafc;
+  --card: rgba(30, 41, 59, 0.9);  /* More opaque cards for better contrast */
+  --card-foreground: #ffffff;     /* Pure white text on cards for AA compliance */
+  --popover: rgba(15, 23, 42, 0.98); /* More opaque popover for better contrast */
+  --popover-foreground: #ffffff;
   
-  /* Interactive Elements */
-  --primary: #3b82f6;             /* Blue primary */
+  /* Interactive Elements - Enhanced for WCAG AA */
+  --primary: #2563eb;             /* Darker blue for better contrast */
   --primary-foreground: #ffffff;
-  --secondary: rgba(51, 65, 85, 0.8); /* Secondary with transparency */
-  --secondary-foreground: #e2e8f0;
-  --muted: rgba(71, 85, 105, 0.6);    /* Muted with transparency */
-  --muted-foreground: #cbd5e1;
-  --accent: rgba(139, 92, 246, 0.8);  /* Purple accent */
+  --secondary: rgba(51, 65, 85, 0.9); /* More opaque secondary */
+  --secondary-foreground: #ffffff;     /* White text for AA compliance */
+  --muted: rgba(71, 85, 105, 0.8);    /* More opaque muted */
+  --muted-foreground: #e2e8f0;         /* Lighter text for better contrast */
+  --accent: rgba(139, 92, 246, 0.9);  /* More opaque accent */
   --accent-foreground: #ffffff;
   
-  /* Borders and Dividers */
-  --border: rgba(71, 85, 105, 0.3);   /* Subtle borders */
-  --input: rgba(51, 65, 85, 0.6);     /* Input backgrounds */
-  --ring: #3b82f6;                    /* Focus rings */
+  /* Borders and Dividers - Enhanced contrast */
+  --border: rgba(71, 85, 105, 0.5);   /* More visible borders */
+  --input: rgba(51, 65, 85, 0.8);     /* More opaque input backgrounds */
+  --ring: #2563eb;                    /* Darker focus rings */
   
   /* Status Colors - Enhanced for gradient backgrounds */
-  --destructive: #ef4444;
+  --destructive: #dc2626;              /* Darker red for better contrast */
   --destructive-foreground: #ffffff;
   
-  /* Gradient-specific Colors */
+  /* Gradient-specific Colors - WCAG compliant */
   --heading-foreground: #ffffff;
-  --heading-gradient-from: #3b82f6;   /* Blue */
-  --heading-gradient-via: #8b5cf6;    /* Purple */
-  --heading-gradient-to: #ec4899;     /* Pink */
+  --heading-gradient-from: #2563eb;   /* Darker blue */
+  --heading-gradient-via: #7c3aed;    /* Darker purple */
+  --heading-gradient-to: #db2777;     /* Darker pink */
   
   /* Chart Colors - Vibrant for gradient backgrounds */
-  --chart-1: #3b82f6;  /* Blue */
-  --chart-2: #10b981;  /* Emerald */
-  --chart-3: #f59e0b;  /* Amber */
-  --chart-4: #ef4444;  /* Red */
-  --chart-5: #8b5cf6;  /* Purple */
+  --chart-1: #2563eb;  /* Darker blue */
+  --chart-2: #059669;  /* Darker emerald */
+  --chart-3: #d97706;  /* Darker amber */
+  --chart-4: #dc2626;  /* Darker red */
+  --chart-5: #7c3aed;  /* Darker purple */
   
   /* Sidebar Colors - Modern gradient compatible */
-  --sidebar: rgba(15, 23, 42, 0.8);
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #3b82f6;
+  --sidebar: rgba(15, 23, 42, 0.9);
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(51, 65, 85, 0.6);
-  --sidebar-accent-foreground: #e2e8f0;
-  --sidebar-border: rgba(71, 85, 105, 0.3);
+  --sidebar-accent: rgba(51, 65, 85, 0.8);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(71, 85, 105, 0.5);
   --sidebar-ring: #3b82f6;
 }
 

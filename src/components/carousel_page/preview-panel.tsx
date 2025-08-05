@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Sparkles, Download, RefreshCw, Wand2, RectangleVertical, Square, Smartphone } from 'lucide-react';
+import { Sparkles, Download, RefreshCw, Wand2, RectangleVertical, Square, Smartphone, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -106,19 +106,19 @@ const CompactFormatSelector = ({
   return (
     <div className="w-full flex flex-col items-center space-y-3">
       {/* Format Selection Group */}
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 p-4">
         <div className="flex items-center justify-center gap-3">
-          <span className="text-sm font-medium text-gray-300">Format:</span>
+          <span className="text-sm font-medium text-white">Format:</span>
           <div className="flex gap-2">
             {ratioOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => onAspectRatioChange?.(option.value as '1:1' | '4:5' | '9:16')}
                 className={cn(
-                  "relative flex items-center gap-2 px-4 py-2.5 rounded-md border transition-all duration-200",
+                  "relative flex items-center gap-2 px-4 py-2.5 rounded-md border transition-all duration-200 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900",
                   aspectRatio === option.value 
-                    ? "border-blue-400 bg-blue-500/20 text-white" 
-                    : "border-white/20 text-gray-300 hover:border-white/40 hover:bg-white/10"
+                    ? "border-blue-500 bg-blue-600/30 text-white shadow-lg" 
+                    : "border-white/30 text-white hover:border-white/50 hover:bg-white/15"
                 )}
               >
                 <option.icon className="h-4 w-4" />
@@ -133,22 +133,22 @@ const CompactFormatSelector = ({
       </div>
 
       {/* Slide Count Selection Group */}
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 p-4">
         <div className="flex items-center justify-center gap-4">
-          <span className="text-sm font-medium text-gray-300">Slides:</span>
+          <span className="text-sm font-medium text-white">Slides:</span>
           <div className="flex items-center gap-3">
             <button
               onClick={() => onSlideCountChange?.(Math.max(2, numberOfSlides - 1))}
               disabled={numberOfSlides <= 2}
-              className="w-10 h-10 rounded-md border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
+              className="w-10 h-10 rounded-md border border-white/30 text-white hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
             >
               -
             </button>
-            <span className="w-12 text-center text-lg font-bold text-blue-400">{numberOfSlides}</span>
+            <span className="w-12 text-center text-lg font-bold text-blue-300">{numberOfSlides}</span>
             <button
               onClick={() => onSlideCountChange?.(Math.min(10, numberOfSlides + 1))}
               disabled={numberOfSlides >= 10}
-              className="w-10 h-10 rounded-md border border-white/20 text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium"
+              className="w-10 h-10 rounded-md border border-white/30 text-white hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-medium focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
             >
               +
             </button>
@@ -201,20 +201,20 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
       {isGenerating && <LoadingOverlay />}
 
       {/* Header */}
-      <div className="w-full flex-shrink-0 flex items-center justify-between gap-3 p-2 bg-glass rounded-lg border border-white/10 min-h-[60px] z-10">
+      <div className="w-full flex-shrink-0 flex items-center justify-between gap-3 p-2 bg-glass rounded-lg border border-white/20 min-h-[60px] z-10">
         {hasResult ? (
           <>
-            <h4 className="font-bold text-lg text-gray-50">Your Carousel</h4>
+            <h4 className="font-bold text-lg text-white">Your Carousel</h4>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="border-white/20 text-gray-200 hover:bg-white/10 hover:text-white"> 
+              <Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/15 hover:text-white focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"> 
                 <Download className="h-4 w-4 mr-2" /> Download All 
               </Button>
             </div>
           </>
         ) : (
            <div className="flex flex-col items-center text-center w-full">
-             <h4 className="font-bold text-lg text-gray-50">Content Preview</h4>
-             <p className="text-sm text-gray-200">Your generated slides will appear here.</p>
+             <h4 className="font-bold text-lg text-white">Content Preview</h4>
+             <p className="text-sm text-gray-100">Your generated slides will appear here.</p>
            </div>
         )}
       </div>
@@ -257,7 +257,7 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2 }}
-                        className={cn("text-gray-100", !isCaptionExpanded && "line-clamp-2")}
+                        className={cn("text-white", !isCaptionExpanded && "line-clamp-2")}
                     >
                          {currentCaption}
                     </motion.p>
@@ -265,7 +265,7 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
                  {hasResult && currentCaption.length > 100 && ( // Rough estimate for line clamping
                      <Button
                          variant="link"
-                         className="text-xs text-gray-300 hover:text-gray-100 p-0 h-auto mt-1"
+                         className="text-xs text-blue-300 hover:text-blue-200 p-0 h-auto mt-1 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                          onClick={() => setIsCaptionExpanded(!isCaptionExpanded)}
                      >
                          {isCaptionExpanded ? '...less' : 'more...'}
@@ -274,33 +274,32 @@ export function PreviewPanel({ numberOfSlides, aspectRatio, carouselImages, isGe
             </div>
 
             {/* Standalone Navigation Controls */}
-            <div className="flex items-center justify-center gap-2 rounded-full bg-glass/80 backdrop-blur-sm border border-white/20 p-2 shadow-lg mt-6">
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-gray-200 hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:text-gray-500" onClick={() => api?.scrollPrev()} disabled={!api?.canScrollPrev()}>
+            <div className="flex items-center justify-center gap-2 rounded-full bg-glass/90 backdrop-blur-sm border border-white/30 p-2 shadow-lg mt-6">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/15 hover:text-white disabled:opacity-50 disabled:text-gray-500 focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900" onClick={() => api?.scrollPrev()} disabled={!api?.canScrollPrev()}>
                     <span className="sr-only">Previous slide</span>
-                    &larr;
+                    <ChevronLeft className="h-4 w-4" />
                 </Button>
                 
                 <div className="flex items-center gap-1">
-                    {Array.from({ length: totalSlides }).map((_, index) => (
-                        <Button
-                            key={index}
-                            variant={index === selectedIndex ? 'default' : 'ghost'}
-                            size="icon"
-                            className={cn("h-8 w-8 rounded-full text-xs", 
-                                index === selectedIndex 
-                                    ? "bg-blue-500/30 text-blue-200 border border-blue-400/50 hover:bg-blue-500/40" 
-                                    : "text-gray-200 hover:bg-white/10 hover:text-white"
+                    {Array.from({ length: totalSlides }, (_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => api?.scrollTo(i)}
+                            className={cn(
+                                "w-2 h-2 rounded-full transition-all duration-200 focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900",
+                                i === selectedIndex 
+                                    ? "bg-white" 
+                                    : "bg-white/40 hover:bg-white/60"
                             )}
-                            onClick={() => api?.scrollTo(index)}
                         >
-                            {index + 1}
-                        </Button>
+                            <span className="sr-only">Go to slide {i + 1}</span>
+                        </button>
                     ))}
                 </div>
-
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-gray-200 hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:text-gray-500" onClick={() => api?.scrollNext()} disabled={!api?.canScrollNext()}>
-                     <span className="sr-only">Next slide</span>
-                    &rarr;
+                
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/15 hover:text-white disabled:opacity-50 disabled:text-gray-500 focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900" onClick={() => api?.scrollNext()} disabled={!api?.canScrollNext()}>
+                    <span className="sr-only">Next slide</span>
+                    <ChevronRight className="h-4 w-4" />
                 </Button>
             </div>
       </div>
