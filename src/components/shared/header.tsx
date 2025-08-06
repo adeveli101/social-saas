@@ -1,342 +1,309 @@
 'use client'
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
-import { Bell, Crown, Menu, X, CheckSquare, Image, BarChart3, Zap, BrainCircuit } from "lucide-react"
-import { useUser } from "@clerk/nextjs"
-import { useState, useEffect } from "react"
-import { useRouter, usePathname } from "next/navigation"
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import Link from 'next/link'
+import { SignedIn, SignedOut, useUser, useClerk } from '@clerk/nextjs'
+import { StyledSignInButton, StyledSignUpButton } from '@/components/auth/clerk-components'
+import { Button } from '@/components/ui/button'
+import { Menu, X, User, LogOut, LayoutDashboard, Sparkles, Image } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function Header() {
-  const router = useRouter()
-  const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const { user } = useUser()
-  const [currentPlan, setCurrentPlan] = useState('free')
-  const [loading, setLoading] = useState(true)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { signOut } = useClerk()
 
   useEffect(() => {
-    async function loadUserPlan() {
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
-      try {
-        const plan = user.publicMetadata?.plan as string || 'free'
-        setCurrentPlan(plan)
-      } catch (error) {
-        console.error('Error loading user plan:', error)
-        setCurrentPlan('free')
-      } finally {
-        setLoading(false)
-      }
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      setIsScrolled(scrollTop > 10)
     }
 
-    loadUserPlan()
-  }, [user])
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
-  const handleNavigation = (section: string) => {
-    setMobileMenuOpen(false)
-    if (pathname === '/') {
-      const element = document.getElementById(section)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
-      }
-    } else {
-      router.push(`/#${section}`)
+  const getUserInitials = () => {
+    if (!user) return 'U'
+    const firstName = user.firstName || ''
+    const lastName = user.lastName || ''
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U'
+  }
+
+  const getUserName = () => {
+    if (!user) return 'User'
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User'
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      setIsMenuOpen(false)
+    } catch (error) {
+      console.error('Error signing out:', error)
     }
   }
 
-  const isLandingPage = pathname === '/'
-  const isPricing = pathname === '/pricing'
-  const isCarousel = pathname.startsWith('/carousel')
-
-  // Plan badge renkleri - Ultra-dark gradient theme için
-  const getPlanBadgeClass = (plan: string) => {
-    switch (plan.toLowerCase()) {
-      case 'starter':
-        return 'bg-blue-500/20 text-blue-200 border border-blue-400/50 backdrop-blur-sm shadow-lg';
-      case 'creator':
-        return 'bg-purple-500/20 text-purple-200 border border-purple-400/50 backdrop-blur-sm shadow-lg';
-      case 'free':
-        return 'bg-gray-500/20 text-gray-200 border border-gray-400/50 backdrop-blur-sm shadow-lg';
-      default:
-        return 'bg-gray-500/20 text-gray-200 border border-gray-400/50 backdrop-blur-sm shadow-lg';
-    }
-  };
-
-  const getPlanIcon = (plan: string, className = "") => {
-    switch (plan.toLowerCase()) {
-      case 'starter':
-        return <Zap className={`${className} text-blue-400`} />;
-      case 'creator':
-        return <Crown className={`${className} text-purple-400`} />;
-      case 'free':
-        return <BrainCircuit className={`${className} text-gray-400`} />;
-      default:
-        return <Zap className={`${className} text-blue-400`} />;
-    }
-  };
-
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-slate-950/95 via-blue-950/90 to-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black/20">
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-white/5 pointer-events-none"></div>
-      <div className="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto py-4 relative">
-        <div className="flex items-center justify-between w-full">
-          {/* Logo - always far left */}
+    <header className={`sticky top-0 z-50 w-full border-b border-white/10 transition-all duration-300 rounded-b-3xl ${
+      isScrolled 
+        ? 'backdrop-blur-xl shadow-2xl shadow-black/20' 
+        : 'backdrop-blur-md shadow-lg shadow-black/10'
+    }`}>
+      <div className="w-full px-4">
+        <div className="flex h-16 items-center justify-between w-full">
+          {/* Logo - En sola dayalı */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-xl shadow-blue-500/25">
-                <span className="text-white font-bold text-sm">S</span>
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">AI</span>
               </div>
-              <span className="font-bold text-xl text-gray-50">Social SaaS</span>
+              <span className="text-xl font-bold text-gray-50">Carousel Studio</span>
             </Link>
           </div>
 
-          {/* Navigation - center on wide screens, hidden on mobile */}
-          <div className="flex-1 flex justify-center">
-            <NavigationMenu className="hidden lg:flex">
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/" className="px-3 py-2 rounded-md text-gray-200 hover:text-gray-50 hover:bg-white/10 transition-colors">
-                      Home
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/dashboard" className="px-3 py-2 rounded-md text-gray-200 hover:text-gray-50 hover:bg-white/10 transition-colors">
-                      Dashboard
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="px-3 py-2 rounded-md text-gray-200 hover:text-gray-50 transition-colors border-none shadow-none bg-transparent hover:bg-white/10 data-[state=open]:bg-white/10">Features</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="bg-glass backdrop-blur-xl border border-white/10 p-4 w-[260px] md:w-[320px] lg:w-[360px] rounded-lg shadow-2xl">
-                      <div className="flex flex-col gap-4">
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-medium leading-none text-gray-50">Task Management</h4>
-                          <div className="space-y-2">
-                            <Link href="/content-board" className="flex items-center space-x-2 p-2 rounded-md hover:bg-white/10 transition-colors">
-                              <CheckSquare className="h-4 w-4 text-blue-400" />
-                              <div>
-                                <div className="text-sm font-medium text-gray-50">Content Planning</div>
-                                <div className="text-xs text-gray-300">Plan and manage your content</div>
-                              </div>
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-medium leading-none text-gray-50">Content Creation</h4>
-                          <div className="space-y-2">
-                            <NavigationMenuLink asChild>
-                              <a
-                                href="/carousel"
-                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-purple-500/20 to-blue-500/20 p-6 no-underline outline-none focus:shadow-md border border-white/10 backdrop-blur-sm hover:bg-white/5 transition-colors"
-                              >
-                                <BrainCircuit size={40} className="text-purple-400" />
-                                <div className="mb-2 mt-4 text-lg font-bold text-gray-50">AI Carousel Generator</div>
-                                <div className="text-xs text-gray-300">Create social media carousels with AI</div>
-                              </a>
-                            </NavigationMenuLink>
-                          </div>
-                        </div>
+          {/* Sağ kısım - En sağa dayalı */}
+          <div className="flex items-center space-x-3 flex-shrink-0">
+            {/* Desktop Navigation - Sadece sağda görünür */}
+            <nav className="hidden lg:flex items-center space-x-6 mr-6">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-gray-200 transition-colors hover:bg-transparent hover:text-white">
+                    Features
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-64 bg-glass backdrop-blur-xl border border-white/20 shadow-2xl rounded-xl p-2"
+                >
+                  <div className="p-3 border-b border-white/10 mb-2">
+                    <p className="text-sm font-semibold text-gray-50">Create Amazing Content</p>
+                    <p className="text-xs text-gray-400">AI-powered tools for creators</p>
+                  </div>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link href="/carousel" className="flex items-start gap-3 cursor-pointer group hover:scale-105 transition-transform duration-200">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-400/30 group-hover:border-blue-400/50 transition-all duration-200">
+                        <Sparkles className="h-5 w-5 text-blue-400" />
                       </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-50">Carousel Creator</span>
+                          <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded-full border border-blue-400/30">Popular</span>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">Create stunning AI carousels in minutes</p>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link href="/content-board" className="flex items-start gap-3 cursor-pointer group hover:scale-105 transition-transform duration-200">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/30 group-hover:border-purple-400/50 transition-all duration-200">
+                        <Image className="h-5 w-5 text-purple-400" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-50">Content Board</span>
+                        <p className="text-xs text-gray-400 mt-1">Organize and plan your content</p>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <div className="p-3 border-t border-white/10 mt-2">
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                      <span>New features coming soon</span>
                     </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/pricing" className="px-3 py-2 rounded-md text-gray-200 hover:text-gray-50 hover:bg-white/10 transition-colors">
-                      Pricing
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Link href="/pricing" className="text-gray-200 hover:text-white transition-colors">
+                Pricing
+              </Link>
+              <Link href="/about" className="text-gray-200 hover:text-white transition-colors">
+                About
+              </Link>
+            </nav>
 
-          {/* Actions - always far right */}
-          <div className="flex items-center space-x-4 flex-shrink-0">
-            {/* Dashboard-specific elements */}
-            {user && (
-              <>
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-gray-50 hover:bg-white/10 border-none shadow-none">
-                  <Bell className="h-5 w-5" />
-                </Button>
-                
-                {!loading && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <div className={`hidden md:flex items-center space-x-2 px-3 py-1 rounded-full cursor-pointer hover:bg-white/10 transition-colors ${getPlanBadgeClass(currentPlan)}`} tabIndex={0} aria-label="View or change your subscription plan">
-                        {getPlanIcon(currentPlan, `h-4 w-4`)}
-                        <span className={`text-sm font-medium capitalize`}>
-                          {currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1).toLowerCase()}
-                        </span>
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent align="end" sideOffset={8} className="w-80 bg-glass backdrop-blur-xl border border-white/20 shadow-2xl rounded-lg">
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2 mb-2">
-                          {getPlanIcon(currentPlan, `h-5 w-5`)}
-                          <span className={`font-semibold capitalize px-2 py-1 rounded text-gray-50`}>{currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1).toLowerCase()}</span>
-                        </div>
-                        <div className="text-sm text-gray-300 mb-2">
-                          You are currently on the <span className="font-medium text-gray-50">{currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1).toLowerCase()}</span> plan. Click below to see all benefits and upgrade your plan.
-                        </div>
-                        <Link href="/pricing" passHref legacyBehavior>
-                          <Button asChild className="w-full mt-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-none shadow-lg" variant="default">
-                            <a>Change Plan</a>
-                          </Button>
-                        </Link>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                )}
-              </>
-            )}
-
+            {/* Auth Buttons */}
             <SignedOut>
-              <div className="hidden md:flex items-center space-x-2">
-                <SignInButton mode="modal">
-                  <Button variant="ghost" className="text-gray-300 hover:text-gray-50 hover:bg-white/10 border-none shadow-none">
-                    Sign In
-                  </Button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-none shadow-lg">
-                    Get Started
-                  </Button>
-                </SignUpButton>
-              </div>
+              <StyledSignInButton mode="modal">
+                <Button variant="ghost" className="text-gray-200 hover:text-white">
+                  Sign In
+                </Button>
+              </StyledSignInButton>
+              <StyledSignUpButton mode="modal">
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white">
+                  Get Started
+                </Button>
+              </StyledSignUpButton>
             </SignedOut>
             <SignedIn>
-              <UserButton 
-                appearance={{
-                  elements: {
-                    avatarBox: "h-8 w-8 ring-2 ring-white/20",
-                    userButtonPopoverCard: "bg-glass backdrop-blur-xl border-white/20",
-                    userButtonPopoverActionButton: "text-gray-300 hover:text-gray-50 hover:bg-white/10",
-                    userButtonPopoverActionButtonText: "text-gray-300",
-                    userButtonPopoverFooter: "border-white/10",
-                  }
-                }}
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-3 p-2 hover:bg-white/10 rounded-lg transition-all duration-200">
+                    <Avatar className="h-8 w-8 ring-2 ring-white/20">
+                      <AvatarImage src={user?.imageUrl} alt={getUserName()} />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-white font-semibold text-sm">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="hidden lg:block text-left">
+                      <p className="text-sm font-medium text-gray-50">{getUserName()}</p>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-56 bg-glass backdrop-blur-xl border border-white/20 shadow-2xl rounded-xl"
+                >
+                  <div className="p-3 border-b border-white/10">
+                    <p className="text-sm font-medium text-gray-50">{getUserName()}</p>
+                  </div>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer">
+                      <LayoutDashboard className="h-4 w-4 text-blue-400" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem 
+                    className="flex items-center gap-3 cursor-pointer text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </SignedIn>
 
-            {/* Mobile Menu */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden text-gray-300 hover:text-gray-50 hover:bg-white/10 border-none shadow-none"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden p-2 text-gray-200 hover:text-white transition-colors"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden mt-4 border-t border-white/10">
-            <nav className="pt-4 space-y-2 bg-glass backdrop-blur-xl rounded-lg mt-4 p-4 border border-white/10 shadow-2xl">
-              <Link
-                href="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-left py-2 px-4 rounded-md transition-colors text-gray-300 hover:text-gray-50 hover:bg-white/10"
-              >
-                Home
-              </Link>
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-left py-2 px-4 rounded-md transition-colors text-gray-300 hover:text-gray-50 hover:bg-white/10"
-              >
-                Dashboard
-              </Link>
-              <div className="space-y-2">
-                <div className="px-4 py-2 text-sm font-medium text-gray-50">Features</div>
-                <Link
-                  href="/content-board"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-left py-2 px-8 rounded-md transition-colors text-gray-300 hover:text-gray-50 hover:bg-white/10"
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="lg:hidden py-4 border-t border-white/10">
+            <nav className="flex flex-col space-y-4">
+              <div className="space-y-3">
+                <div className="px-2">
+                  <p className="text-sm font-semibold text-gray-50">Create Amazing Content</p>
+                  <p className="text-xs text-gray-400">AI-powered tools for creators</p>
+                </div>
+                <Link 
+                  href="/carousel" 
+                  className="flex items-start gap-3 text-gray-200 hover:text-white transition-colors px-3 py-3 rounded-lg hover:scale-105 transition-transform duration-200 group"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  Content Planning
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-400/30 group-hover:border-blue-400/50 transition-all duration-200">
+                    <Sparkles className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Carousel Creator</span>
+                      <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded-full border border-blue-400/30">Popular</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">Create stunning AI carousels in minutes</p>
+                  </div>
                 </Link>
-                <Link
-                  href="/carousel"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-left py-2 px-8 rounded-md transition-colors text-gray-300 hover:text-gray-50 hover:bg-white/10"
+                <Link 
+                  href="/content-board" 
+                  className="flex items-start gap-3 text-gray-200 hover:text-white transition-colors px-3 py-3 rounded-lg hover:scale-105 transition-transform duration-200 group"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  Carousel Creator
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/30 group-hover:border-purple-400/50 transition-all duration-200">
+                    <Image className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="font-medium">Content Board</span>
+                    <p className="text-xs text-gray-400 mt-1">Organize and plan your content</p>
+                  </div>
                 </Link>
+                <div className="px-3 py-2">
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                    <span>New features coming soon</span>
+                  </div>
+                </div>
               </div>
-              <Link
-                href="/pricing"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-left py-2 px-4 rounded-md transition-colors text-gray-300 hover:text-gray-50 hover:bg-white/10"
+              <Link 
+                href="/pricing" 
+                className="text-gray-200 hover:text-white transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Pricing
               </Link>
+              <Link 
+                href="/about" 
+                className="text-gray-200 hover:text-white transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
+              </Link>
               
-              {/* Mobile Auth Buttons */}
-              <SignedOut>
-                <div className="flex flex-col space-y-2 pt-4 border-t border-white/10">
-                  <SignInButton mode="modal">
+              <div className="pt-4 border-t border-white/10">
+                <SignedOut>
+                  <div className="flex flex-col space-y-3">
+                    <StyledSignInButton mode="modal">
+                      <Button variant="ghost" className="w-full text-gray-200 hover:text-white">
+                        Sign In
+                      </Button>
+                    </StyledSignInButton>
+                    <StyledSignUpButton mode="modal">
+                      <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white">
+                        Get Started
+                      </Button>
+                    </StyledSignUpButton>
+                  </div>
+                </SignedOut>
+                <SignedIn>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                    <Avatar className="h-10 w-10 ring-2 ring-white/20">
+                      <AvatarImage src={user?.imageUrl} alt={getUserName()} />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-white font-semibold">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-50">{getUserName()}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <Button asChild variant="ghost" className="w-full justify-start">
+                      <Link 
+                        href="/dashboard" 
+                        className="flex items-center gap-3 text-gray-200 hover:text-white"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <LayoutDashboard className="h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </Button>
                     <Button 
                       variant="ghost" 
-                      className="w-full justify-start text-gray-300 hover:text-gray-50 hover:bg-white/10 border-none shadow-none"
-                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                      onClick={handleSignOut}
                     >
-                      Sign In
+                      <LogOut className="h-4 w-4 mr-3" />
+                      Sign Out
                     </Button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <Button 
-                      className="w-full justify-start bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-none shadow-lg"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Get Started
-                    </Button>
-                  </SignUpButton>
-                </div>
-              </SignedOut>
-
-              {/* Mobile Dashboard Elements */}
-              {user && (
-                <div className="pt-4 border-t border-white/10">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start text-gray-300 hover:text-gray-50 hover:bg-white/10 border-none shadow-none"
-                  >
-                    <Bell className="h-5 w-5 mr-2" />
-                    Notifications
-                  </Button>
-                  {!loading && (
-                    <div className="flex items-center space-x-2 px-4 py-2 mt-2">
-                      {getPlanIcon(currentPlan, "h-4 w-4")}
-                      <span className="text-sm font-medium text-gray-300 capitalize">
-                        {currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1).toLowerCase()} Plan
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                </SignedIn>
+              </div>
             </nav>
           </div>
         )}
