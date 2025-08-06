@@ -4,7 +4,6 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
 
 interface Style {
   id: string;
@@ -27,6 +26,15 @@ const styles = [
 ]
 
 export function StyleSelector({ selectedStyle, onStyleSelect }: StyleSelectorProps) {
+  const handleStyleClick = (styleId: string) => {
+    // If clicking the same style, deselect it
+    if (selectedStyle === styleId) {
+      onStyleSelect('');
+    } else {
+      onStyleSelect(styleId);
+    }
+  };
+
   return (
     <div>
       <Label className="mb-2 block text-gray-200">Visual Style</Label>
@@ -35,7 +43,7 @@ export function StyleSelector({ selectedStyle, onStyleSelect }: StyleSelectorPro
           <Button
             key={style.id}
             type="button"
-            onClick={() => onStyleSelect(style.id)}
+            onClick={() => handleStyleClick(style.id)}
             className={cn(
               "flex items-center justify-center gap-2 rounded-lg px-2 py-2 text-xs lg:text-sm font-medium transition-all whitespace-nowrap",
               selectedStyle === style.id
@@ -43,7 +51,7 @@ export function StyleSelector({ selectedStyle, onStyleSelect }: StyleSelectorPro
                 : "bg-white/10 text-gray-200 border border-white/20 hover:bg-white/15 hover:text-white"
             )}
           >
-            {selectedStyle === style.id ? <Check className="h-3 w-3 lg:h-4 lg:w-4" /> : style.name}
+            {style.name}
           </Button>
         ))}
       </div>

@@ -74,7 +74,7 @@ export function FeaturesSection() {
     <Section 
       id="features" 
       gradient="none"
-      className="py-20 bg-gradient-natural" 
+      className="py-20 border-b border-white/10" 
       containerClassName="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto"
     >
       <div className="text-center mb-16" data-aos="fade-up">

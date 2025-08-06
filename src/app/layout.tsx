@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/error-boundary"
 import { EnvCheck } from "@/components/env-check"
 import { DebugInfo } from "@/components/debug-info"
 import { ErrorFallback } from "@/components/error-fallback"
+import { FooterWrapper } from "@/components/shared/footer-wrapper"
 
 export const metadata: Metadata = {
   title: "Social SaaS - Modern Social Media Management",
@@ -36,11 +37,11 @@ export default function RootLayout({
           <ErrorBoundary fallback={<ErrorFallback error={new Error('Unknown error')} />}>
             <EnvCheck />
             <ThemeProvider>
-              <Header />
-              <div className="min-h-screen bg-gradient-main page-fade transition-all">
+              <div className="min-h-screen bg-gradient-natural page-fade transition-all">
+                <Header />
                 {children}
+                <FooterWrapper />
               </div>
-              <FooterSection />
               <DebugInfo />
             </ThemeProvider>
           </ErrorBoundary>

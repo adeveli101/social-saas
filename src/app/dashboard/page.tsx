@@ -2,10 +2,11 @@ import { WelcomeSection } from "@/components/dashboard_page/welcome-section"
 import { StatsGrid } from "@/components/dashboard_page/stats-grid"
 import { QuickActions } from "@/components/dashboard_page/quick-actions"
 import { RecentCreations } from "@/components/dashboard_page/recent-creations"
+import { AccountSettings } from "@/components/dashboard_page/account-settings"
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-natural">
+    <div className="min-h-screen">
       {/* Header Section */}
       <div className="border-b border-white/10 bg-glass backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
@@ -32,6 +33,9 @@ export default function DashboardPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
           <WelcomeSection />
+          
+          {/* Account Settings - Horizontal below Welcome */}
+          <AccountSettings />
           
           {/* Stats Section */}
           <div className="space-y-4">

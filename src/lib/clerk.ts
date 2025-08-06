@@ -1,3 +1,4 @@
+// Server-side Clerk functions - only for server components
 import { clerkClient } from '@clerk/nextjs/server'
 import { auth } from '@clerk/nextjs/server'
 import { SUBSCRIPTION_PLANS, type SubscriptionPlan } from './plans'

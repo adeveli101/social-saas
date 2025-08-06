@@ -49,7 +49,7 @@ export function FooterSection() {
   useEffect(() => { AOS.init({ once: true, duration: 700 }) }, [])
 
   return (
-    <Section className="py-20 border-t border-slate-300 bg-gradient-natural">
+    <Section className="py-20 border-t border-white/10">
       <div className="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto">
         {/* Newsletter Section */}
         <div className="text-center mb-16" data-aos="fade-up">

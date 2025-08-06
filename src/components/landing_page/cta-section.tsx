@@ -11,7 +11,7 @@ export function CTASection() {
   useEffect(() => { AOS.init({ once: true, duration: 700 }) }, [])
   return (
     <Section 
-      className="py-20 bg-gradient-natural" 
+      className="py-20 border-b border-white/10" 
       gradient="none"
       containerClassName="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto" 
       center={true}

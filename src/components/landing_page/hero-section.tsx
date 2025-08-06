@@ -10,7 +10,7 @@ export function HeroSection() {
   const contentTypes = ["TikToks", "Reels", "Carousels", "Stories", "Posts"]
 
   return (
-    <section className="w-full min-h-screen flex items-center justify-center gradient-bg-daylight">
+    <section className="w-full min-h-screen flex items-center justify-center border-b border-white/10">
       <div className="w-full px-4 md:px-8 xl:px-12 2xl:px-16">
         <div className="w-full min-h-[90vh] py-8 md:py-16 flex flex-col items-center justify-center text-center">
           

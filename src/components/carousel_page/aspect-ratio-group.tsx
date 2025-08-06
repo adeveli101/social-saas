@@ -1,6 +1,6 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { Square, RectangleHorizontal, Smartphone } from "lucide-react"
+import { Square, RectangleVertical, Smartphone } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type AspectRatio = '1:1' | '4:5' | '9:16';
@@ -10,35 +10,56 @@ interface AspectRatioGroupProps {
   onRatioSelect: (ratio: AspectRatio) => void;
 }
 
-const ratioOptions: { value: AspectRatio; label: string; icon: React.ElementType }[] = [
-  { value: '1:1', label: 'Square (1:1)', icon: Square },
-  { value: '4:5', label: 'Portrait (4:5)', icon: RectangleHorizontal },
-  { value: '9:16', label: 'Reels (9:16)', icon: Smartphone },
+const ratioOptions: { value: AspectRatio; label: string; icon: React.ElementType; name: string }[] = [
+  { value: '4:5', label: '4:5', icon: RectangleVertical, name: 'Carousel' },
+  { value: '1:1', label: '1:1', icon: Square, name: 'Square' },
+  { value: '9:16', label: '9:16', icon: Smartphone, name: 'Reels' },
 ];
 
 export function AspectRatioGroup({ selectedRatio, onRatioSelect }: AspectRatioGroupProps) {
   return (
     <div>
-      <Label className="mb-2 block text-gray-200">Aspect Ratio</Label>
+      <Label className="mb-3 block text-gray-200 text-sm font-medium">Format</Label>
       <RadioGroup
         value={selectedRatio}
         onValueChange={(value) => onRatioSelect(value as AspectRatio)}
-        className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+        className="flex justify-center gap-4"
       >
         {ratioOptions.map((option) => (
           <Label
             key={option.value}
             htmlFor={`ratio-${option.value}`}
             className={cn(
-              "flex flex-col items-center justify-center rounded-md border-2 bg-white/5 p-4 hover:bg-white/10 cursor-pointer transition-all",
+              "relative flex flex-col items-center gap-3 px-5 py-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105",
               selectedRatio === option.value 
-                ? "border-blue-400 bg-blue-500/20 text-blue-200" 
-                : "border-white/20 text-gray-200 hover:text-white"
+                ? "border-blue-400 bg-gradient-to-br from-blue-500/40 to-blue-600/30 text-white shadow-xl shadow-blue-500/30" 
+                : "border-white/20 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/40"
             )}
           >
             <RadioGroupItem value={option.value} id={`ratio-${option.value}`} className="sr-only" />
-            <option.icon className="h-6 w-6 mb-2" />
-            <span className="text-sm font-medium">{option.label}</span>
+            
+            {/* Selection indicator */}
+            {selectedRatio === option.value && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-400 rounded-full border-2 border-white flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+            )}
+            
+            {/* Prominent icon */}
+            <div className={cn(
+              "p-3 rounded-lg transition-all",
+              selectedRatio === option.value 
+                ? "bg-white/25 ring-2 ring-white/30" 
+                : "bg-white/10"
+            )}>
+              <option.icon className="h-8 w-8" />
+            </div>
+            
+            {/* Clear information hierarchy */}
+            <div className="text-center space-y-1">
+              <div className="text-lg font-bold font-mono">{option.label}</div>
+              <div className="text-xs font-medium text-gray-400 uppercase tracking-wide">{option.name}</div>
+            </div>
           </Label>
         ))}
       </RadioGroup>

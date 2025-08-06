@@ -74,6 +74,18 @@
     "tailwindcss": "^3.4.0",
     "typescript": "^5"
   },
+  "resolutions": {
+    "inflight": "npm:@npmcli/inflight@^2.0.0",
+    "npmlog": "npm:@npmcli/log@^2.0.0",
+    "rimraf": "^4.0.0",
+    "glob": "^9.0.0"
+  },
+  "overrides": {
+    "inflight": "npm:@npmcli/inflight@^2.0.0",
+    "npmlog": "npm:@npmcli/log@^2.0.0",
+    "rimraf": "^4.0.0",
+    "glob": "^9.0.0"
+  },
   "engines": {
     "node": "20.x",
     "npm": ">=9.0.0"

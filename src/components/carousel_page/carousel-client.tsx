@@ -457,7 +457,7 @@ Instructions: Generate a compelling and visually consistent carousel based on th
         )}
       </AnimatePresence>
 
-      <div className="min-h-screen bg-gradient-natural text-gray-50 p-1 sm:p-2 lg:p-4">
+      <div className="min-h-screen text-gray-50 p-1 sm:p-2 lg:p-4">
         <div className="w-full max-w-screen-2xl mx-auto rounded-xl border border-white/10 bg-glass backdrop-blur-sm shadow-2xl shadow-blue-500/10">
           
           {/* Mobile Tab Navigation - Only visible on mobile/tablet */}

@@ -1,0 +1,63 @@
+# Manual Git Operations Rule
+
+## Core Principle
+**NEVER** execute Git commands automatically. All Git operations must be performed manually by the user.
+
+## Prohibited Git Commands
+- `git add`
+- `git commit`
+- `git push`
+- `git pull`
+- `git merge`
+- `git rebase`
+- `git checkout`
+- `git branch`
+- `git tag`
+- `git reset`
+- `git stash`
+- Any other Git operations
+
+## Allowed Operations
+- File creation and editing
+- Code refactoring
+- Component development
+- TypeScript type definitions
+- Documentation updates
+- Cursor rules creation
+- Configuration changes
+- Package installation (`npm install`)
+
+## When User Requests Git Operations
+- Provide detailed commit messages
+- Suggest appropriate Git commands
+- Explain what changes should be committed
+- Provide step-by-step instructions
+- Never execute the commands automatically
+
+## Example Response
+"I don't execute Git commands automatically. Here are the commands you should run manually:
+
+```bash
+git add .
+git commit -m 'feat: your commit message'
+git push origin main
+```
+
+I can help you with code changes, but you'll need to run the Git commands yourself."
+
+## Development Focus
+- Write clean, maintainable code
+- Follow established patterns and conventions
+- Create reusable components
+- Implement proper TypeScript types
+- Maintain project structure
+- Update documentation
+
+## Git Command Suggestions
+When providing Git command suggestions:
+1. Use conventional commit format
+2. Provide detailed commit messages
+3. Include file lists when relevant
+4. Suggest appropriate branch names
+5. Include push/pull instructions when needed
+

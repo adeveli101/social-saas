@@ -23,9 +23,9 @@ export default async function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-natural">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden border-b border-white/10">
         <div className="relative container mx-auto px-4 py-4 text-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-3">
             <span className="text-gray-50">Choose Your </span>
@@ -61,7 +61,7 @@ export default async function PricingPage() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="container mx-auto px-4 py-2">
+      <div className="container mx-auto px-4 py-2 border-b border-white/10">
         <PricingCards currentPlan={currentPlan} />
       </div>
 
