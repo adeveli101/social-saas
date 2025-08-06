@@ -152,7 +152,7 @@ export function TemplateSelector({ open, onOpenChange, onTemplateSelect }: { ope
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[calc(100vh-8rem)] w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] md:w-[90vw] lg:w-[92vw] xl:w-[94vw] 2xl:w-[96vw] max-w-none bg-glass backdrop-blur-xl border-white/10 text-gray-50 p-0 flex flex-col fixed top-135 left-1/2 transform -translate-x-1/2">
+      <DialogContent className="h-[calc(100vh-8rem)] w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] md:w-[90vw] lg:w-[92vw] xl:w-[94vw] 2xl:w-[96vw] max-w-none bg-glass backdrop-blur-xl border-white/10 text-gray-50 p-0 flex flex-col fixed top-[25%] left-1/2 transform -translate-x-1/2">
         <DialogHeader className="p-4 pb-3 border-b border-white/10">
           <DialogTitle className="text-xl text-gray-50">Template Library</DialogTitle>
           <DialogDescription className="text-gray-200 text-sm">Select a pre-made template or one of your own to get started quickly.</DialogDescription>
