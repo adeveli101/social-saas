@@ -2,30 +2,29 @@
 const nextConfig = {
   // Production optimized output
   output: 'standalone',
-  
+
   // Optimize images for production
   images: {
-    domains: ['localhost'],
-    unoptimized: false, // Enable optimization for production
     formats: ['image/webp', 'image/avif'],
+    domains: [
+      'localhost',
+      'picsum.photos',
+      'images.clerk.dev',
+      'img.clerk.com',
+      'replicate.delivery',
+    ],
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.blob.core.windows.net' },
+      { protocol: 'https', hostname: '**.replicate.com' },
+    ],
   },
-  
-  // Environment variables - Ensure all required env vars are available
-  env: {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-    CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  },
-  
+
   // Production optimizations
   experimental: {
     optimizePackageImports: ['aos', 'lucide-react', 'framer-motion'],
     optimizeCss: true,
   },
-  
+
   // Production webpack configuration
   webpack: (config, { isServer, dev }) => {
     // Production optimizations
@@ -45,7 +44,7 @@ const nextConfig = {
         },
       };
     }
-    
+
     // Fallback for client-side
     if (!isServer) {
       config.resolve.fallback = {
@@ -53,28 +52,19 @@ const nextConfig = {
         fs: false,
       };
     }
-    
+
     return config;
   },
-  
-  // Production headers
+
+  // Security headers
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
         ],
       },
     ];

@@ -232,11 +232,12 @@ export class JobProcessor {
     }
 
     // Register Google Gemini service
-    if (process.env.GOOGLE_AI_API_KEY) {
+    const googleApiKey = process.env.GOOGLE_AI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+    if (googleApiKey) {
       orchestrator.registerService('google', {
         provider: 'google',
         config: {
-          apiKey: process.env.GOOGLE_AI_API_KEY,
+          apiKey: googleApiKey,
           maxRetries: 3,
           timeout: 30000
         },
