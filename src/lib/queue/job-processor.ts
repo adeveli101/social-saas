@@ -44,6 +44,11 @@ export class JobProcessor {
     }
 
     try {
+      // Early exit if required env vars are missing in hosting env
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        console.warn('Missing Supabase env vars');
+        return false;
+      }
       const job = await this.queueManager.getNextJob();
       if (!job) {
         return false; // No jobs available

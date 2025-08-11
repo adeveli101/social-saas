@@ -4,11 +4,16 @@ import { NextRequest, NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 
 export async function GET() {
-  // Convenience: allow browser GET to verify the endpoint exists
-  return NextResponse.json(
-    { ok: true, info: 'Jobs processor endpoint. Send POST with x-job-key header to process batch.' },
-    { headers: { 'Cache-Control': 'no-store' } }
-  )
+  try {
+    const envOk = Boolean(process.env.JOB_PROCESSOR_API_KEY)
+    return NextResponse.json(
+      { ok: true, info: 'Jobs processor endpoint. Send POST with x-job-key header to process batch.', envOk },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
+  } catch (error) {
+    console.error('GET /api/jobs/process failed:', error)
+    return NextResponse.json({ ok: false, error: 'Unexpected error' }, { status: 500 })
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -16,7 +21,10 @@ export async function POST(request: NextRequest) {
   const requiredKey = process.env.JOB_PROCESSOR_API_KEY || ''
 
   if (!requiredKey || providedKey !== requiredKey) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401, headers: { 'Cache-Control': 'no-store' } })
+    return NextResponse.json(
+      { ok: false, error: 'Unauthorized', reason: !requiredKey ? 'MISSING_ENV' : 'BAD_HEADER' },
+      { status: 401, headers: { 'Cache-Control': 'no-store' } }
+    )
   }
 
   try {
@@ -27,7 +35,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, processed }, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     console.error('Job processing error:', error)
-    return NextResponse.json({ ok: false, error: 'Processing failed' }, { status: 500, headers: { 'Cache-Control': 'no-store' } })
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ ok: false, error: 'Processing failed', message }, { status: 500, headers: { 'Cache-Control': 'no-store' } })
   }
 }
 
