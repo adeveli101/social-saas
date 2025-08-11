@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { JobProcessor } from '@/lib/queue/job-processor'
+
+// Ensure Node.js runtime (not edge) for this route
+export const runtime = 'nodejs'
 
 export async function GET() {
   // Convenience: allow browser GET to verify the endpoint exists
@@ -18,6 +20,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const { JobProcessor } = await import('@/lib/queue/job-processor')
     const processor = new JobProcessor()
     // Process a small batch each tick; tune as needed
     const processed = await processor.processBatch(10)
