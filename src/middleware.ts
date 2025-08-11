@@ -1,8 +1,8 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { authMiddleware } from "@clerk/nextjs";
 
-export default clerkMiddleware({
+export default authMiddleware({
   publicRoutes: [
-    '/api/jobs/process', // allow scheduler to call without auth; secured via x-job-key
+    "/api/jobs/process",
   ],
 });
 
