@@ -28,16 +28,16 @@ export function Section({
 }: SectionProps) {
   // Ultra-dark gradient theme mappings
   const gradientClass = {
-    hero: "bg-gradient-natural", // Ultra-dark hero background
-    dramatic: "bg-gradient-natural", // Ultra-dark dramatic background
-    pricing: "bg-gradient-natural", // Ultra-dark pricing background
-    "glow-soft": "bg-gradient-natural", // Soft ultra-dark glow
-    "glow-medium": "bg-gradient-natural", // Medium ultra-dark glow
-    "glow-intense": "bg-gradient-natural", // Intense ultra-dark glow
-    aurora: "bg-gradient-natural", // Aurora ultra-dark effect
-    natural: "bg-gradient-natural", // Natural ultra-dark gradient
-    daylight: "bg-gradient-natural", // Daylight ultra-dark gradient
-    brand: "bg-gradient-brand", // Brand ultra-dark gradient
+    hero: "bg-gradient-natural", // unified ultra-dark hero background
+    dramatic: "bg-gradient-natural",
+    pricing: "bg-gradient-natural",
+    "glow-soft": "bg-gradient-natural",
+    "glow-medium": "bg-gradient-natural",
+    "glow-intense": "bg-gradient-natural",
+    aurora: "bg-gradient-natural",
+    natural: "bg-gradient-natural",
+    daylight: "bg-gradient-natural",
+    brand: "bg-gradient-natural", // keep brand unified with rest for consistency
     none: ""
   }[gradient]
 

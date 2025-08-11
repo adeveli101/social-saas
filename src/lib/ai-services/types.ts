@@ -170,13 +170,18 @@ export class InvalidPromptError extends AIServiceError {
 // Service Provider Types
 // =============================================================================
 
-export type AIServiceProvider = 'openai' | 'google' | 'anthropic' | 'mock';
+export type AIServiceProvider = 'openai' | 'google' | 'anthropic' | 'replicate' | 'mock';
 
 export interface AIServiceProviderConfig {
   provider: AIServiceProvider;
   config: AIServiceConfig;
   enabled: boolean;
   priority: number; // Lower number = higher priority
+  costHint?: {
+    imageStd?: number; // $/image
+    imageHd?: number;  // $/image
+    textPer1k?: number; // $/1K tokens
+  };
 }
 
 // =============================================================================
@@ -263,4 +268,5 @@ export interface AIServiceOptions {
   qualityThreshold?: number;
   onProgress?: ProgressCallback;
   onError?: ErrorCallback;
+  policy?: 'cheapest' | 'balanced' | 'premium';
 } 

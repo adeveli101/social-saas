@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { PricingCards } from '@/components/paywall/pricing-cards'
 import { getUserCurrentPlan } from '@/lib/clerk'
 import { createClient } from '@/utils/supabase/server'
+import { MouseBeamController } from '@/components/pricing_page/mouse-beam-controller'
 
 export const metadata: Metadata = {
   title: 'Pricing - AI Carousel Studio',
@@ -23,16 +24,17 @@ export default async function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen page-scale-90">
       {/* Hero Section */}
-      <div className="relative overflow-hidden border-b border-white/10">
-        <div className="relative container mx-auto px-4 py-4 text-center">
+      <MouseBeamController>
+        <div className="relative overflow-hidden border-b border-white/10 pricing-hero">
+          <div className="relative container mx-auto px-4 py-3 text-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-3">
             <span className="text-gray-50">Choose Your </span>
             <span className="text-gradient-animated">Plan</span>
           </h1>
           
-          <p className="text-sm text-gray-200 max-w-md mx-auto mb-4">
+            <p className="text-sm text-gray-200 max-w-md mx-auto mb-3">
             Simple, transparent pricing for everyone.
           </p>
 
@@ -57,12 +59,13 @@ export default async function PricingPage() {
               <span>Premium styles</span>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      </MouseBeamController>
 
       {/* Pricing Cards */}
       <div className="container mx-auto px-4 py-2 border-b border-white/10">
-        <PricingCards currentPlan={currentPlan} />
+        <PricingCards currentPlan={currentPlan} excludePlanIds={['free']} introDiscountPercent={50} />
       </div>
 
       {/* Simple Footer CTA */}

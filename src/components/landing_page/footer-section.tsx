@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail, Twitter, Facebook, Instagram, Linkedin, Github, Globe, Heart } from "lucide-react"
-import { useEffect } from "react"
-import AOS from "aos"
+import { motion } from "framer-motion"
 import { Section } from "@/components/shared/page-container"
 
 const footerLinks = {
@@ -46,13 +45,17 @@ const socialLinks = [
 ]
 
 export function FooterSection() {
-  useEffect(() => { AOS.init({ once: true, duration: 700 }) }, [])
-
   return (
-    <Section className="py-20 border-t border-white/10">
+    <Section className="py-20" gradient="none">
       <div className="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto">
         {/* Newsletter Section */}
-        <div className="text-center mb-16" data-aos="fade-up">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.5 }}
+        >
           <h3 className="text-3xl font-bold text-gray-50 mb-4">
             Stay in the loop
           </h3>
@@ -69,10 +72,16 @@ export function FooterSection() {
               Subscribe
             </Button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Links Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12" data-aos="fade-up">
+        <motion.div 
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.5 }}
+        >
           <div>
             <h4 className="text-gray-50 font-semibold mb-4">Product</h4>
             <ul className="space-y-2">
@@ -136,10 +145,16 @@ export function FooterSection() {
               ))}
             </ul>
           </div>
-        </div>
+        </motion.div>
 
         {/* Bottom Section */}
-        <div className="border-t border-white/15 pt-8 flex flex-col md:flex-row justify-between items-center" data-aos="fade-up">
+        <motion.div 
+          className="border-t border-white/15 pt-8 flex flex-col md:flex-row justify-between items-center"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="flex items-center space-x-2 mb-4 md:mb-0">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">S</span>
@@ -165,7 +180,7 @@ export function FooterSection() {
             <Heart className="h-4 w-4 mx-1 text-red-300 fill-current" />
             <span> © 2024 Social SaaS</span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </Section>
   )

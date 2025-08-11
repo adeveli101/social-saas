@@ -1,8 +1,6 @@
-import { WelcomeSection } from "@/components/dashboard_page/welcome-section"
+import { UserProfileSection } from "@/components/dashboard_page/user-profile-section"
 import { StatsGrid } from "@/components/dashboard_page/stats-grid"
-import { QuickActions } from "@/components/dashboard_page/quick-actions"
 import { RecentCreations } from "@/components/dashboard_page/recent-creations"
-import { AccountSettings } from "@/components/dashboard_page/account-settings"
 
 export default function DashboardPage() {
   return (
@@ -32,10 +30,8 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
-          <WelcomeSection />
-          
-          {/* Account Settings - Horizontal below Welcome */}
-          <AccountSettings />
+          {/* User Profile Section with Tabs */}
+          <UserProfileSection />
           
           {/* Stats Section */}
           <div className="space-y-4">
@@ -43,19 +39,10 @@ export default function DashboardPage() {
             <StatsGrid />
           </div>
 
-          {/* Main Grid - Balanced Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Column - Quick Actions */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-50">Quick Actions</h2>
-              <QuickActions />
-            </div>
-            
-            {/* Right Column - Recent Activity */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-50">Recent Activity</h2>
-              <RecentCreations />
-            </div>
+          {/* Recent Activity Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-50">Recent Activity</h2>
+            <RecentCreations />
           </div>
         </div>
       </main>

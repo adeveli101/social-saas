@@ -6,6 +6,7 @@
 
 import { OpenAIService } from './openai-service'
 import { GeminiService } from './gemini-service'
+import { ReplicateService } from './replicate-service'
 import type { 
   AIServiceConfig, 
   AIServiceProvider,
@@ -19,6 +20,7 @@ import type {
   AIServiceOptions
 } from './types'
 import { AIServiceError } from './types'
+import { getProviderOrderByCost } from './cost-router'
 
 export class AIServiceOrchestrator {
   private services: Map<AIServiceProvider, any> = new Map()
@@ -54,6 +56,9 @@ export class AIServiceOrchestrator {
         break
       case 'google':
         service = new GeminiService(config.config)
+        break
+      case 'replicate':
+        service = new ReplicateService(config.config)
         break
       case 'mock':
         // Mock service for testing
@@ -93,7 +98,10 @@ export class AIServiceOrchestrator {
     options: AIServiceOptions = {}
   ): Promise<ImageGenerationResult> {
     const mergedOptions = { ...this.defaultOptions, ...options }
-    const providers = this.getImageGenerationProviders()
+    const baseProviders = this.getImageGenerationProviders()
+    const providers = mergedOptions.policy === 'cheapest'
+      ? this.getProvidersByPolicy('cheapest').filter(p => baseProviders.includes(p))
+      : baseProviders
 
     for (const provider of providers) {
       try {
@@ -125,13 +133,13 @@ export class AIServiceOrchestrator {
   /**
    * Get providers that support image generation
    */
-  private getImageGenerationProviders(): AIServiceProvider[] {
+   private getImageGenerationProviders(): AIServiceProvider[] {
     const providers: AIServiceProvider[] = []
     
     for (const [provider, config] of this.configs) {
       if (config.enabled && this.services.has(provider)) {
-        // Only OpenAI supports image generation currently
-        if (provider === 'openai' || provider === 'mock') {
+        // Image-capable providers (extendable): openai, replicate, mock
+        if (provider === 'openai' || provider === 'replicate' || provider === 'mock') {
           providers.push(provider)
         }
       }
@@ -146,6 +154,29 @@ export class AIServiceOrchestrator {
   }
 
   // =============================================================================
+  // Provider Routing by Cost/Quality
+  // =============================================================================
+
+  /**
+   * Return providers sorted by configured priority and optional cost hints
+   */
+  getProvidersByPolicy(policy: 'cheapest' | 'balanced' | 'premium' = 'balanced'): AIServiceProvider[] {
+    const availableConfigs = Array.from(this.configs.values())
+      .filter(c => c.enabled && this.services.has(c.provider))
+
+    if (policy === 'cheapest') {
+      return getProviderOrderByCost(
+        availableConfigs.map(c => c.provider),
+        availableConfigs.map(c => ({ provider: c.provider, ...c.costHint }))
+      )
+    }
+
+    // Default to priority ordering
+    const ordered = availableConfigs.sort((a, b) => a.priority - b.priority)
+    return policy === 'premium' ? ordered.reverse().map(c => c.provider) : ordered.map(c => c.provider)
+  }
+
+  // =============================================================================
   // Text Generation
   // =============================================================================
 
@@ -157,7 +188,10 @@ export class AIServiceOrchestrator {
     options: AIServiceOptions = {}
   ): Promise<TextGenerationResult> {
     const mergedOptions = { ...this.defaultOptions, ...options }
-    const providers = this.getTextGenerationProviders()
+    const baseProviders = this.getTextGenerationProviders()
+    const providers = mergedOptions.policy === 'cheapest'
+      ? this.getProvidersByPolicy('cheapest').filter(p => baseProviders.includes(p))
+      : baseProviders
 
     for (const provider of providers) {
       try {
@@ -218,7 +252,10 @@ export class AIServiceOrchestrator {
     options: AIServiceOptions = {}
   ): Promise<ContentStrategyResult> {
     const mergedOptions = { ...this.defaultOptions, ...options }
-    const providers = this.getTextGenerationProviders() // Content strategy uses text generation
+    const baseProviders = this.getTextGenerationProviders() // Content strategy uses text generation
+    const providers = mergedOptions.policy === 'cheapest'
+      ? this.getProvidersByPolicy('cheapest').filter(p => baseProviders.includes(p))
+      : baseProviders
 
     for (const provider of providers) {
       try {

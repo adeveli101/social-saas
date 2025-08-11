@@ -124,7 +124,7 @@ export function PaywallGuard({
               Upgrade to {requiredPlanData?.name}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl bg-glass backdrop-blur-xl border border-white/10">
+          <DialogContent className="modal-override-scope max-w-2xl bg-glass backdrop-blur-xl border border-white/10">
             <DialogHeader>
               <DialogTitle className="text-gray-50">Upgrade Your Plan</DialogTitle>
               <DialogDescription className="text-gray-200">

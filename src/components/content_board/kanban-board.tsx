@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 import { getContentTasks, updateContentTask, moveContentTask, createContentTask, deleteContentTask } from '@/lib/content-board'
 import type { Database } from '@/lib/database.types'
 
@@ -67,7 +68,8 @@ export function KanbanBoard() {
   const [addError, setAddError] = useState('')
   const [addLoading, setAddLoading] = useState(false)
   const router = useRouter()
-  const userId = 'demo-user-id'
+  const { user, isLoaded } = useUser()
+  const userId = user?.id || ''
   const [search, setSearch] = useState("")
   const [account, setAccount] = useState("all")
   const [assigned, setAssigned] = useState("all")
@@ -86,6 +88,7 @@ export function KanbanBoard() {
     async function fetchTasks() {
       setLoading(true)
       try {
+        if (!userId) return
         const data = await getContentTasks(userId)
         setTasks(data)
       } catch (e) {
@@ -94,8 +97,8 @@ export function KanbanBoard() {
         setLoading(false)
       }
     }
-    fetchTasks()
-  }, [userId])
+    if (isLoaded) fetchTasks()
+  }, [userId, isLoaded])
 
   useEffect(() => {
     if (selectedTask) {
@@ -220,7 +223,7 @@ export function KanbanBoard() {
   const pendingReview = tasks.filter(t => t.status === 'to_review').length;
   const publishedThisMonth = tasks.filter(t => t.status === 'posted' && t.planned_date && new Date(t.planned_date).getMonth() === now.getMonth() && new Date(t.planned_date).getFullYear() === now.getFullYear()).length;
 
-  if (loading) {
+  if (loading || !isLoaded || !userId) {
     return (
       <div className="w-full flex justify-center items-center py-20 bg-gradient-natural min-h-screen">
         <div className="flex flex-col items-center gap-4 text-gray-200">

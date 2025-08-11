@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { SignedIn, SignedOut, useUser, useClerk } from '@clerk/nextjs'
 import { StyledSignInButton, StyledSignUpButton } from '@/components/auth/clerk-components'
 import { Button } from '@/components/ui/button'
-import { Menu, X, User, LogOut, LayoutDashboard, Sparkles, Image } from 'lucide-react'
+import { Menu, X, User, LogOut, LayoutDashboard, Sparkles, Image as ImageIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { 
   DropdownMenu, 
@@ -53,17 +53,17 @@ export function Header() {
   }
 
   return (
-    <header className={`sticky top-0 z-50 w-full border-b border-white/10 transition-all duration-300 rounded-b-3xl ${
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
       isScrolled 
-        ? 'backdrop-blur-xl shadow-2xl shadow-black/20' 
-        : 'backdrop-blur-md shadow-lg shadow-black/10'
+        ? 'border-b border-white/10 backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20' 
+        : 'bg-transparent border-transparent shadow-none backdrop-blur-0'
     }`}>
       <div className="w-full px-4">
         <div className="flex h-16 items-center justify-between w-full">
           {/* Logo - En sola dayalı */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">AI</span>
               </div>
               <span className="text-xl font-bold text-gray-50">Carousel Studio</span>
@@ -91,8 +91,8 @@ export function Header() {
                   
                   <DropdownMenuItem asChild>
                     <Link href="/carousel" className="flex items-start gap-3 cursor-pointer group hover:scale-105 transition-transform duration-200">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-400/30 group-hover:border-blue-400/50 transition-all duration-200">
-                        <Sparkles className="h-5 w-5 text-blue-400" />
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-sky-500/20 to-emerald-500/20 border border-sky-400/30 group-hover:border-sky-400/50 transition-all duration-200">
+                        <Sparkles className="h-5 w-5 text-sky-400" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
@@ -106,8 +106,8 @@ export function Header() {
                   
                   <DropdownMenuItem asChild>
                     <Link href="/content-board" className="flex items-start gap-3 cursor-pointer group hover:scale-105 transition-transform duration-200">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/30 group-hover:border-purple-400/50 transition-all duration-200">
-                        <Image className="h-5 w-5 text-purple-400" />
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-400/30 group-hover:border-cyan-400/50 transition-all duration-200">
+                        <ImageIcon className="h-5 w-5 text-cyan-400" />
                       </div>
                       <div className="flex-1">
                         <span className="font-medium text-gray-50">Content Board</span>
@@ -140,7 +140,7 @@ export function Header() {
                 </Button>
               </StyledSignInButton>
               <StyledSignUpButton mode="modal">
-                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white">
+                <Button className="bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 text-white">
                   Get Started
                 </Button>
               </StyledSignUpButton>
@@ -151,7 +151,7 @@ export function Header() {
                   <Button variant="ghost" className="flex items-center gap-3 p-2 hover:bg-white/10 rounded-lg transition-all duration-200">
                     <Avatar className="h-8 w-8 ring-2 ring-white/20">
                       <AvatarImage src={user?.imageUrl} alt={getUserName()} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-white font-semibold text-sm">
+                      <AvatarFallback className="bg-gradient-to-br from-sky-500/20 to-emerald-600/20 text-white font-semibold text-sm">
                         {getUserInitials()}
                       </AvatarFallback>
                     </Avatar>
@@ -226,7 +226,7 @@ export function Header() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/30 group-hover:border-purple-400/50 transition-all duration-200">
-                    <Image className="h-5 w-5 text-purple-400" />
+                    <ImageIcon className="h-5 w-5 text-purple-400" />
                   </div>
                   <div className="flex-1">
                     <span className="font-medium">Content Board</span>

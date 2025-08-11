@@ -3,20 +3,24 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Check } from "lucide-react"
 import Link from "next/link"
-import { useEffect } from "react"
-import AOS from "aos"
+import { motion } from "framer-motion"
 import { Section } from "@/components/shared/page-container"
 
 export function CTASection() {
-  useEffect(() => { AOS.init({ once: true, duration: 700 }) }, [])
   return (
     <Section 
-      className="py-20 border-b border-white/10" 
+      className="py-20" 
       gradient="none"
       containerClassName="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto" 
       center={true}
     >
-      <div className="rounded-2xl bg-white/8 backdrop-blur-md shadow-xl p-10 text-center border border-white/15 hover:border-white/25 transition-all duration-300 mx-auto max-w-3xl" data-aos="zoom-in">
+      <motion.div 
+        className="rounded-2xl bg-white/8 backdrop-blur-md shadow-xl p-10 text-center border border-white/15 hover:border-white/25 transition-all duration-300 mx-auto max-w-3xl"
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.5 }}
+      >
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-50">
           Ready to elevate your social media?
         </h2>
@@ -56,7 +60,7 @@ export function CTASection() {
             <span className="text-sm">Cancel anytime</span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </Section>
   )
 } 

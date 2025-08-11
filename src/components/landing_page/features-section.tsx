@@ -10,8 +10,7 @@ import {
   Zap,
   Image
 } from "lucide-react"
-import { useEffect } from "react"
-import AOS from "aos"
+import { motion } from "framer-motion"
 import { Section } from "@/components/shared/page-container"
 import { AnimatedGradientText } from "@/components/shared/AnimatedGradientText"
 import { StaticGradientText } from "@/components/shared/StaticGradientText"
@@ -68,16 +67,20 @@ const getBadgeVariant = (badge: string) => {
 }
 
 export function FeaturesSection() {
-  useEffect(() => { AOS.init({ once: true, duration: 700 }) }, [])
-
   return (
     <Section 
       id="features" 
       gradient="none"
-      className="py-20 border-b border-white/10" 
+      className="py-20"
       containerClassName="w-full px-4 md:px-8 xl:px-12 2xl:px-16 mx-auto"
     >
-      <div className="text-center mb-16" data-aos="fade-up">
+      <motion.div 
+        className="text-center mb-16"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5 }}
+      >
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
           <span className="text-gray-50">Powerful AI Features for </span>
           <AnimatedGradientText>Content Creation</AnimatedGradientText>
@@ -85,16 +88,19 @@ export function FeaturesSection() {
         <p className="text-xl text-gray-100 max-w-3xl mx-auto">
           Transform your ideas into stunning social media carousels with cutting-edge AI technology and professional design tools.
         </p>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {features.map((feature, index) => (
-          <Card 
+          <motion.div
             key={feature.title}
             className="card-hover-effect bg-white/5 backdrop-blur-sm border-white/10 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
-            data-aos="fade-up"
-            data-aos-delay={index * 100}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: index * 0.08 }}
           >
+            <Card>
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500/30 to-purple-500/30 border border-white/20 flex items-center justify-center">
@@ -113,18 +119,25 @@ export function FeaturesSection() {
                 {feature.description}
               </CardDescription>
             </CardContent>
-          </Card>
+            </Card>
+          </motion.div>
         ))}
       </div>
 
-      <div className="text-center mt-16" data-aos="fade-up">
+      <motion.div 
+        className="text-center mt-16"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5 }}
+      >
         <p className="text-lg text-gray-200 mb-4">
           Ready to create your first AI carousel?
         </p>
         <StaticGradientText className="text-lg font-semibold">
           Start generating stunning content today!
         </StaticGradientText>
-      </div>
+      </motion.div>
     </Section>
   )
 } 
